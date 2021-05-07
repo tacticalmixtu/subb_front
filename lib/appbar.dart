@@ -1,0 +1,101 @@
+import 'package:flutter/material.dart';
+
+class MyAppbar extends StatefulWidget with PreferredSizeWidget {
+  @override
+  _MyAppbarState createState() => _MyAppbarState();
+
+  @override
+  // Size.fromHeight(toolbarHeight ?? kToolbarHeight + (bottom?.preferredSize.height ?? 0.0))
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+}
+
+class _MyAppbarState extends State<MyAppbar> {
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      // TODO: navigation menu?
+      // leading: IconButton(
+      //   Icons.menu,
+      // ),
+      title: Text('SUBB'),
+      actions: <Widget>[
+        InkWell(
+          // When the user taps the button, show a snackbar.
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Tap'),
+            ));
+          },
+          child: Container(
+            padding: EdgeInsets.all(12.0),
+            child: OutlinedButton(
+              onPressed: () {
+                // Respond to button press
+              },
+              child: Text("Sign In"),
+            ),
+          ),
+        ),
+        InkWell(
+          // When the user taps the button, show a snackbar.
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Tap'),
+            ));
+          },
+          child: Container(
+            // color: Theme.of(context).accentColor,
+            padding: EdgeInsets.all(12.0),
+            child: OutlinedButton(
+              onPressed: () {
+                // Respond to button press
+              },
+              child: Text("Sign Up"),
+            ),
+          ),
+        ),
+        IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(context: context, delegate: Search());
+            }),
+        // Padding(
+        //   padding: EdgeInsets.symmetric(horizontal: 16),
+        // ),
+      ],
+    );
+  }
+}
+
+class Search extends SearchDelegate {
+  @override
+  List<Widget> buildActions(BuildContext context) =>
+      <Widget>[IconButton(icon: Icon(Icons.clear), onPressed: () {})];
+
+  @override
+  Widget buildLeading(BuildContext context) => IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        Navigator.pop(context);
+      });
+
+  @override
+  Widget buildResults(BuildContext context) => Container(
+        child: Center(
+          child: Text("Search result page"),
+        ),
+      );
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<String> suggesstionList = ["hi"];
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(suggesstionList[index]),
+        );
+      },
+      itemCount: suggesstionList.length,
+    );
+  }
+}
