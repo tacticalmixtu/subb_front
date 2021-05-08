@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:subb_front/appbar.dart';
+import 'package:subb_front/model/photo.dart';
+import 'package:http/http.dart' as http;
+import 'package:subb_front/model/album.dart';
 
 class HomePage extends StatelessWidget {
   ListTile _tile(String title, String subtitle, IconData icon) => ListTile(
@@ -16,40 +19,6 @@ class HomePage extends StatelessWidget {
           color: Colors.blue[500],
         ),
       );
-  Widget _buildCard() => SizedBox(
-        height: 210,
-        child: Card(
-          child: Column(
-            children: [
-              ListTile(
-                title: Text('1625 Main Street',
-                    style: TextStyle(fontWeight: FontWeight.w500)),
-                subtitle: Text('My City, CA 99984'),
-                leading: Icon(
-                  Icons.restaurant_menu,
-                  color: Colors.blue[500],
-                ),
-              ),
-              Divider(),
-              ListTile(
-                title: Text('(408) 555-1212',
-                    style: TextStyle(fontWeight: FontWeight.w500)),
-                leading: Icon(
-                  Icons.contact_phone,
-                  color: Colors.blue[500],
-                ),
-              ),
-              ListTile(
-                title: Text('costa@example.com'),
-                leading: Icon(
-                  Icons.contact_mail,
-                  color: Colors.blue[500],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
 
   @override
   Widget build(BuildContext context) {
@@ -62,36 +31,208 @@ class HomePage extends StatelessWidget {
       //     _buildCard(),
       //   ],
       // ),
-      drawer: Drawer(
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              child: Text('Forum sections'),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-            ),
-            ListTile(
-              title: Text('First section'),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Another section'),
-              onTap: () {
-                // Update the state of the app.
-                // ...
-                Navigator.pop(context);
-              },
-            ),
-          ],
+      drawer: ForumDrawer(),
+      body: Center(
+        child: FutureBuilder<List<Photo>>(
+          future: fetchPhotos(http.Client()),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) print(snapshot.error);
+
+            return snapshot.hasData
+                ? PhotosList(photos: snapshot.data!)
+                : Center(child: CircularProgressIndicator());
+          },
         ),
       ),
+    );
+  }
+}
+
+class PhotosList extends StatelessWidget {
+  final List<Photo> photos;
+
+  PhotosList({Key? key, required this.photos}) : super(key: key);
+  Widget _buildCard() => SizedBox(
+        height: 210,
+        child: Card(
+          child: Column(
+            children: [
+              // ListTile(
+              //   title: Text('1625 Main Street',
+              //       style: TextStyle(fontWeight: FontWeight.w500)),
+              //   subtitle: Text('My City, CA 99984'),
+              //   leading: Icon(
+              //     Icons.restaurant_menu,
+              //     color: Colors.blue[500],
+              //   ),
+              // ),
+              // Divider(),
+              // ListTile(
+              //   title: Text('(408) 555-1212',
+              //       style: TextStyle(fontWeight: FontWeight.w500)),
+              //   leading: Icon(
+              //     Icons.contact_phone,
+              //     color: Colors.blue[500],
+              //   ),
+              // ),
+              // ListTile(
+              //   title: Text('costa@example.com'),
+              //   leading: Icon(
+              //     Icons.contact_mail,
+              //     color: Colors.blue[500],
+              //   ),
+              // ),
+              const ListTile(
+                leading: Icon(Icons.album),
+                title: Text('The Enchanted Nightingale'),
+                subtitle: Text('Music by Julie Gable. Lyrics by Sidney Stein.'),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  TextButton(
+                    child: const Text('BUY TICKETS'),
+                    onPressed: () {/* ... */},
+                  ),
+                  const SizedBox(width: 8),
+                  TextButton(
+                    child: const Text('LISTEN'),
+                    onPressed: () {/* ... */},
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+      ),
+      itemCount: photos.length,
+      itemBuilder: (context, index) {
+        // return Image.network(photos[index].thumbnailUrl);
+        // return Text('${photos[index].title}');
+        return _buildCard();
+      },
+    );
+  }
+}
+
+class ForumList extends StatelessWidget {
+  final List<Album> albums;
+
+  ForumList({Key? key, required this.albums}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: albums.length,
+      itemBuilder: (context, index) {
+        // return Image.network(photos[index].thumbnailUrl);
+        // return Text('${albums[index].title}');
+        return ListTile(
+          title: Text('${albums[index].title}'),
+          onTap: () {
+            // Update the state of the app.
+            // ...
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+}
+// class Albums extends StatefulWidget {
+//   @override
+//   _AlbumsState createState() => _AlbumsState();
+// }
+
+// class _AlbumsState extends State<Albums> {
+//   late Future<Album> futureAlbum;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     futureAlbum = fetchAlbum();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) => FutureBuilder<Album>(
+//         future: futureAlbum,
+//         builder: (context, snapshot) {
+//           if (snapshot.hasData) {
+//             return Text(snapshot.data!.title);
+//           } else if (snapshot.hasError) {
+//             return Text("${snapshot.error}");
+//           }
+
+//           // By default, show a loading spinner.
+//           return CircularProgressIndicator();
+//         },
+//       );
+// }
+
+class ForumDrawer extends StatelessWidget {
+  const ForumDrawer({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: FutureBuilder<List<Album>>(
+        future: fetchAlbums(http.Client()),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+
+          return snapshot.hasData
+              ? ForumList(albums: snapshot.data!)
+              : Center(child: CircularProgressIndicator());
+          // return ForumList(albums: snapshot.data!);
+        },
+      ),
+      //ListView(
+      // Important: Remove any padding from the ListView.
+      //padding: EdgeInsets.zero,
+      // children: <Widget>[
+      //   DrawerHeader(
+      //     child: Text('Forum sections'),
+      //     decoration: BoxDecoration(
+      //       color: Colors.blue,
+      //     ),
+      //   ),
+      //   ListTile(
+      //     title: Text('First section'),
+      //     onTap: () {
+      //       // Update the state of the app.
+      //       // ...
+      //       Navigator.pop(context);
+      //     },
+      //   ),
+      //   ListTile(
+      //     title: Text('Another section'),
+      //     onTap: () {
+      //       // Update the state of the app.
+      //       // ...
+      //       Navigator.pop(context);
+      //     },
+      //   ),
+      // ],
+      // children: <Widget>[
+      //   DrawerHeader(
+      //     child: Text('Forum sections'),
+      //     decoration: BoxDecoration(
+      //       color: Colors.blue,
+      //     ),
+      //   ),
+
+      // ],
+      // ),
     );
   }
 }
