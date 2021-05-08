@@ -31,6 +31,7 @@ class _MyAppbarState extends State<MyAppbar> {
             child: OutlinedButton(
               onPressed: () {
                 // Respond to button press
+                Navigator.pushNamed(context, '/signin');
               },
               child: Text("Sign In"),
             ),
@@ -49,6 +50,7 @@ class _MyAppbarState extends State<MyAppbar> {
             child: OutlinedButton(
               onPressed: () {
                 // Respond to button press
+                Navigator.pushNamed(context, '/signup');
               },
               child: Text("Sign Up"),
             ),

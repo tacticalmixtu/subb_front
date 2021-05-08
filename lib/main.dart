@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/home.dart';
+import 'package:subb_front/signin.dart';
+import 'package:subb_front/signup.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,6 +28,11 @@ class MyApp extends StatelessWidget {
           bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Sherman'),
         ),
       ),
+      routes: {
+        // '/' :
+        '/signin': (BuildContext text) => new LoginScreen(),
+        '/signup': (BuildContext context) => new SignUpScreen(),
+      },
       home: HomePage(),
       debugShowCheckedModeBanner: false,
     );
