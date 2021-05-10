@@ -1,38 +1,20 @@
 // import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:subb_front/appbar.dart';
-import 'package:subb_front/model/photo.dart';
+import 'package:subb_front/screens/appbar.dart';
+import 'package:subb_front/models/photo.dart';
 import 'package:http/http.dart' as http;
-import 'package:subb_front/model/album.dart';
+import 'package:subb_front/models/album.dart';
 
-class HomePage extends StatelessWidget {
-  ListTile _tile(String title, String subtitle, IconData icon) => ListTile(
-        title: Text(title,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 20,
-            )),
-        subtitle: Text(subtitle),
-        leading: Icon(
-          icon,
-          color: Colors.blue[500],
-        ),
-      );
-
+class HomeScreen extends StatelessWidget {
+  static const routeName = '/';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppbar(),
-      // body: ListView(
-      //   children: [
-      //     _buildCard(),
-      //     Divider(),
-      //     _buildCard(),
-      //   ],
-      // ),
       drawer: ForumDrawer(),
-      body: Center(
+      // TODO: render different layout for web/android
+      body: SafeArea(
         child: FutureBuilder<List<Photo>>(
           future: fetchPhotos(http.Client()),
           builder: (context, snapshot) {
@@ -44,6 +26,14 @@ class HomePage extends StatelessWidget {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xff03dac6),
+        foregroundColor: Colors.black,
+        onPressed: () {
+          Navigator.pushNamed(context, '/compose');
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
@@ -52,55 +42,15 @@ class PhotosList extends StatelessWidget {
   final List<Photo> photos;
 
   PhotosList({Key? key, required this.photos}) : super(key: key);
-  Widget _buildCard() => SizedBox(
-        height: 210,
+  Widget _buildCard() => Container(
+        margin: EdgeInsets.all(4),
         child: Card(
           child: Column(
             children: [
-              // ListTile(
-              //   title: Text('1625 Main Street',
-              //       style: TextStyle(fontWeight: FontWeight.w500)),
-              //   subtitle: Text('My City, CA 99984'),
-              //   leading: Icon(
-              //     Icons.restaurant_menu,
-              //     color: Colors.blue[500],
-              //   ),
-              // ),
-              // Divider(),
-              // ListTile(
-              //   title: Text('(408) 555-1212',
-              //       style: TextStyle(fontWeight: FontWeight.w500)),
-              //   leading: Icon(
-              //     Icons.contact_phone,
-              //     color: Colors.blue[500],
-              //   ),
-              // ),
-              // ListTile(
-              //   title: Text('costa@example.com'),
-              //   leading: Icon(
-              //     Icons.contact_mail,
-              //     color: Colors.blue[500],
-              //   ),
-              // ),
               const ListTile(
                 leading: Icon(Icons.album),
                 title: Text('The Enchanted Nightingale'),
                 subtitle: Text('Music by Julie Gable. Lyrics by Sidney Stein.'),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  TextButton(
-                    child: const Text('BUY TICKETS'),
-                    onPressed: () {/* ... */},
-                  ),
-                  const SizedBox(width: 8),
-                  TextButton(
-                    child: const Text('LISTEN'),
-                    onPressed: () {/* ... */},
-                  ),
-                  const SizedBox(width: 8),
-                ],
               ),
             ],
           ),
@@ -109,10 +59,7 @@ class PhotosList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-      ),
+    return ListView.builder(
       itemCount: photos.length,
       itemBuilder: (context, index) {
         // return Image.network(photos[index].thumbnailUrl);

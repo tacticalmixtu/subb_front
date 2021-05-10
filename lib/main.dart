@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/home.dart';
-import 'package:subb_front/signin.dart';
-import 'package:subb_front/signup.dart';
+import 'package:subb_front/screens/compose.dart';
+import 'package:subb_front/screens/home.dart';
+import 'package:subb_front/screens/post.dart';
+import 'package:subb_front/screens/signin.dart';
+import 'package:subb_front/screens/signup.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,14 +29,23 @@ class MyApp extends StatelessWidget {
           headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
           bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Sherman'),
         ),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      initialRoute: '/',
       routes: {
-        // '/' :
-        '/signin': (BuildContext text) => new LoginScreen(),
-        '/signup': (BuildContext context) => new SignUpScreen(),
+        HomeScreen.routeName: (BuildContext context) => HomeScreen(),
+        SigninScreen.routeName: (BuildContext context) => SigninScreen(),
+        SignUpScreen.routeName: (BuildContext context) => SignUpScreen(),
+        PostScreen.routeName: (BuildContext context) => PostScreen(),
+        ComposeScreen.routeName: (BuildContext context) => ComposeScreen(),
       },
-      home: HomePage(),
+      // home: HomePage(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
+
+// TODO:
+// Rich-text editor
+// data pulling/process
+// test data gathering

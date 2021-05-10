@@ -20,12 +20,6 @@ class _MyAppbarState extends State<MyAppbar> {
       title: Text('SUBB'),
       actions: <Widget>[
         InkWell(
-          // When the user taps the button, show a snackbar.
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Tap'),
-            ));
-          },
           child: Container(
             padding: EdgeInsets.all(12.0),
             child: OutlinedButton(
@@ -38,12 +32,6 @@ class _MyAppbarState extends State<MyAppbar> {
           ),
         ),
         InkWell(
-          // When the user taps the button, show a snackbar.
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Tap'),
-            ));
-          },
           child: Container(
             // color: Theme.of(context).accentColor,
             padding: EdgeInsets.all(12.0),
