@@ -4,6 +4,8 @@ import 'package:subb_front/screens/home.dart';
 import 'package:subb_front/screens/post.dart';
 import 'package:subb_front/screens/signin.dart';
 import 'package:subb_front/screens/signup.dart';
+import 'package:subb_front/screens/editprofile.dart';
+import 'package:subb_front/screens/userprofile.dart';
 
 void main() {
   runApp(MyApp());
@@ -36,6 +38,8 @@ class MyApp extends StatelessWidget {
         HomeScreen.routeName: (BuildContext context) => HomeScreen(),
         SigninScreen.routeName: (BuildContext context) => SigninScreen(),
         SignUpScreen.routeName: (BuildContext context) => SignUpScreen(),
+        UserProfileScreen.routeName: (BuildContext context) => UserProfileScreen(),
+        EditProfileScreen.routeName: (BuildContext context) => EditProfileScreen(),
         PostScreen.routeName: (BuildContext context) => PostScreen(),
         ComposeScreen.routeName: (BuildContext context) => ComposeScreen(),
       },

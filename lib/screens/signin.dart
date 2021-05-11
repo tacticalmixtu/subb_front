@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import 'signup.dart';
 
 class SigninScreen extends StatelessWidget {
   static const routeName = '/signin';
@@ -47,13 +46,15 @@ class SigninFormState extends State<SigninForm> {
   }
 
   void showWelcomeScreen() {
+    Navigator.pushNamed(context, '/userprofile');
+    /*
     Navigator.push(context, MaterialPageRoute(builder: (BuildContext) {
       return Scaffold(
         appBar: AppBar(
           title: Text("You are signed in."),
         ),
       );
-    }));
+    }));*/
   }
 
   void showSignUpScreen() {
