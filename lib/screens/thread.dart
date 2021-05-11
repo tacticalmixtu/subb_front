@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/screens/appbar.dart';
 
-class PostScreen extends StatelessWidget {
-  static const routeName = '/posts';
+class ThreadScreen extends StatelessWidget {
+  static const routeName = '/threads';
   ListTile _tile(String title, String subtitle, IconData icon) => ListTile(
         title: Text(title,
             style: TextStyle(

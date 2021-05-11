@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/screens/compose.dart';
 import 'package:subb_front/screens/home.dart';
-import 'package:subb_front/screens/post.dart';
+import 'package:subb_front/screens/thread.dart';
 import 'package:subb_front/screens/signin.dart';
 import 'package:subb_front/screens/signup.dart';
 import 'package:subb_front/screens/editprofile.dart';
@@ -38,9 +38,11 @@ class MyApp extends StatelessWidget {
         HomeScreen.routeName: (BuildContext context) => HomeScreen(),
         SigninScreen.routeName: (BuildContext context) => SigninScreen(),
         SignUpScreen.routeName: (BuildContext context) => SignUpScreen(),
-        UserProfileScreen.routeName: (BuildContext context) => UserProfileScreen(),
-        EditProfileScreen.routeName: (BuildContext context) => EditProfileScreen(),
-        PostScreen.routeName: (BuildContext context) => PostScreen(),
+        UserProfileScreen.routeName: (BuildContext context) =>
+            UserProfileScreen(),
+        EditProfileScreen.routeName: (BuildContext context) =>
+            EditProfileScreen(),
+        ThreadScreen.routeName: (BuildContext context) => ThreadScreen(),
         ComposeScreen.routeName: (BuildContext context) => ComposeScreen(),
       },
       // home: HomePage(),

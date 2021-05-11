@@ -8,7 +8,10 @@ import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/default_styles.dart';
 import 'package:flutter_quill/widgets/editor.dart';
 import 'package:flutter_quill/widgets/toolbar.dart';
+import 'package:subb_front/constants.dart';
+import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/universal_ui/universal_ui.dart';
+import 'package:subb_front/utils/network.dart';
 import 'package:tuple/tuple.dart';
 import 'package:subb_front/screens/appbar.dart';
 import 'package:flutter_quill/widgets/controller.dart';
@@ -16,6 +19,7 @@ import 'package:subb_front/screens/home.dart';
 
 class ComposeScreen extends StatefulWidget {
   static const routeName = '/compose';
+  static const _apiPath = '/new_thread';
   @override
   _ComposeScreenState createState() => _ComposeScreenState();
 }
@@ -56,25 +60,35 @@ class _ComposeScreenState extends State<ComposeScreen> {
   }
 
   Future<void> _sendNewPost() async {
-    final response = await http.post(Uri.https('httpbin.org', 'post'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        // body: jsonEncode(<String, String>{
-        //   'title': "hello world",
-        // }),
-        body: jsonEncode(_controller!.document.toDelta().toJson()));
+    String forumID = '1';
+    String title = 'demo title 2';
+    final queryParams = {
+      'forum_id': forumID,
+      'title': title,
+    };
+    final b =
+        await compute(jsonEncode, _controller!.document.toDelta().toJson());
 
-    if (response.statusCode == 200) {
-      // If the server did return a 201 CREATED response,
-      // then parse the JSON.
-      // return Album.fromJson(jsonDecode(response.body));
-      print(response.body);
+    final apiResponse =
+        await doPost('small_talk_api/new_thread/', queryParams, b);
+    if (apiResponse != null) {
+      print('code: ${apiResponse.code}');
+      print('message: ${apiResponse.message}');
+      print('data: ${apiResponse.data}');
     } else {
-      // If the server did not return a 201 CREATED response,
-      // then throw an exception.
-      // throw Exception('Failed to load album');
-      print("failed to load");
+      print("_sendNewPost() error, null apiResponse");
+    }
+  }
+
+  Future<void> _testPost() async {
+    final apiResponse =
+        await doGet("/small_talk_api/get_post", {'post_id': '1'});
+    if (apiResponse != null) {
+      print('code: ${apiResponse.code}');
+      print('message: ${apiResponse.message}');
+      print('data: ${apiResponse.data}');
+    } else {
+      print("_testPost() error, null apiResponse");
     }
   }
 
@@ -110,7 +124,8 @@ class _ComposeScreenState extends State<ComposeScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
-        onPressed: _sendNewPost,
+        // onPressed: _sendNewPost,
+        onPressed: _testPost,
         child: Icon(Icons.send),
       ),
       // body: RawKeyboardListener(
