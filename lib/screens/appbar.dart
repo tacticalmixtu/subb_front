@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:subb_front/screens/signin.dart';
 
 class MyAppbar extends StatefulWidget with PreferredSizeWidget {
   @override
@@ -19,31 +21,41 @@ class _MyAppbarState extends State<MyAppbar> {
       // ),
       title: Text('SUBB'),
       actions: <Widget>[
-        InkWell(
-          child: Container(
-            padding: EdgeInsets.all(12.0),
-            child: OutlinedButton(
-              onPressed: () {
-                // Respond to button press
-                Navigator.pushNamed(context, '/signin');
-              },
-              child: Text("Sign In"),
-            ),
-          ),
-        ),
-        InkWell(
-          child: Container(
-            // color: Theme.of(context).accentColor,
-            padding: EdgeInsets.all(12.0),
-            child: OutlinedButton(
-              onPressed: () {
-                // Respond to button press
-                Navigator.pushNamed(context, '/signup');
-              },
-              child: Text("Sign Up"),
-            ),
-          ),
-        ),
+        kIsWeb
+            ? Row(
+                children: [
+                  InkWell(
+                    child: Container(
+                      padding: EdgeInsets.all(12.0),
+                      child: OutlinedButton(
+                        onPressed: () {
+                          // Respond to button press
+                          Navigator.pushNamed(context, '/signin');
+                        },
+                        child: Text("Sign In"),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    child: Container(
+                      // color: Theme.of(context).accentColor,
+                      padding: EdgeInsets.all(12.0),
+                      child: OutlinedButton(
+                        onPressed: () {
+                          // Respond to button press
+                          Navigator.pushNamed(context, '/signup');
+                        },
+                        child: Text("Sign Up"),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : IconButton(
+                icon: Icon(Icons.person),
+                onPressed: () {
+                  Navigator.pushNamed(context, SigninScreen.routeName);
+                }),
         IconButton(
             icon: Icon(Icons.search),
             onPressed: () {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/default_styles.dart';
 import 'package:flutter_quill/widgets/editor.dart';
@@ -21,7 +22,8 @@ class ComposeScreen extends StatefulWidget {
 
 class _ComposeScreenState extends State<ComposeScreen> {
   QuillController? _controller;
-  final FocusNode _focusNode = FocusNode();
+  // TODO: fix focus bug
+  late FocusNode _focusNode;
 
   Future<void> _loadFromAssets() async {
     try {
@@ -43,7 +45,37 @@ class _ComposeScreenState extends State<ComposeScreen> {
   @override
   void initState() {
     super.initState();
+    _focusNode = FocusNode();
     _loadFromAssets();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _sendNewPost() async {
+    final response = await http.post(Uri.https('httpbin.org', 'post'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        // body: jsonEncode(<String, String>{
+        //   'title': "hello world",
+        // }),
+        body: jsonEncode(_controller!.document.toDelta().toJson()));
+
+    if (response.statusCode == 200) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      // return Album.fromJson(jsonDecode(response.body));
+      print(response.body);
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      // throw Exception('Failed to load album');
+      print("failed to load");
+    }
   }
 
   @override
@@ -60,14 +92,27 @@ class _ComposeScreenState extends State<ComposeScreen> {
           QuillToolbar.basic(controller: _controller!),
           Expanded(
             child: Container(
-              child: QuillEditor.basic(
+              child: QuillEditor(
                 controller: _controller!,
-                readOnly: false, // true for view only mode
+                readOnly: false,
+                autoFocus: true,
+                focusNode: _focusNode,
+                scrollController: ScrollController(),
+                scrollable: true,
+                expands: false,
+                padding: EdgeInsets.zero,
+                embedBuilder: defaultEmbedBuilderWeb,
               ),
             ),
           )
         ],
       )),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xff03dac6),
+        foregroundColor: Colors.black,
+        onPressed: _sendNewPost,
+        child: Icon(Icons.send),
+      ),
       // body: RawKeyboardListener(
       //   focusNode: FocusNode(),
       //   onKey: (event) {
