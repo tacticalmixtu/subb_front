@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:subb_front/screens/home.dart';
 import 'package:subb_front/utils/network.dart';
 
 class SigninScreen extends StatelessWidget {
@@ -82,13 +83,22 @@ class SigninFormState extends State<SigninForm> {
       },
       null,
     );
+    late final SnackBar snackBar;
     if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('message: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
+      // print('code: ${apiResponse.code}');
+      // print('message: ${apiResponse.message}');
+      // print('data: ${apiResponse.data}');
+      snackBar = SnackBar(content: Text('Signed in success'));
     } else {
-      print("_signIn() error, null apiResponse");
+      snackBar = SnackBar(content: Text('Signed in failed'));
+      // print("_signIn() error, null apiResponse");
     }
+
+    // Find the ScaffoldMessenger in the widget tree
+    // and use it to show a SnackBar.
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    Navigator.pop(context);
   }
 
   @override

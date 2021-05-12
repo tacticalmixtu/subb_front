@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -22,7 +21,7 @@ Future<ApiResponse?> doGet(
         : await _client.get(uri);
 
     if (response.statusCode == 200) {
-      return await compute(parseResponseBody, response.body);
+      return await compute(parseApiResponse, response.body);
     }
   } catch (e, s) {
     print('exception caught in doGet(): $e');
@@ -49,7 +48,7 @@ Future<ApiResponse?> doPost(
         _cookie = response.headers[HttpHeaders.setCookieHeader];
         print('cookie set!: ${response.headers[HttpHeaders.setCookieHeader]}');
       }
-      return await compute(parseResponseBody, response.body);
+      return await compute(parseApiResponse, response.body);
     }
   } catch (e, s) {
     print('exception caught in doGet():');
@@ -57,10 +56,4 @@ Future<ApiResponse?> doPost(
     print('Stack trace:\n $s');
     return null;
   }
-}
-
-ApiResponse parseResponseBody(String responseBody) {
-  final Map<String, dynamic> parsed = jsonDecode(responseBody);
-  final response = ApiResponse.fromJson(parsed);
-  return response;
 }

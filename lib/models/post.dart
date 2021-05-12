@@ -1,49 +1,57 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:subb_front/utils/network.dart';
+
+part 'post.g.dart';
+
+@JsonSerializable()
 class Post {
-  final int postId;
-  final int threadId;
-  final int author;
-  final int timestamp;
-  final int quoteId;
-  final String content;
-  final String status;
-  final int comments;
-  final int votes;
+  int postId;
+  int threadId;
+  int author;
+  int timestamp;
+  int quoteId;
+  String content;
+  String status;
+  int comments;
+  int votes;
 
-  Post(
-      {required this.postId,
-      required this.threadId,
-      required this.author,
-      required this.timestamp,
-      required this.quoteId,
-      required this.content,
-      required this.status,
-      required this.comments,
-      required this.votes});
+  Post(this.postId, this.threadId, this.author, this.timestamp, this.quoteId,
+      this.content, this.status, this.comments, this.votes);
 
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(
-        postId: json['post_id'],
-        threadId: json['thread_id'],
-        author: json['author'],
-        timestamp: json['timestamp'],
-        quoteId: json['quote_id'],
-        content: json['content'],
-        status: json['status'],
-        comments: json['comments'],
-        votes: json['votes']);
+  factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PostToJson(this);
+}
+
+// A function that converts a response body into a List<Thread>.
+List<Post> parsePosts(String responseBody) {
+  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+
+  return parsed.map<Post>((json) => Post.fromJson(json)).toList();
+}
+
+const _apiPath = 'small_talk_api/get_thread_page';
+
+Future<List<Post>> fetchPosts(String threadID, String page) async {
+  try {
+    final apiResponse =
+        await doGet(_apiPath, {'post_id': threadID, 'page': page});
+
+    if (apiResponse != null) {
+      // print('code: ${apiResponse.code}');
+      // print('message: ${apiResponse.message}');
+      // print('data: ${apiResponse.data}');
+      return compute(parsePosts, apiResponse.data!);
+    } else {
+      print("_fetchPosts() error, null apiResponse");
+    }
+  } catch (e, s) {
+    print('exception caught in fetchPosts(): $e');
+    print('Exception details:\n $e');
+    print('Stack trace:\n $s');
   }
-
-  // Map<String, dynamic> toJson() {
-  //   final Map<String, dynamic> data = new Map<String, dynamic>();
-  //   data['post_id'] = this.postId;
-  //   data['thread_id'] = this.threadId;
-  //   data['author'] = this.author;
-  //   data['timestamp'] = this.timestamp;
-  //   data['quote_id'] = this.quoteId;
-  //   data['content'] = this.content;
-  //   data['status'] = this.status;
-  //   data['comments'] = this.comments;
-  //   data['votes'] = this.votes;
-  //   return data;
-  // }
+  return [];
 }
