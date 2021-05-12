@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:subb_front/utils/network.dart';
 
 class SigninScreen extends StatelessWidget {
   static const routeName = '/signin';
@@ -8,14 +9,7 @@ class SigninScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('SUBB'),
       ),
-      body: Center(
-        child: SizedBox(
-          width: 400,
-          child: Card(
-            child: SigninForm(),
-          ),
-        ),
-      ),
+      body: SigninForm(),
     );
   }
 }
@@ -26,13 +20,29 @@ class SigninForm extends StatefulWidget {
 }
 
 class SigninFormState extends State<SigninForm> {
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
+  final _signInApi = '/small_talk_api/sign_in/';
+  late final _emailController;
+  late final _passwordController;
+
+  @override
+  void initState() {
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   double formProgress = 0;
 
   void updateFormProgress() {
     var progress = 0.0;
-    final controllers = [usernameController, passwordController];
+    final controllers = [_emailController, _passwordController];
 
     for (final controller in controllers) {
       if (controller.value.text.isNotEmpty) {
@@ -63,6 +73,24 @@ class SigninFormState extends State<SigninForm> {
     Navigator.pushNamed(context, '/signup');
   }
 
+  void _signIn() async {
+    final apiResponse = await doPost(
+      _signInApi,
+      {
+        'email': _emailController.text,
+        'password': _passwordController.text,
+      },
+      null,
+    );
+    if (apiResponse != null) {
+      print('code: ${apiResponse.code}');
+      print('message: ${apiResponse.message}');
+      print('data: ${apiResponse.data}');
+    } else {
+      print("_signIn() error, null apiResponse");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -72,14 +100,15 @@ class SigninFormState extends State<SigninForm> {
           Padding(
             padding: EdgeInsets.all(8.0),
             child: TextFormField(
-              controller: usernameController,
-              decoration: InputDecoration(hintText: 'Username'),
+              controller: _emailController,
+              decoration: InputDecoration(hintText: 'Email'),
             ),
           ),
           Padding(
             padding: EdgeInsets.all(8.0),
+            // TODO: use password hidden
             child: TextFormField(
-              controller: passwordController,
+              controller: _passwordController,
               decoration: InputDecoration(hintText: 'Password'),
             ),
           ),
@@ -96,7 +125,8 @@ class SigninFormState extends State<SigninForm> {
                           states.contains(MaterialState.disabled)
                               ? null
                               : Colors.deepOrangeAccent)),
-              onPressed: formProgress == 1 ? showWelcomeScreen : null,
+              // onPressed: formProgress == 1 ? showWelcomeScreen : _signIn,
+              onPressed: _signIn,
               child: Text("Sign In")),
           Padding(padding: EdgeInsets.all(8.0)),
           Padding(

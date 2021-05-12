@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +9,6 @@ import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/default_styles.dart';
 import 'package:flutter_quill/widgets/editor.dart';
 import 'package:flutter_quill/widgets/toolbar.dart';
-import 'package:subb_front/constants.dart';
-import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/universal_ui/universal_ui.dart';
 import 'package:subb_front/utils/network.dart';
 import 'package:tuple/tuple.dart';
@@ -28,6 +27,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
   QuillController? _controller;
   // TODO: fix focus bug
   late FocusNode _focusNode;
+  late http.Client _client;
 
   Future<void> _loadFromAssets() async {
     try {
@@ -50,18 +50,20 @@ class _ComposeScreenState extends State<ComposeScreen> {
   void initState() {
     super.initState();
     _focusNode = FocusNode();
+    _client = http.Client();
     _loadFromAssets();
   }
 
   @override
   void dispose() {
+    _client.close();
     _focusNode.dispose();
     super.dispose();
   }
 
-  Future<void> _sendNewPost() async {
+  void _sendNewPost() async {
     String forumID = '1';
-    String title = 'demo title 2';
+    String title = 'demo title 3';
     final queryParams = {
       'forum_id': forumID,
       'title': title,
@@ -77,18 +79,6 @@ class _ComposeScreenState extends State<ComposeScreen> {
       print('data: ${apiResponse.data}');
     } else {
       print("_sendNewPost() error, null apiResponse");
-    }
-  }
-
-  Future<void> _testPost() async {
-    final apiResponse =
-        await doGet("/small_talk_api/get_post", {'post_id': '1'});
-    if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('message: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
-    } else {
-      print("_testPost() error, null apiResponse");
     }
   }
 
@@ -125,7 +115,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
         // onPressed: _sendNewPost,
-        onPressed: _testPost,
+        onPressed: _sendNewPost,
         child: Icon(Icons.send),
       ),
       // body: RawKeyboardListener(

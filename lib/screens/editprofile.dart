@@ -8,14 +8,7 @@ class EditProfileScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('SUBB'),
       ),
-      body: Center(
-        child: SizedBox(
-          width: 400,
-          child: Card(
-            child: EditProfileForm(),
-          ),
-        ),
-      ),
+      body: EditProfileForm(),
     );
   }
 }
@@ -64,10 +57,10 @@ class EditProfileFormState extends State<EditProfileForm> {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text('Edit Profile', style: Theme.of(context).textTheme.headline4),
           Padding(padding: EdgeInsets.all(8.0)),
-
           Container(
             child: CircleAvatar(
-              backgroundImage: NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRP8UGUq_Z0Tn5u4gqDgXlffUaKu2Cm1Hcedw&usqp=CAU"),//image url here
+              backgroundImage: NetworkImage(
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRP8UGUq_Z0Tn5u4gqDgXlffUaKu2Cm1Hcedw&usqp=CAU"), //image url here
               radius: 60.0,
             ),
           ),
@@ -75,16 +68,14 @@ class EditProfileFormState extends State<EditProfileForm> {
             padding: EdgeInsets.all(8.0),
             child: TextFormField(
               controller: nameController,
-              decoration:
-              InputDecoration(hintText: 'Nickname'),
+              decoration: InputDecoration(hintText: 'Nickname'),
             ),
           ),
           Padding(
             padding: EdgeInsets.all(8.0),
             child: TextFormField(
               controller: usernameController,
-              decoration:
-              InputDecoration(hintText: 'Username'),
+              decoration: InputDecoration(hintText: 'Username'),
             ),
           ),
           Padding(
@@ -102,29 +93,28 @@ class EditProfileFormState extends State<EditProfileForm> {
             ),
           ),
           Padding(padding: EdgeInsets.all(8.0)),
-
           TextButton(
               style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.resolveWith(
-                          (Set<MaterialState> states) {
-                        return states.contains(MaterialState.disabled)
-                            ? null
-                            : Colors.blue;
-                      }),
+                      (Set<MaterialState> states) {
+                    return states.contains(MaterialState.disabled)
+                        ? null
+                        : Colors.blue;
+                  }),
                   backgroundColor: MaterialStateProperty.resolveWith(
-                          (Set<MaterialState> states) =>
-                      states.contains(MaterialState.disabled)
-                          ? null
-                          : Colors.deepOrangeAccent)),
+                      (Set<MaterialState> states) =>
+                          states.contains(MaterialState.disabled)
+                              ? null
+                              : Colors.deepOrangeAccent)),
               onPressed: formProgress == 1 ? popCurrentPage : null,
               child: Text("Save")),
           Padding(padding: EdgeInsets.all(8.0)),
           TextButton(
               style: ButtonStyle(
                 foregroundColor:
-                MaterialStateProperty.resolveWith((states) => Colors.blue),
+                    MaterialStateProperty.resolveWith((states) => Colors.blue),
                 backgroundColor: MaterialStateProperty.resolveWith(
-                        (states) => Colors.deepOrangeAccent),
+                    (states) => Colors.deepOrangeAccent),
               ),
               onPressed: popCurrentPage,
               child: Text("Cancel")),
