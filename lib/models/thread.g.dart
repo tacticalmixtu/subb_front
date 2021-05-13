@@ -8,12 +8,12 @@ part of 'thread.dart';
 
 Thread _$ThreadFromJson(Map<String, dynamic> json) {
   return Thread(
-    json['threadId'] as int,
-    json['forumId'] as int,
+    json['thread_id'] as int,
+    json['forum_id'] as int,
     json['title'] as String,
     json['author'] as int,
-    json['createTimestamp'] as int,
-    json['activeTimestamp'] as int,
+    json['create_timestamp'] as int,
+    json['active_timestamp'] as int,
     json['status'] as String,
     json['posts'] as int,
     json['views'] as int,
@@ -23,12 +23,12 @@ Thread _$ThreadFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$ThreadToJson(Thread instance) => <String, dynamic>{
-      'threadId': instance.threadId,
-      'forumId': instance.forumId,
+      'thread_id': instance.threadId,
+      'forum_id': instance.forumId,
       'title': instance.title,
       'author': instance.author,
-      'createTimestamp': instance.createTimestamp,
-      'activeTimestamp': instance.activeTimestamp,
+      'create_timestamp': instance.createTimestamp,
+      'active_timestamp': instance.activeTimestamp,
       'status': instance.status,
       'posts': instance.posts,
       'views': instance.views,

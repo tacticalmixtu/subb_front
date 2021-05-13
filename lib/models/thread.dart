@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:subb_front/utils/network.dart';
 
@@ -12,14 +9,23 @@ class Thread {
   int threadId;
   @JsonKey(name: 'forum_id')
   int forumId;
+  @JsonKey(name: 'title')
   String title;
+  @JsonKey(name: 'author')
   int author;
+  @JsonKey(name: 'create_timestamp')
   int createTimestamp;
+  @JsonKey(name: 'active_timestamp')
   int activeTimestamp;
+  @JsonKey(name: 'status')
   String status;
+  @JsonKey(name: 'posts')
   int posts;
+  @JsonKey(name: 'views')
   int views;
+  @JsonKey(name: 'votes')
   int votes;
+  @JsonKey(name: 'heat')
   int heat;
 
   Thread(
@@ -41,29 +47,18 @@ class Thread {
 }
 
 // A function that converts a response body into a List<Thread>.
-List<Thread> parseThreads(Object data) {
-  print(data);
-  // return jsonDecode(data).cast<List<Thread>>();
-  return data as List<Thread>;
-  // print('8888888888*****************');
-  // return parsed.map<Thread>((json) => Thread.fromJson(json)).toList();
+List<Thread> parseThreads(List<dynamic> data) {
+  return data.map((e) => Thread.fromJson(e)).toList();
 }
 
+const _apiPath = 'small_talk_api/get_forum_page';
+
 Future<List<Thread>> fetchThreads(String forumID, String page) async {
-  const _apiPath = 'small_talk_api/get_forum_page';
-  // final apiResponse =
-  //     await doGet(_apiPath, {'forum_id': forumID, 'page': page});
-  // return compute(parseThreads, apiResponse!.data!);
   try {
     final apiResponse =
         await doGet(_apiPath, {'forum_id': forumID, 'page': page});
-
     if (apiResponse != null) {
-      // print('code: ${apiResponse.code}');
-      // print('message: ${apiResponse.message}');
-      // print('data: ${apiResponse.data}');
-      // return compute(parseThreads, apiResponse.data! as String);
-      return parseThreads(apiResponse.data!);
+      return parseThreads(apiResponse.data! as List<dynamic>);
     } else {
       print("_fetchThreads() error, null apiResponse");
     }
