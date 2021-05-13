@@ -25,7 +25,7 @@ class HomeScreen extends StatelessWidget {
         //         ? PhotosList(photos: snapshot.data!)
         //         : Center(child: CircularProgressIndicator());
         //   },
-        child: ForumScreen(),
+        child: ForumScreen(forumId: 1),
         // ),
       ),
       floatingActionButton: FloatingActionButton(
