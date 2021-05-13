@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/models/documents/document.dart';
+import 'package:flutter_quill/widgets/controller.dart';
+import 'package:flutter_quill/widgets/editor.dart';
 import 'package:subb_front/models/comment.dart';
 import 'package:subb_front/models/post.dart';
 import 'package:subb_front/screens/comment.dart';
@@ -33,8 +38,39 @@ class PostScreen extends StatelessWidget {
 
 class CommentsList extends StatelessWidget {
   final List<Comment> comments;
+  final FocusNode _fn = FocusNode();
 
   CommentsList({Key? key, required this.comments}) : super(key: key);
+
+  QuillController _getController(Comment comment) {
+    return QuillController(
+        document: Document.fromJson(jsonDecode(comment.content)),
+        selection: const TextSelection.collapsed(offset: 0));
+  }
+
+  Widget _buildContent(QuillController? controller) {
+    var quillEditor = QuillEditor(
+      controller: controller!,
+      scrollController: ScrollController(),
+      scrollable: true,
+      focusNode: _fn,
+      autoFocus: true,
+      readOnly: true,
+      expands: false,
+      padding: EdgeInsets.zero,
+    );
+    _fn.unfocus();
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: quillEditor,
+      ),
+    );
+  }
 
   Widget _buildCard(Comment comment) => Container(
         margin: EdgeInsets.all(4),
@@ -42,10 +78,14 @@ class CommentsList extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                leading: Icon(Icons.message),
-                title: Text(comment.content),
-                subtitle: Text('$comment.author'),
+                leading: Icon(
+                  Icons.person_pin,
+                ),
+                title: Text('posted by: author ${comment.author}'),
+                subtitle: Text('comment on post: ${comment.postId}'),
               ),
+              Image.network(r'https://picsum.photos/100'),
+              _buildContent(_getController(comment)),
             ],
           ),
         ),
