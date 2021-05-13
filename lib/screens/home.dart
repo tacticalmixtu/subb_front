@@ -5,6 +5,7 @@ import 'package:subb_front/screens/appbar.dart';
 import 'package:subb_front/models/photo.dart';
 import 'package:http/http.dart' as http;
 import 'package:subb_front/models/album.dart';
+import 'package:subb_front/screens/forum.dart';
 
 class HomeScreen extends StatelessWidget {
   static const routeName = '/';
@@ -15,16 +16,17 @@ class HomeScreen extends StatelessWidget {
       drawer: ForumDrawer(),
       // TODO: render different layout for web/android
       body: SafeArea(
-        child: FutureBuilder<List<Photo>>(
-          future: fetchPhotos(http.Client()),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) print(snapshot.error);
+        // child: FutureBuilder<List<Photo>>(
+        //   future: fetchPhotos(http.Client()),
+        //   builder: (context, snapshot) {
+        //     if (snapshot.hasError) print(snapshot.error);
 
-            return snapshot.hasData
-                ? PhotosList(photos: snapshot.data!)
-                : Center(child: CircularProgressIndicator());
-          },
-        ),
+        //     return snapshot.hasData
+        //         ? PhotosList(photos: snapshot.data!)
+        //         : Center(child: CircularProgressIndicator());
+        //   },
+        child: ForumScreen(),
+        // ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff03dac6),

@@ -44,7 +44,7 @@ Future<List<Post>> fetchPosts(String threadID, String page) async {
       // print('code: ${apiResponse.code}');
       // print('message: ${apiResponse.message}');
       // print('data: ${apiResponse.data}');
-      return compute(parsePosts, apiResponse.data!);
+      return compute(parsePosts, apiResponse.data! as String);
     } else {
       print("_fetchPosts() error, null apiResponse");
     }

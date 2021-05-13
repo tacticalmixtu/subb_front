@@ -10,7 +10,7 @@ ApiResponse _$ApiResponseFromJson(Map<String, dynamic> json) {
   return ApiResponse(
     json['code'] as int,
     json['message'] as String,
-    json['data'] as String?,
+    json['data'],
   );
 }
 

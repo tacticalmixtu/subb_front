@@ -18,29 +18,28 @@ import 'package:subb_front/screens/home.dart';
 
 class ComposeScreen extends StatefulWidget {
   static const routeName = '/compose';
-  static const _apiPath = '/new_thread';
   @override
   _ComposeScreenState createState() => _ComposeScreenState();
 }
 
 class _ComposeScreenState extends State<ComposeScreen> {
-  QuillController? _controller;
+  QuillController? _quillController;
+  late final _titleController;
   // TODO: fix focus bug
   late FocusNode _focusNode;
-  late http.Client _client;
 
   Future<void> _loadFromAssets() async {
     try {
       final result = await rootBundle.loadString('assets/sample_data.json');
       final doc = Document.fromJson(jsonDecode(result));
       setState(() {
-        _controller = QuillController(
+        _quillController = QuillController(
             document: doc, selection: const TextSelection.collapsed(offset: 0));
       });
     } catch (error) {
       final doc = Document()..insert(0, 'Empty asset');
       setState(() {
-        _controller = QuillController(
+        _quillController = QuillController(
             document: doc, selection: const TextSelection.collapsed(offset: 0));
       });
     }
@@ -50,41 +49,57 @@ class _ComposeScreenState extends State<ComposeScreen> {
   void initState() {
     super.initState();
     _focusNode = FocusNode();
-    _client = http.Client();
+    _titleController = TextEditingController();
     _loadFromAssets();
   }
 
   @override
   void dispose() {
-    _client.close();
     _focusNode.dispose();
+    _titleController.dispose();
     super.dispose();
   }
 
-  void _sendNewPost() async {
+  void _newThread() async {
+    SnackBar snackBar = SnackBar(content: Text('No title!'));
+
     String forumID = '1';
-    String title = 'demo title 3';
+    // String title = 'demo title 3';
+    if (_titleController.text == "") {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
     final queryParams = {
       'forum_id': forumID,
-      'title': title,
+      'title': _titleController.text,
     };
-    final b =
-        await compute(jsonEncode, _controller!.document.toDelta().toJson());
+    final b = await compute(
+        jsonEncode, _quillController!.document.toDelta().toJson());
 
     final apiResponse =
         await doPost('small_talk_api/new_thread/', queryParams, b);
+
     if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('message: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
+      // print('code: ${apiResponse.code}');
+      // print('message: ${apiResponse.message}');
+      // print('data: ${apiResponse.data}');
+      snackBar = SnackBar(content: Text('Thread created'));
     } else {
-      print("_sendNewPost() error, null apiResponse");
+      snackBar = SnackBar(content: Text('Thread created failed'));
+      // print("_signIn() error, null apiResponse");
     }
+
+    // Find the ScaffoldMessenger in the widget tree
+    // and use it to show a SnackBar.
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_controller == null) {
+    if (_quillController == null) {
       return const Scaffold(body: Center(child: Text('Loading...')));
     }
     return Scaffold(
@@ -93,21 +108,27 @@ class _ComposeScreenState extends State<ComposeScreen> {
       body: SafeArea(
           child: Column(
         children: [
-          QuillToolbar.basic(controller: _controller!),
+          QuillToolbar.basic(controller: _quillController!),
           Expanded(
-            child: Container(
-              child: QuillEditor(
-                controller: _controller!,
+            child: Column(children: <Widget>[
+              TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(), hintText: 'Title'),
+                controller: _titleController,
+                autofocus: true,
+              ),
+              QuillEditor(
+                controller: _quillController!,
                 readOnly: false,
                 autoFocus: true,
                 focusNode: _focusNode,
                 scrollController: ScrollController(),
                 scrollable: true,
                 expands: false,
-                padding: EdgeInsets.zero,
-                embedBuilder: defaultEmbedBuilderWeb,
+                padding: EdgeInsets.only(top: 4),
+                // embedBuilder: defaultEmbedBuilderWeb,
               ),
-            ),
+            ]),
           )
         ],
       )),
@@ -115,7 +136,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
         // onPressed: _sendNewPost,
-        onPressed: _sendNewPost,
+        onPressed: _newThread,
         child: Icon(Icons.send),
       ),
       // body: RawKeyboardListener(

@@ -6,24 +6,10 @@ part 'api_response.g.dart';
 
 @JsonSerializable()
 class ApiResponse {
-  // final int code;
-  // final String message;
-  // final Object? data;
-
-  // ApiResponse({required this.code, required this.message, this.data});
-
-  // factory ApiResponse.fromJson(Map<String, dynamic> json) {
-  //   return ApiResponse(
-  //     code: json['code'],
-  //     message: json['message'],
-  //     data: json['data'],
-  //   );
-  // }
-
   final int code;
   final String message;
   @JsonKey(defaultValue: null)
-  String? data;
+  Object? data;
 
   ApiResponse(this.code, this.message, this.data);
 

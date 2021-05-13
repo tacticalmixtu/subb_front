@@ -8,7 +8,9 @@ part 'thread.g.dart';
 
 @JsonSerializable()
 class Thread {
+  @JsonKey(name: 'thread_id')
   int threadId;
+  @JsonKey(name: 'forum_id')
   int forumId;
   String title;
   int author;
@@ -39,15 +41,19 @@ class Thread {
 }
 
 // A function that converts a response body into a List<Thread>.
-List<Thread> parseThreads(String responseBody) {
-  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-
-  return parsed.map<Thread>((json) => Thread.fromJson(json)).toList();
+List<Thread> parseThreads(Object data) {
+  print(data);
+  // return jsonDecode(data).cast<List<Thread>>();
+  return data as List<Thread>;
+  // print('8888888888*****************');
+  // return parsed.map<Thread>((json) => Thread.fromJson(json)).toList();
 }
 
-const _apiPath = 'small_talk_api/get_thread_page';
-
 Future<List<Thread>> fetchThreads(String forumID, String page) async {
+  const _apiPath = 'small_talk_api/get_forum_page';
+  // final apiResponse =
+  //     await doGet(_apiPath, {'forum_id': forumID, 'page': page});
+  // return compute(parseThreads, apiResponse!.data!);
   try {
     final apiResponse =
         await doGet(_apiPath, {'forum_id': forumID, 'page': page});
@@ -56,12 +62,13 @@ Future<List<Thread>> fetchThreads(String forumID, String page) async {
       // print('code: ${apiResponse.code}');
       // print('message: ${apiResponse.message}');
       // print('data: ${apiResponse.data}');
-      return compute(parseThreads, apiResponse.data!);
+      // return compute(parseThreads, apiResponse.data! as String);
+      return parseThreads(apiResponse.data!);
     } else {
-      print("_sendNewPost() error, null apiResponse");
+      print("_fetchThreads() error, null apiResponse");
     }
   } catch (e, s) {
-    print('exception caught in doGet(): $e');
+    print('exception caught in fetchThreads(): $e');
     print('Exception details:\n $e');
     print('Stack trace:\n $s');
   }
