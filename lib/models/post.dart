@@ -32,7 +32,7 @@ class Post {
   Map<String, dynamic> toJson() => _$PostToJson(this);
 }
 
-// A function that converts a response body into a List<Thread>.
+// A function that converts a response body into a List<Post>.
 List<Post> parsePosts(List<dynamic> data) {
   return data.map((e) => Post.fromJson(e)).toList();
 }
@@ -42,7 +42,7 @@ const _apiPath = 'small_talk_api/get_thread_page';
 Future<List<Post>> fetchPosts(String threadID, String page) async {
   try {
     final apiResponse =
-        await doGet(_apiPath, {'post_id': threadID, 'page': page});
+        await doGet(_apiPath, {'thread_id': threadID, 'page': page});
     if (apiResponse != null) {
       return parsePosts(apiResponse.data! as List<dynamic>);
     } else {

@@ -43,13 +43,13 @@ class Comment {
   Map<String, dynamic> toJson() => _$CommentToJson(this);
 }
 
-// A function that converts a response body into a List<Thread>.
+// A function that converts a response body into a List<Comment>.
 List<Comment> parseComments(List<dynamic> data) {
   return data.map((e) => Comment.fromJson(e)).toList();
 }
 
 const _apiPath = 'small_talk_api/get_post_page';
-const _apiPathCommentsUnderRoot = "small_talk_api/get_comment_page";
+const _apiPathChildComments = "small_talk_api/get_comment_page";
 
 Future<List<Comment>> fetchComments(String postId, String page) async {
   try {
@@ -68,17 +68,17 @@ Future<List<Comment>> fetchComments(String postId, String page) async {
   return [];
 }
 
-Future<List<Comment>> fetchCommentsUnderRoot(String commentId, String page) async {
+Future<List<Comment>> fetchChildComments(String commentId, String page) async {
   try {
     final apiResponse =
-        await doGet(_apiPathCommentsUnderRoot, {'comment_id': commentId, 'page': page});
+        await doGet(_apiPathChildComments, {'comment_id': commentId, 'page': page});
     if (apiResponse != null) {
       return parseComments(apiResponse.data! as List<dynamic>);
     } else {
-      print("_fetchCommentsUnderRoot() error, null apiResponse");
+      print("_fetchChildComments() error, null apiResponse");
     }
   } catch (e, s) {
-    print('exception caught in fetchCommentsUnderRoot(): $e');
+    print('exception caught in fetchChildComments(): $e');
     print('Exception details:\n $e');
     print('Stack trace:\n $s');
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/models/thread.dart';
+import 'package:subb_front/screens/thread.dart';
 
 // class ForumScreen extends StatelessWidget {
 //   @override
@@ -25,17 +26,27 @@ import 'package:subb_front/models/thread.dart';
 // }
 
 class ForumScreen extends StatefulWidget {
+  static const routeName = '/forum';
+
+  final int forumId;
+
+  ForumScreen({Key? key, required this.forumId}) : super(key: key);
+
   @override
-  _ForumScreenState createState() => _ForumScreenState();
+  _ForumScreenState createState() => _ForumScreenState(forumId);
 }
 
 class _ForumScreenState extends State<ForumScreen> {
   late Future<List<Thread>> _futureThreads;
 
+  final int forumId;
+
+  _ForumScreenState(this.forumId);
+
   @override
   void initState() {
     super.initState();
-    _futureThreads = fetchThreads('1', '1');
+    _futureThreads = fetchThreads(forumId.toString(), '1');
   }
 
   @override
@@ -73,16 +84,15 @@ class ThreadsPage extends StatelessWidget {
   final List<Thread> threads;
   ThreadsPage({Key? key, required this.threads});
 
-  Widget _buildCard(String title, int author) => Container(
+  Widget _buildCard(Thread thread) => Container(
         margin: EdgeInsets.all(4),
         child: Card(
           child: Column(
             children: [
               ListTile(
                 leading: Icon(Icons.message),
-                title: Text(title),
-                subtitle: Text('$author'),
-                // Image.network(photos[index].thumbnailUrl);
+                title: Text(thread.title),
+                subtitle: Text('$thread.author'),
               ),
             ],
           ),
@@ -92,9 +102,17 @@ class ThreadsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: threads.length,
-        itemBuilder: (context, index) {
-          return _buildCard(threads[index].title, threads[index].author);
-        });
+      itemCount: threads.length,
+      itemBuilder: (context, index) {
+        // return Image.network(photos[index].thumbnailUrl);
+        // return Text('${photos[index].title}');
+          return GestureDetector(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ThreadScreen(thread: threads[index])));
+          },
+          child: _buildCard(threads[index]),
+        ); 
+      },
+    );
   }
 }

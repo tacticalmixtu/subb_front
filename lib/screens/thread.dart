@@ -1,45 +1,71 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/screens/appbar.dart';
+import 'package:subb_front/models/post.dart';
+import 'package:subb_front/models/thread.dart';
+import 'package:subb_front/screens/post.dart';
 
 class ThreadScreen extends StatelessWidget {
-  static const routeName = '/threads';
-  ListTile _tile(String title, String subtitle, IconData icon) => ListTile(
-        title: Text(title,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 20,
-            )),
-        subtitle: Text(subtitle),
-        leading: Icon(
-          icon,
-          color: Colors.blue[500],
-        ),
-      );
+  static const routeName = '/thread';
+
+  final Thread thread;
+
+  ThreadScreen({Key? key, required this.thread}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppbar(),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
-        foregroundColor: Colors.black,
-        onPressed: () {
-          // Respond to button press
-          print("reply to current new post");
+      appBar: AppBar(
+        title: Text(thread.title),
+      ),
+      body: FutureBuilder<List<Post>>(
+        future: fetchPosts(thread.threadId.toString(), '1'),
+        builder: (context, snapshot) {
+          if (snapshot.hasError)
+            print('ThreadScreen FutureBuilder ${snapshot.error}');
+
+          return snapshot.hasData
+              ? PostsList(posts: snapshot.data!)
+              : Center(child: CircularProgressIndicator());
         },
-        child: Icon(Icons.reply),
       ),
-      body: SafeArea(
-        child: ListView(
-          children: [
-            _tile("conent", "subtitle", Icons.person),
-            Divider(),
-            _tile("conent", "subtitle", Icons.person),
-            Divider(),
-            _tile("conent", "subtitle", Icons.person),
-            Divider(),
-          ],
+    );
+  }
+}
+
+class PostsList extends StatelessWidget {
+  final List<Post> posts;
+
+  PostsList({Key? key, required this.posts}) : super(key: key);
+
+  Widget _buildCard(Post post) => Container(
+        margin: EdgeInsets.all(4),
+        child: Card(
+          child: Column(
+            children: [
+              ListTile(
+                leading: Icon(Icons.message),
+                title: Text(post.content),
+                subtitle: Text('$post.author'),
+              ),
+            ],
+          ),
         ),
-      ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: posts.length,
+      itemBuilder: (context, index) {
+        // return Image.network(photos[index].thumbnailUrl);
+        // return Text('${photos[index].title}');
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => PostScreen(post: posts[index])));
+          },
+          child: _buildCard(posts[index]),
+        );
+      },
     );
   }
 }
