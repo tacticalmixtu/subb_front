@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         accentColor: Color(0xFF2B72D7),
 
         // Define the default font family.
-        fontFamily: 'Georgia',
+        // fontFamily: 'Georgia',
 
         // Define the default TextTheme. Use this to specify the default
         // text styling for headlines, titles, bodies of text, and more.

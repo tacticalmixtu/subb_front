@@ -8,7 +8,7 @@ part 'api_response.g.dart';
 class ApiResponse {
   final int code;
   final String message;
-  @JsonKey(defaultValue: null)
+  // @JsonKey(defaultValue: null)
   Object? data;
 
   ApiResponse(this.code, this.message, this.data);
@@ -21,6 +21,5 @@ class ApiResponse {
 
 ApiResponse parseApiResponse(String responseBody) {
   final Map<String, dynamic> parsed = jsonDecode(responseBody);
-  final response = ApiResponse.fromJson(parsed);
-  return response;
+  return ApiResponse.fromJson(parsed);
 }

@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:subb_front/utils/network.dart';
 
@@ -8,14 +5,23 @@ part 'post.g.dart';
 
 @JsonSerializable()
 class Post {
+  @JsonKey(name: 'post_id')
   int postId;
+  @JsonKey(name: 'thread_id')
   int threadId;
+  @JsonKey(name: 'author')
   int author;
+  @JsonKey(name: 'timestamp')
   int timestamp;
+  @JsonKey(name: 'quote_id')
   int quoteId;
+  @JsonKey(name: 'content')
   String content;
+  @JsonKey(name: 'status')
   String status;
+  @JsonKey(name: 'comments')
   int comments;
+  @JsonKey(name: 'votes')
   int votes;
 
   Post(this.postId, this.threadId, this.author, this.timestamp, this.quoteId,
@@ -27,10 +33,8 @@ class Post {
 }
 
 // A function that converts a response body into a List<Thread>.
-List<Post> parsePosts(String responseBody) {
-  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-
-  return parsed.map<Post>((json) => Post.fromJson(json)).toList();
+List<Post> parsePosts(List<dynamic> data) {
+  return data.map((e) => Post.fromJson(e)).toList();
 }
 
 const _apiPath = 'small_talk_api/get_thread_page';
@@ -39,12 +43,8 @@ Future<List<Post>> fetchPosts(String threadID, String page) async {
   try {
     final apiResponse =
         await doGet(_apiPath, {'post_id': threadID, 'page': page});
-
     if (apiResponse != null) {
-      // print('code: ${apiResponse.code}');
-      // print('message: ${apiResponse.message}');
-      // print('data: ${apiResponse.data}');
-      return compute(parsePosts, apiResponse.data! as String);
+      return parsePosts(apiResponse.data! as List<dynamic>);
     } else {
       print("_fetchPosts() error, null apiResponse");
     }
