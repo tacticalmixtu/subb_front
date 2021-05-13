@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:subb_front/models/album.dart';
 import 'package:subb_front/screens/signin.dart';
 
 class MyAppbar extends StatefulWidget with PreferredSizeWidget {
@@ -98,6 +99,31 @@ class Search extends SearchDelegate {
         );
       },
       itemCount: suggesstionList.length,
+    );
+  }
+}
+
+class ForumList extends StatelessWidget {
+  final List<Album> albums;
+
+  ForumList({Key? key, required this.albums}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: albums.length,
+      itemBuilder: (context, index) {
+        // return Image.network(photos[index].thumbnailUrl);
+        // return Text('${albums[index].title}');
+        return ListTile(
+          title: Text('${albums[index].title}'),
+          onTap: () {
+            // Update the state of the app.
+            // ...
+            Navigator.pop(context);
+          },
+        );
+      },
     );
   }
 }
