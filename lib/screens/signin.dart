@@ -120,6 +120,7 @@ class SigninFormState extends State<SigninForm> {
             child: TextFormField(
               controller: _passwordController,
               decoration: InputDecoration(hintText: 'Password'),
+              obscureText: true,
             ),
           ),
           TextButton(

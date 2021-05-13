@@ -1,6 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/models/thread.dart';
 
+// class ForumScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return FutureBuilder<List<Thread>>(
+//       future: fetchThreads('1', '1'),
+//       builder: (context, snapshot) {
+//         switch (snapshot.connectionState) {
+//           case ConnectionState.none:
+//           case ConnectionState.waiting:
+//           case ConnectionState.active:
+//             return Center(child: CircularProgressIndicator());
+//           case ConnectionState.done:
+//             if (snapshot.hasError) {
+//               return Text('Error: ${snapshot.error}');
+//             } else {
+//               return ThreadsPage(threads: snapshot.data!);
+//             }
+//         }
+//       },
+//     );
+//   }
+// }
+
 class ForumScreen extends StatefulWidget {
   @override
   _ForumScreenState createState() => _ForumScreenState();
@@ -13,12 +36,6 @@ class _ForumScreenState extends State<ForumScreen> {
   void initState() {
     super.initState();
     _futureThreads = fetchThreads('1', '1');
-  }
-
-  void _updateThreads() async {
-    setState(() {
-      _futureThreads = fetchThreads('1', '1');
-    });
   }
 
   @override
@@ -36,7 +53,15 @@ class _ForumScreenState extends State<ForumScreen> {
                 return Text('Error: ${snapshot.error}');
               } else {
                 // return ListView.builder(itemBuilder: (context, index) {
-                return ThreadsPage(threads: snapshot.data!);
+                return RefreshIndicator(
+                  child: ThreadsPage(threads: snapshot.data!),
+                  onRefresh: () {
+                    setState(() {
+                      _futureThreads = fetchThreads('1', '1');
+                    });
+                    return _futureThreads;
+                  },
+                );
                 // });
               }
           }
@@ -66,8 +91,10 @@ class ThreadsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(itemBuilder: (context, index) {
-      return _buildCard(threads[index].title, threads[index].author);
-    });
+    return ListView.builder(
+        itemCount: threads.length,
+        itemBuilder: (context, index) {
+          return _buildCard(threads[index].title, threads[index].author);
+        });
   }
 }

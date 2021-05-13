@@ -84,6 +84,7 @@ class SignUpFormState extends State<SignUpForm> {
             child: TextFormField(
               controller: passwordController,
               decoration: InputDecoration(hintText: 'Password'),
+              obscureText: true,
             ),
           ),
           Padding(
