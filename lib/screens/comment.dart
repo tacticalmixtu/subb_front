@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/models/comment.dart';
+import 'package:subb_front/screens/composechildcomment.dart';
 
 class CommentScreen extends StatelessWidget {
   static const routeName = '/comment';
@@ -12,7 +13,7 @@ class CommentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Post"),
+        title: Text("View Discussion (${comment.comments})"),
       ),
       body: FutureBuilder<List<Comment>>(
         future: fetchChildComments(comment.commentId.toString(), '1'),
@@ -24,6 +25,17 @@ class CommentScreen extends StatelessWidget {
               ? ChildCommentsList(comments: snapshot.data!)
               : Center(child: CircularProgressIndicator());
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xff03dac6),
+        foregroundColor: Colors.black,
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ComposeChildCommentScreen(comment)));
+        },
+        child: Icon(Icons.add),
       ),
     );
   }

@@ -84,15 +84,47 @@ class ThreadsPage extends StatelessWidget {
   final List<Thread> threads;
   ThreadsPage({Key? key, required this.threads});
 
+  String _toDT(int epoch) {
+    final dt = DateTime.fromMillisecondsSinceEpoch(epoch * 1000);
+    return '${dt.month}/${dt.day}/${dt.year} ${dt.hour}:${dt.minute}';
+  }
+
+  Widget _buildIconItem(IconData icon, String content) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: Colors.blueGrey[400],
+        ),
+        Text(content),
+      ],
+    );
+  }
+
   Widget _buildCard(Thread thread) => Container(
         margin: EdgeInsets.all(4),
         child: Card(
           child: Column(
             children: [
               ListTile(
-                leading: Icon(Icons.message),
-                title: Text(thread.title),
-                subtitle: Text('$thread.author'),
+                leading: new Icon(Icons.person_pin, size: 40.0),
+                title: Text('${thread.title}'),
+                subtitle: Text('User ID - ${thread.author}'),
+                trailing: Column(
+                  children: [
+                    Text('${_toDT(thread.activeTimestamp)}'),
+                  ],
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 192),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildIconItem(Icons.trending_up, '${thread.heat}'),
+                      _buildIconItem(Icons.sms, '${thread.posts}'),
+                      _buildIconItem(Icons.thumb_up, '${thread.votes}'),
+                    ]),
               ),
             ],
           ),
@@ -106,12 +138,16 @@ class ThreadsPage extends StatelessWidget {
       itemBuilder: (context, index) {
         // return Image.network(photos[index].thumbnailUrl);
         // return Text('${photos[index].title}');
-          return GestureDetector(
+        return GestureDetector(
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ThreadScreen(thread: threads[index])));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ThreadScreen(thread: threads[index])));
           },
           child: _buildCard(threads[index]),
-        ); 
+        );
       },
     );
   }

@@ -6,22 +6,30 @@ import 'package:flutter/services.dart';
 import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/editor.dart';
 import 'package:flutter_quill/widgets/toolbar.dart';
+import 'package:subb_front/models/comment.dart';
 import 'package:subb_front/utils/network.dart';
-import 'package:subb_front/screens/appbar.dart';
 import 'package:flutter_quill/widgets/controller.dart';
-import 'package:subb_front/screens/home.dart';
 
-class ComposeScreen extends StatefulWidget {
-  static const routeName = '/compose';
+class ComposeChildCommentScreen extends StatefulWidget {
+  static const routeName = '/composechildcomment';
+
+  final Comment comment;
+
+  ComposeChildCommentScreen(this.comment);
+
   @override
-  _ComposeScreenState createState() => _ComposeScreenState();
+  _ComposeChildCommentScreenState createState() => _ComposeChildCommentScreenState(comment);
 }
 
-class _ComposeScreenState extends State<ComposeScreen> {
+class _ComposeChildCommentScreenState extends State<ComposeChildCommentScreen> {
   QuillController? _quillController;
   late final _titleController;
   // TODO: fix focus bug
   late FocusNode _focusNode;
+
+  final Comment comment;
+
+  _ComposeChildCommentScreenState(this.comment);
 
   Future<void> _loadFromAssets() async {
     try {
@@ -55,33 +63,26 @@ class _ComposeScreenState extends State<ComposeScreen> {
     super.dispose();
   }
 
-  void _newThread() async {
+  void _newChildComment() async {
     SnackBar snackBar = SnackBar(content: Text('No title!'));
 
-    String forumID = '1';
-    // String title = 'demo title 3';
-    if (_titleController.text == "") {
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
-    }
-
     final queryParams = {
-      'forum_id': forumID,
-      'title': _titleController.text,
+      'post_id': comment.postId.toString(),
+      'quote_id': comment.commentId.toString(),
     };
     final b = await compute(
         jsonEncode, _quillController!.document.toDelta().toJson());
 
     final apiResponse =
-        await doPost('small_talk_api/new_thread/', queryParams, b);
+        await doPost('small_talk_api/new_comment/', queryParams, b);
 
     if (apiResponse != null) {
       // print('code: ${apiResponse.code}');
       // print('message: ${apiResponse.message}');
       // print('data: ${apiResponse.data}');
-      snackBar = SnackBar(content: Text('Thread created'));
+      snackBar = SnackBar(content: Text('Child comment created'));
     } else {
-      snackBar = SnackBar(content: Text('Thread created failed'));
+      snackBar = SnackBar(content: Text('Child comment created failed'));
       // print("_signIn() error, null apiResponse");
     }
 
@@ -98,8 +99,9 @@ class _ComposeScreenState extends State<ComposeScreen> {
       return const Scaffold(body: Center(child: Text('Loading...')));
     }
     return Scaffold(
-      appBar: MyAppbar(),
-      drawer: ForumDrawer(),
+      appBar: AppBar(
+        title: Text("Re: ${comment.content}"),
+      ),
       body: SafeArea(
           child: Column(
         children: [
@@ -131,7 +133,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
         // onPressed: _sendNewPost,
-        onPressed: _newThread,
+        onPressed: _newChildComment,
         child: Icon(Icons.send),
       ),
     );

@@ -5,6 +5,7 @@ import 'package:subb_front/screens/appbar.dart';
 import 'package:subb_front/models/photo.dart';
 import 'package:http/http.dart' as http;
 import 'package:subb_front/models/album.dart';
+import 'package:subb_front/screens/compose.dart';
 import 'package:subb_front/screens/forum.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -32,7 +33,10 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
         onPressed: () {
-          Navigator.pushNamed(context, '/compose');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ComposeScreen()));
         },
         child: Icon(Icons.add),
       ),

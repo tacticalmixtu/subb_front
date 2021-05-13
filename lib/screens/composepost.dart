@@ -6,22 +6,30 @@ import 'package:flutter/services.dart';
 import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/editor.dart';
 import 'package:flutter_quill/widgets/toolbar.dart';
+import 'package:subb_front/models/thread.dart';
 import 'package:subb_front/utils/network.dart';
-import 'package:subb_front/screens/appbar.dart';
 import 'package:flutter_quill/widgets/controller.dart';
-import 'package:subb_front/screens/home.dart';
 
-class ComposeScreen extends StatefulWidget {
-  static const routeName = '/compose';
+class ComposePostScreen extends StatefulWidget {
+  static const routeName = '/composepost';
+
+  final Thread thread;
+
+  ComposePostScreen(this.thread);
+
   @override
-  _ComposeScreenState createState() => _ComposeScreenState();
+  _ComposePostScreenState createState() => _ComposePostScreenState(thread);
 }
 
-class _ComposeScreenState extends State<ComposeScreen> {
+class _ComposePostScreenState extends State<ComposePostScreen> {
   QuillController? _quillController;
   late final _titleController;
   // TODO: fix focus bug
   late FocusNode _focusNode;
+
+  final Thread thread;
+
+  _ComposePostScreenState(this.thread);
 
   Future<void> _loadFromAssets() async {
     try {
@@ -55,33 +63,25 @@ class _ComposeScreenState extends State<ComposeScreen> {
     super.dispose();
   }
 
-  void _newThread() async {
+  void _newPost() async {
     SnackBar snackBar = SnackBar(content: Text('No title!'));
 
-    String forumID = '1';
-    // String title = 'demo title 3';
-    if (_titleController.text == "") {
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
-    }
-
     final queryParams = {
-      'forum_id': forumID,
-      'title': _titleController.text,
+      'thread_id': thread.threadId.toString(),
     };
     final b = await compute(
         jsonEncode, _quillController!.document.toDelta().toJson());
 
     final apiResponse =
-        await doPost('small_talk_api/new_thread/', queryParams, b);
+        await doPost('small_talk_api/new_post/', queryParams, b);
 
     if (apiResponse != null) {
       // print('code: ${apiResponse.code}');
       // print('message: ${apiResponse.message}');
       // print('data: ${apiResponse.data}');
-      snackBar = SnackBar(content: Text('Thread created'));
+      snackBar = SnackBar(content: Text('Post created'));
     } else {
-      snackBar = SnackBar(content: Text('Thread created failed'));
+      snackBar = SnackBar(content: Text('Post created failed'));
       // print("_signIn() error, null apiResponse");
     }
 
@@ -98,20 +98,15 @@ class _ComposeScreenState extends State<ComposeScreen> {
       return const Scaffold(body: Center(child: Text('Loading...')));
     }
     return Scaffold(
-      appBar: MyAppbar(),
-      drawer: ForumDrawer(),
+      appBar: AppBar(
+        title: Text("Writing Post: ${thread.title}"),
+      ),
       body: SafeArea(
           child: Column(
         children: [
           QuillToolbar.basic(controller: _quillController!),
           Expanded(
             child: Column(children: <Widget>[
-              TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), hintText: 'Title'),
-                controller: _titleController,
-                autofocus: true,
-              ),
               QuillEditor(
                 controller: _quillController!,
                 readOnly: false,
@@ -131,7 +126,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
         // onPressed: _sendNewPost,
-        onPressed: _newThread,
+        onPressed: _newPost,
         child: Icon(Icons.send),
       ),
     );
