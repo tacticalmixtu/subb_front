@@ -7,7 +7,11 @@ import 'package:subb_front/models/api_response.dart';
 
 const domainName = 'smalltalknow.com';
 
-// TODO: rework as app-level state
+// use shared_preferences plugin to store cookie
+// Wraps platform-specific persistent storage for simple data (NSUserDefaults on iOS and macOS, SharedPreferences on Android, etc.).
+// Data may be persisted to disk asynchronously
+// no guarantee that writes will be persisted to disk after returning, so this plugin must not be used for storing critical data.
+
 String? _cookie;
 final _client = http.Client();
 

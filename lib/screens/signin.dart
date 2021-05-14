@@ -58,20 +58,16 @@ class SigninFormState extends State<SigninForm> {
 
   void showWelcomeScreen() {
     Navigator.pushNamed(context, '/userprofile');
-    /*
-    Navigator.push(context, MaterialPageRoute(builder: (BuildContext) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text("You are signed in."),
-        ),
-      );
-    }));*/
   }
 
   void showSignUpScreen() {
     //Navigator.push(context, MaterialPageRoute(builder: (BuildContext) => new SignUpScreen()));
     //Navigator.of(context).pop();
     Navigator.pushNamed(context, '/signup');
+  }
+
+  void showResetScreen() {
+    Navigator.pushNamed(context, '/resetpassword');
   }
 
   void _signIn() async {
@@ -85,9 +81,9 @@ class SigninFormState extends State<SigninForm> {
     );
     late final SnackBar snackBar;
     if (apiResponse != null) {
-      // print('code: ${apiResponse.code}');
-      // print('message: ${apiResponse.message}');
-      // print('data: ${apiResponse.data}');
+       print('code: ${apiResponse.code}');
+       print('message: ${apiResponse.message}');
+       print('data: ${apiResponse.data}');
       snackBar = SnackBar(content: Text('Signed in success'));
     } else {
       snackBar = SnackBar(content: Text('Signed in failed'));
@@ -111,7 +107,7 @@ class SigninFormState extends State<SigninForm> {
             padding: EdgeInsets.all(8.0),
             child: TextFormField(
               controller: _emailController,
-              decoration: InputDecoration(hintText: 'Email'),
+              decoration: InputDecoration(labelText: 'Email'),
             ),
           ),
           Padding(
@@ -119,8 +115,7 @@ class SigninFormState extends State<SigninForm> {
             // TODO: use password hidden
             child: TextFormField(
               controller: _passwordController,
-              decoration: InputDecoration(hintText: 'Password'),
-              obscureText: true,
+              decoration: InputDecoration(labelText: 'Password'),
             ),
           ),
           TextButton(
@@ -140,7 +135,7 @@ class SigninFormState extends State<SigninForm> {
               onPressed: _signIn,
               child: Text("Sign In")),
           Padding(padding: EdgeInsets.all(8.0)),
-          Padding(
+          /*Padding(
             padding: EdgeInsets.all(1.0),
             child: Text("New User?",
                 style: TextStyle(fontSize: 16.0, color: Colors.deepOrange)),
@@ -153,7 +148,52 @@ class SigninFormState extends State<SigninForm> {
                     (states) => Colors.deepOrangeAccent),
               ),
               onPressed: showSignUpScreen,
-              child: Text("Sign Up")),
+              child: Text("Sign Up")),*/
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+
+              Padding(padding: EdgeInsets.all(6.0)),
+              Expanded(child: Text("New User", textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16.0, color: Colors.deepOrange))
+              ),
+              Expanded(child: Padding(padding: EdgeInsets.all(2.0))),
+              Expanded(child: Text("Forget Password", textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16.0, color: Colors.deepOrange))
+              ),
+              Padding(padding: EdgeInsets.all(6.0)),
+            ],
+          ),
+          Row(
+
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(padding: EdgeInsets.all(6.0)),
+              Expanded(child: TextButton(
+                  style: ButtonStyle(
+                    foregroundColor:
+                    MaterialStateProperty.resolveWith((states) => Colors.blue),
+                    backgroundColor: MaterialStateProperty.resolveWith(
+                            (states) => Colors.yellow),
+                  ),
+                  onPressed: showSignUpScreen,
+                  child: Text("Sign Up"))
+              ),
+              Expanded(child: Padding(padding: EdgeInsets.all(2.0))),
+              Expanded(child: TextButton(
+                  style: ButtonStyle(
+                    foregroundColor:
+                    MaterialStateProperty.resolveWith((states) => Colors.blue),
+                    backgroundColor: MaterialStateProperty.resolveWith(
+                            (states) => Colors.yellow),
+                  ),
+                  onPressed: showResetScreen,
+                  child: Text("Reset Password"))
+              ),
+              Padding(padding: EdgeInsets.all(6.0)),
+            ],
+          ),
         ]));
   }
 }
