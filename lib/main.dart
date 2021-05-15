@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
         ResetPasswordScreen.routeName: (BuildContext context) => ResetPasswordScreen(),
         UserProfileScreen.routeName: (BuildContext context) => UserProfileScreen(),
         EditProfileScreen.routeName: (BuildContext context) => EditProfileScreen(),
-        ThreadScreen.routeName: (BuildContext context) => ThreadScreen(),
+        // ThreadScreen.routeName: (BuildContext context) => ThreadScreen(),
         ComposeScreen.routeName: (BuildContext context) => ComposeScreen(),
       },
       // home: HomePage(),
