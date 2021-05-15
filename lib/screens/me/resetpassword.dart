@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/screens/home.dart';
+import 'package:subb_front/screens/home/home.dart';
 import 'package:subb_front/utils/network.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
@@ -48,7 +48,11 @@ class ResetFormState extends State<ResetForm> {
 
   void updateFormProgress() {
     var progress = 0.0;
-    final controllers = [_emailController, _passwordController, _passcodeController];
+    final controllers = [
+      _emailController,
+      _passwordController,
+      _passcodeController
+    ];
 
     for (final controller in controllers) {
       if (controller.value.text.isNotEmpty) {
@@ -61,12 +65,11 @@ class ResetFormState extends State<ResetForm> {
     }
   }
 
-
   void _requestPasscode() async {
     final apiResponse = await doPost(
       _requestPasscodeApi,
       {
-        'email' : _emailController.text,
+        'email': _emailController.text,
       },
       null,
     );
@@ -90,7 +93,7 @@ class ResetFormState extends State<ResetForm> {
       {
         'email': _emailController.text,
         'password': _passwordController.text,
-        'passcode' : _passcodeController.text,
+        'passcode': _passcodeController.text,
       },
       null,
     );
@@ -139,35 +142,42 @@ class ResetFormState extends State<ResetForm> {
 
           //Padding(padding: EdgeInsets.all(8.0)),
           Row(
-            children: <Widget> [
-              Expanded(child: TextButton(
-                  style:  ButtonStyle(
-                      foregroundColor: MaterialStateProperty.resolveWith(
+            children: <Widget>[
+              Expanded(
+                  child: TextButton(
+                      style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.resolveWith(
                               (Set<MaterialState> states) {
                             return states.contains(MaterialState.disabled)
-                                ? null : Colors.blue;
+                                ? null
+                                : Colors.blue;
                           }),
-                      backgroundColor: MaterialStateProperty.resolveWith(
+                          backgroundColor: MaterialStateProperty.resolveWith(
                               (Set<MaterialState> states) =>
-                          states.contains(MaterialState.disabled)
-                              ? null : Colors.yellow)),
-                  onPressed: _emailController.text.isNotEmpty ? _requestPasscode : null,
-                  child: Text("Request Code"))
-              ),
-              Expanded(child: Padding(padding:EdgeInsets.all(2.0))),
-              Expanded(child:
-                TextButton(
+                                  states.contains(MaterialState.disabled)
+                                      ? null
+                                      : Colors.yellow)),
+                      onPressed: _emailController.text.isNotEmpty
+                          ? _requestPasscode
+                          : null,
+                      child: Text("Request Code"))),
+              Expanded(child: Padding(padding: EdgeInsets.all(2.0))),
+              Expanded(
+                child: TextButton(
                     style: ButtonStyle(
                         foregroundColor: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) {
-                            return states.contains(MaterialState.disabled) ? null : Colors.blue;
-                          }),
+                            (Set<MaterialState> states) {
+                          return states.contains(MaterialState.disabled)
+                              ? null
+                              : Colors.blue;
+                        }),
                         backgroundColor: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) =>
-                          states.contains(MaterialState.disabled)  ? null : Colors.deepOrangeAccent)),
+                            (Set<MaterialState> states) =>
+                                states.contains(MaterialState.disabled)
+                                    ? null
+                                    : Colors.deepOrangeAccent)),
                     onPressed: _reset,
-                    child: Text("Reset Password")
-                ),
+                    child: Text("Reset Password")),
               ),
             ],
           ),

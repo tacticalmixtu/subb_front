@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/screens/home.dart';
-import 'package:subb_front/screens/signin.dart';
-import 'package:subb_front/screens/signup.dart';
-import 'package:subb_front/screens/editprofile.dart';
-import 'package:subb_front/screens/userprofile.dart';
-import 'package:subb_front/screens/resetpassword.dart';
+import 'package:provider/provider.dart';
+import 'package:subb_front/models/sign_in_state.dart';
+import 'package:subb_front/screens/home/home.dart';
+import 'package:subb_front/screens/me/me_screen.dart';
+import 'package:subb_front/screens/me/signin.dart';
+import 'package:subb_front/screens/me/signup.dart';
+import 'package:subb_front/screens/me/editprofile.dart';
+import 'package:subb_front/screens/me/userprofile.dart';
+import 'package:subb_front/screens/me/resetpassword.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(create: (context) => SignInState(), child: MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -21,7 +26,7 @@ class MyApp extends StatelessWidget {
         accentColor: Color(0xFF2B72D7),
 
         // Define the default font family.
-        fontFamily: 'Georgia',
+        // fontFamily: 'Georgia',
 
         // Define the default TextTheme. Use this to specify the default
         // text styling for headlines, titles, bodies of text, and more.
@@ -32,16 +37,18 @@ class MyApp extends StatelessWidget {
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/',
+      initialRoute: HomeScreen.routeName,
       routes: {
         HomeScreen.routeName: (BuildContext context) => HomeScreen(),
         SigninScreen.routeName: (BuildContext context) => SigninScreen(),
         SignUpScreen.routeName: (BuildContext context) => SignUpScreen(),
         UserProfileScreen.routeName: (BuildContext context) =>
             UserProfileScreen(),
-        ResetPasswordScreen.routeName: (BuildContext context) => ResetPasswordScreen(),
+        ResetPasswordScreen.routeName: (BuildContext context) =>
+            ResetPasswordScreen(),
         EditProfileScreen.routeName: (BuildContext context) =>
             EditProfileScreen(),
+        MeScreen.routeName: (BuildContext context) => MeScreen(),
       },
       // home: HomePage(),
       debugShowCheckedModeBanner: false,
