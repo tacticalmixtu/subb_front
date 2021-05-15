@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:subb_front/models/album.dart';
 import 'package:subb_front/models/thread.dart';
+import 'package:subb_front/screens/appbar.dart';
+import 'package:subb_front/screens/compose.dart';
 import 'package:subb_front/screens/thread.dart';
 
 // class ForumScreen extends StatelessWidget {
@@ -51,32 +55,45 @@ class _ForumScreenState extends State<ForumScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Thread>>(
-        future: _futureThreads,
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              return Center(child: CircularProgressIndicator());
-            case ConnectionState.done:
-              if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else {
-                // return ListView.builder(itemBuilder: (context, index) {
-                return RefreshIndicator(
-                  child: ThreadsPage(threads: snapshot.data!),
-                  onRefresh: () {
-                    setState(() {
-                      _futureThreads = fetchThreads('1', '1');
-                    });
-                    return _futureThreads;
-                  },
-                );
-                // });
-              }
-          }
-        });
+    return Scaffold(
+      appBar: MyAppbar(),
+      drawer: ForumDrawer(),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xff03dac6),
+        foregroundColor: Colors.black,
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ComposeScreen()));
+        },
+        child: Icon(Icons.add),
+      ),
+      body: FutureBuilder<List<Thread>>(
+          future: _futureThreads,
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return Center(child: CircularProgressIndicator());
+              case ConnectionState.done:
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  // return ListView.builder(itemBuilder: (context, index) {
+                  return RefreshIndicator(
+                    child: ThreadsPage(threads: snapshot.data!),
+                    onRefresh: () {
+                      setState(() {
+                        _futureThreads = fetchThreads('1', '1');
+                      });
+                      return _futureThreads;
+                    },
+                  );
+                  // });
+                }
+            }
+          }),
+    );
   }
 }
 
@@ -149,6 +166,29 @@ class ThreadsPage extends StatelessWidget {
           child: _buildCard(threads[index]),
         );
       },
+    );
+  }
+}
+
+class ForumDrawer extends StatelessWidget {
+  const ForumDrawer({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: FutureBuilder<List<Album>>(
+        future: fetchAlbums(http.Client()),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) print(snapshot.error);
+
+          return snapshot.hasData
+              ? ForumList(albums: snapshot.data!)
+              : Center(child: CircularProgressIndicator());
+          // return ForumList(albums: snapshot.data!);
+        },
+      ),
     );
   }
 }

@@ -9,7 +9,6 @@ import 'package:flutter_quill/widgets/toolbar.dart';
 import 'package:subb_front/utils/network.dart';
 import 'package:subb_front/screens/appbar.dart';
 import 'package:flutter_quill/widgets/controller.dart';
-import 'package:subb_front/screens/home.dart';
 
 class ComposeScreen extends StatefulWidget {
   static const routeName = '/compose';
@@ -98,8 +97,6 @@ class _ComposeScreenState extends State<ComposeScreen> {
       return const Scaffold(body: Center(child: Text('Loading...')));
     }
     return Scaffold(
-      appBar: MyAppbar(),
-      drawer: ForumDrawer(),
       body: SafeArea(
           child: Column(
         children: [

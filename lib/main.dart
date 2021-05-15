@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/screens/home.dart';
-import 'package:subb_front/screens/thread.dart';
 import 'package:subb_front/screens/signin.dart';
 import 'package:subb_front/screens/signup.dart';
 import 'package:subb_front/screens/editprofile.dart';
@@ -33,14 +32,15 @@ class MyApp extends StatelessWidget {
         ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/',
+      initialRoute: HomeScreen.routeName,
       routes: {
         HomeScreen.routeName: (BuildContext context) => HomeScreen(),
         SigninScreen.routeName: (BuildContext context) => SigninScreen(),
         SignUpScreen.routeName: (BuildContext context) => SignUpScreen(),
         UserProfileScreen.routeName: (BuildContext context) =>
             UserProfileScreen(),
-        ResetPasswordScreen.routeName: (BuildContext context) => ResetPasswordScreen(),
+        ResetPasswordScreen.routeName: (BuildContext context) =>
+            ResetPasswordScreen(),
         EditProfileScreen.routeName: (BuildContext context) =>
             EditProfileScreen(),
       },
