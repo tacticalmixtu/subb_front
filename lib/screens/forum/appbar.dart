@@ -3,68 +3,57 @@ import 'package:flutter/material.dart';
 import 'package:subb_front/models/album.dart';
 import 'package:subb_front/screens/me/signin.dart';
 
-class MyAppbar extends StatefulWidget with PreferredSizeWidget {
+class ForumAppbar extends StatefulWidget with PreferredSizeWidget {
   @override
-  _MyAppbarState createState() => _MyAppbarState();
+  _ForumAppbarState createState() => _ForumAppbarState();
 
   @override
   // Size.fromHeight(toolbarHeight ?? kToolbarHeight + (bottom?.preferredSize.height ?? 0.0))
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 
-class _MyAppbarState extends State<MyAppbar> {
+class _ForumAppbarState extends State<ForumAppbar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      // TODO: navigation menu?
-      // leading: IconButton(
-      //   Icons.menu,
-      // ),
       title: Text('SUBB'),
       actions: <Widget>[
-        kIsWeb
-            ? Row(
-                children: [
-                  InkWell(
-                    child: Container(
-                      padding: EdgeInsets.all(12.0),
-                      child: OutlinedButton(
-                        onPressed: () {
-                          // Respond to button press
-                          Navigator.pushNamed(context, '/signin');
-                        },
-                        child: Text("Sign In"),
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    child: Container(
-                      // color: Theme.of(context).accentColor,
-                      padding: EdgeInsets.all(12.0),
-                      child: OutlinedButton(
-                        onPressed: () {
-                          // Respond to button press
-                          Navigator.pushNamed(context, '/signup');
-                        },
-                        child: Text("Sign Up"),
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            : IconButton(
-                icon: Icon(Icons.person),
-                onPressed: () {
-                  Navigator.pushNamed(context, SigninScreen.routeName);
-                }),
+        // show sign up/sign in on web
+        // kIsWeb
+        //     ? Row(
+        //         children: [
+        //           InkWell(
+        //             child: Container(
+        //               padding: EdgeInsets.all(12.0),
+        //               child: OutlinedButton(
+        //                 onPressed: () {
+        //                   Navigator.pushNamed(context, '/signin');
+        //                 },
+        //                 child: Text("Sign In"),
+        //               ),
+        //             ),
+        //           ),
+        //           InkWell(
+        //             child: Container(
+        //               // color: Theme.of(context).accentColor,
+        //               padding: EdgeInsets.all(12.0),
+        //               child: OutlinedButton(
+        //                 onPressed: () {
+        //                   // Respond to button press
+        //                   Navigator.pushNamed(context, '/signup');
+        //                 },
+        //                 child: Text("Sign Up"),
+        //               ),
+        //             ),
+        //           ),
+        //         ],
+        //       )
+        //     : null,
         IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
               showSearch(context: context, delegate: Search());
             }),
-        // Padding(
-        //   padding: EdgeInsets.symmetric(horizontal: 16),
-        // ),
       ],
     );
   }
@@ -116,7 +105,7 @@ class ForumList extends StatelessWidget {
         // return Image.network(photos[index].thumbnailUrl);
         // return Text('${albums[index].title}');
         return ListTile(
-          title: Text('${albums[index].title}'),
+          title: Text('Forum placeholder'),
           onTap: () {
             // Update the state of the app.
             // ...

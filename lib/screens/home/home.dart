@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/screens/home/bottom_navi_bar.dart';
 import 'package:subb_front/screens/forum/forum.dart';
+import 'package:subb_front/screens/me/empty.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/';
@@ -17,9 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Center(
       child: Text('Implement notification screen'),
     ),
-    Center(
-      child: Text('Implement Personal info screen'),
-    ),
+    MeScreen(),
   ];
   void _handleBottomBarItemTapped(int index) {
     setState(() {
@@ -31,10 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       // TODO: render different layout for web/android
-      body: SafeArea(
-        child: _contentPages[_contentPageIndex],
-      ),
-
+      body: _contentPages[_contentPageIndex],
       bottomNavigationBar: HomeBottomNavigationBar(
         callbackOnTap: _handleBottomBarItemTapped,
         currentItemIndex: _contentPageIndex,
