@@ -15,9 +15,9 @@ Future<String?> getCookies() async {
   return prefs.getString('COOKIES') ?? null;
 }
 
-Future<void> setCookies(String session) async {
+Future<void> setCookies(String cookies) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setString('COOKIES', session);
+  prefs.setString('COOKIES', cookies);
 }
 
 Future<ApiResponse?> doGet(
@@ -25,9 +25,9 @@ Future<ApiResponse?> doGet(
   final uri = Uri.https(domainName, path, queryParams);
 
   try {
-    final session = await getCookies();
-    final response = session != null
-        ? await _client.get(uri, headers: {HttpHeaders.cookieHeader: session})
+    final cookies = await getCookies();
+    final response = cookies != null
+        ? await _client.get(uri, headers: {HttpHeaders.cookieHeader: cookies})
         : await _client.get(uri);
 
     if (response.statusCode == 200) {
@@ -44,10 +44,10 @@ Future<ApiResponse?> doPost(
     String path, Map<String, dynamic> queryParams, Object? body) async {
   final uri = Uri.https(domainName, path, queryParams);
   try {
-    final session = await getCookies();
-    final response = session != null
+    final cookies = await getCookies();
+    final response = cookies != null
         ? await _client.post(uri,
-            headers: {HttpHeaders.cookieHeader: session}, body: body)
+            headers: {HttpHeaders.cookieHeader: cookies}, body: body)
         : await _client.post(uri,
             // headers: {
             //   HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',

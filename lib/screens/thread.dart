@@ -62,13 +62,14 @@ class PostsList extends StatelessWidget {
   Widget _buildContent(QuillController? controller) {
     var quillEditor = QuillEditor(
       controller: controller!,
+      focusNode: _fn,
       scrollController: ScrollController(),
       scrollable: true,
-      focusNode: _fn,
+      padding: EdgeInsets.zero,
       autoFocus: true,
+      showCursor: false,
       readOnly: true,
       expands: false,
-      padding: EdgeInsets.zero,
     );
     _fn.unfocus();
     return Padding(
@@ -76,7 +77,6 @@ class PostsList extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: Colors.grey.shade200),
         ),
         child: quillEditor,
       ),

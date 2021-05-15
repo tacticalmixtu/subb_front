@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/screens/home.dart';
-import 'package:subb_front/screens/thread.dart';
 import 'package:subb_front/screens/signin.dart';
 import 'package:subb_front/screens/signup.dart';
 import 'package:subb_front/screens/editprofile.dart';
