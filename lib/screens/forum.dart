@@ -121,7 +121,7 @@ class ThreadsPage extends StatelessWidget {
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildIconItem(Icons.trending_up, '${thread.heat}'),
+                      _buildIconItem(Icons.whatshot, '${thread.heat}'),
                       _buildIconItem(Icons.sms, '${thread.posts}'),
                       _buildIconItem(Icons.thumb_up, '${thread.votes}'),
                     ]),
