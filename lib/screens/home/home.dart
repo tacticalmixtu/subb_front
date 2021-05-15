@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:subb_front/screens/home/bottom_navi_bar.dart';
 import 'package:subb_front/screens/forum/forum.dart';
 import 'package:subb_front/screens/me/me_screen.dart';
+import 'package:subb_front/screens/notification/notification.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/';
@@ -15,9 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _contentPages = <Widget>[
     ForumScreen(forumId: 1),
-    Center(
-      child: Text('Implement notification screen'),
-    ),
+    NotificationScreen(),
     MeScreen(),
   ];
   void _handleBottomBarItemTapped(int index) {

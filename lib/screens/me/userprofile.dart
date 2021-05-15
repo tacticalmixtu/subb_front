@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subb_front/models/sign_in_state.dart';
 import 'package:subb_front/screens/me/me_screen.dart';
-import 'package:subb_front/screens/me/signin.dart';
 
 class UserProfileScreen extends StatelessWidget {
   static const routeName = '/userprofile';

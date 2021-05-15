@@ -136,7 +136,6 @@ class SigninFormState extends State<SigninForm> {
           ),
           Padding(
             padding: EdgeInsets.all(8.0),
-            // TODO: use password hidden
             child: TextFormField(
               controller: _passwordController,
               maxLength: 20,
