@@ -66,6 +66,7 @@ class _ComposePostScreenState extends State<ComposePostScreen> {
   void _newPost() async {
     SnackBar snackBar = SnackBar(content: Text('No title!'));
 
+    print("*********");
     final queryParams = {
       'thread_id': thread.threadId.toString(),
     };

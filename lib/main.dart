@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/screens/compose.dart';
 import 'package:subb_front/screens/home.dart';
 import 'package:subb_front/screens/signin.dart';
 import 'package:subb_front/screens/signup.dart';
@@ -41,7 +40,6 @@ class MyApp extends StatelessWidget {
             UserProfileScreen(),
         EditProfileScreen.routeName: (BuildContext context) =>
             EditProfileScreen(),
-        ComposeScreen.routeName: (BuildContext context) => ComposeScreen(),
       },
       // home: HomePage(),
       debugShowCheckedModeBanner: false,

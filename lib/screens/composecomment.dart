@@ -107,12 +107,6 @@ class _ComposeCommentScreenState extends State<ComposeCommentScreen> {
           QuillToolbar.basic(controller: _quillController!),
           Expanded(
             child: Column(children: <Widget>[
-              TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), hintText: 'Title'),
-                controller: _titleController,
-                autofocus: true,
-              ),
               QuillEditor(
                 controller: _quillController!,
                 readOnly: false,
