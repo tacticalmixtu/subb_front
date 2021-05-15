@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 
 class HomeBottomNavigationBar extends StatelessWidget {
@@ -25,9 +26,15 @@ class HomeBottomNavigationBar extends StatelessWidget {
           label: 'Forums',
           icon: Icon(Icons.forum),
         ),
-        // TODO: add badges to indicate number of unread notifications
         BottomNavigationBarItem(
-            label: 'Notifications', icon: Icon(Icons.notifications)),
+            label: 'Notifications',
+            icon: Badge(
+              // TODO: dynamic number
+              badgeContent: Text('12'),
+              child: Icon(Icons.notifications),
+              padding: EdgeInsets.all(4),
+              animationType: BadgeAnimationType.scale,
+            )),
         BottomNavigationBarItem(
           label: 'Me',
           icon: Icon(Icons.person),
