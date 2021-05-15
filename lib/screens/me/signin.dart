@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/screens/home/home.dart';
+import 'package:provider/provider.dart';
+import 'package:subb_front/models/sign_in_state.dart';
 import 'package:subb_front/utils/network.dart';
 
 class SigninScreen extends StatelessWidget {
@@ -84,6 +85,7 @@ class SigninFormState extends State<SigninForm> {
       print('code: ${apiResponse.code}');
       print('message: ${apiResponse.message}');
       print('data: ${apiResponse.data}');
+      Provider.of<SignInState>(context, listen: false).signIn();
       snackBar = SnackBar(content: Text('Signed in success'));
     } else {
       snackBar = SnackBar(content: Text('Signed in failed'));

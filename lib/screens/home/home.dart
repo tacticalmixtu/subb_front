@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/screens/home/bottom_navi_bar.dart';
 import 'package:subb_front/screens/forum/forum.dart';
-import 'package:subb_front/screens/me/empty.dart';
+import 'package:subb_front/screens/me/me_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/';
