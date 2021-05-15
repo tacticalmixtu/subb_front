@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:subb_front/utils/network.dart';
 
 class EditProfileScreen extends StatelessWidget {
   static const routeName = '/editprofile';
@@ -13,16 +14,41 @@ class EditProfileScreen extends StatelessWidget {
   }
 }
 
+
 class EditProfileForm extends StatefulWidget {
   @override
   EditProfileFormState createState() => EditProfileFormState();
 }
 
 class EditProfileFormState extends State<EditProfileForm> {
-  final nameController = TextEditingController();
-  final usernameController = TextEditingController();
-  final schoolController = TextEditingController();
-  final bioController = TextEditingController();
+  //final nameController = TextEditingController();
+  //final passwordController = TextEditingController();
+  //final genderController = TextEditingController();
+  //final bioController = TextEditingController();
+
+  final _modifyInfoApi = '/small_talk_api/modify_info/';
+  late final nameController;
+  late final passwordController;
+  late final genderController;
+  late final bioController;
+
+  @override
+  void initState() {
+    nameController = TextEditingController();
+    passwordController = TextEditingController();
+    genderController = TextEditingController();
+    bioController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    passwordController.dispose();
+    genderController.dispose();
+    bioController.dispose();
+    super.dispose();
+  }
 
   double formProgress = 0;
 
@@ -30,8 +56,8 @@ class EditProfileFormState extends State<EditProfileForm> {
     var progress = 0.0;
     final controllers = [
       nameController,
-      usernameController,
-      schoolController,
+      passwordController,
+      genderController,
       bioController
     ];
 
@@ -50,74 +76,110 @@ class EditProfileFormState extends State<EditProfileForm> {
     Navigator.of(context).pop();
   }
 
+
+  void _modifyInfo() async {
+    final apiResponse = await doPost(
+      _modifyInfoApi,
+      {
+        'nickname': nameController.text,
+        'password': passwordController.text,
+        'gender': 'gender_' + genderController.text,
+        'avatar_link' : '',
+        'personal_info': bioController.text,
+      },
+      null,
+    );
+    late final SnackBar snackBar;
+    if (apiResponse != null) {
+      print('code: ${apiResponse.code}');
+      print('message: ${apiResponse.message}');
+      print('data: ${apiResponse.data}');
+
+      if (apiResponse.code == 200) {
+        snackBar = SnackBar(content: Text('Saved'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return;
+      }
+    }
+    snackBar = SnackBar(content: Text('Save failed'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    //Navigator.pop(context);
+  }
+
+  /*
+  void _loadSelf() async {
+
+    final _loadSelfApi = '/small_talk_api/load_self';
+    final apiResponse = await doGet(_loadSelfApi, null);
+
+    //final apiResponse = await Uri.https('smalltalknow.com', _loadSelfApi, {});
+
+    late final SnackBar snackBar;
+    if (apiResponse != null) {
+      print('code: ${apiResponse.code}');
+      print('message: ${apiResponse.message}');
+      print('data: ${apiResponse.data}');
+
+      if (apiResponse.code == 200) {
+        print('200');
+        snackBar = SnackBar(content: Text('Profile loaded'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return;
+      }
+    }
+    print('not 200');
+    snackBar = SnackBar(content: Text('Load profile failed'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    Navigator.pop(context);
+  }
+  */
+
   @override
   Widget build(BuildContext context) {
     return Form(
         onChanged: updateFormProgress,
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('Edit Profile', style: Theme.of(context).textTheme.headline4),
-          Padding(padding: EdgeInsets.all(8.0)),
+        child: Column(
+            //mainAxisSize: MainAxisSize.min,
+            children: [
+          Text('Edit Profile', style: Theme.of(context).textTheme.headline5),
           Container(
             child: CircleAvatar(
               backgroundImage: NetworkImage(
                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRP8UGUq_Z0Tn5u4gqDgXlffUaKu2Cm1Hcedw&usqp=CAU"), //image url here
-              radius: 60.0,
+              radius: 40.0,
             ),
           ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextFormField(
+          TextFormField(
               controller: nameController,
-              decoration: InputDecoration(hintText: 'Nickname'),
+              decoration: InputDecoration(labelText: ' Nickname'),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextFormField(
-              controller: usernameController,
-              decoration: InputDecoration(hintText: 'Username'),
+            TextFormField(
+              controller: passwordController,
+              decoration: InputDecoration(labelText: ' Password'),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextFormField(
-              controller: schoolController,
-              decoration: InputDecoration(hintText: 'School/Department'),
+            TextFormField(
+              controller: genderController,
+              decoration: InputDecoration(labelText: ' Gender', helperText: ' E.g. male, female, others, hidden'),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextFormField(
+            TextFormField(
               controller: bioController,
-              decoration: InputDecoration(hintText: 'Bio/About me'),
+              decoration: InputDecoration(labelText: ' About me'),
             ),
-          ),
-          Padding(padding: EdgeInsets.all(8.0)),
-          TextButton(
-              style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.resolveWith(
-                      (Set<MaterialState> states) {
-                    return states.contains(MaterialState.disabled)
-                        ? null
-                        : Colors.blue;
-                  }),
-                  backgroundColor: MaterialStateProperty.resolveWith(
-                      (Set<MaterialState> states) =>
-                          states.contains(MaterialState.disabled)
-                              ? null
-                              : Colors.deepOrangeAccent)),
-              onPressed: formProgress == 1 ? popCurrentPage : null,
-              child: Text("Save")),
-          Padding(padding: EdgeInsets.all(8.0)),
-          TextButton(
-              style: ButtonStyle(
-                foregroundColor:
-                    MaterialStateProperty.resolveWith((states) => Colors.blue),
-                backgroundColor: MaterialStateProperty.resolveWith(
-                    (states) => Colors.deepOrangeAccent),
-              ),
-              onPressed: popCurrentPage,
-              child: Text("Cancel")),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget> [
+              TextButton(
+                //onPressed: formProgress == 1 ? popCurrentPage : null,
+                  onPressed: _modifyInfo,
+                  child: Text("Save")),
+              TextButton(
+                  onPressed: popCurrentPage,
+                  child: Text("Cancel")),
+              //TextButton(
+              //    onPressed: _loadSelf,
+              //    child: Text("Load Self")),
+            ],
+          )
         ]));
   }
 }

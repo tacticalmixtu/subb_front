@@ -5,11 +5,35 @@ import 'package:subb_front/screens/appbar.dart';
 import 'package:subb_front/models/photo.dart';
 import 'package:http/http.dart' as http;
 import 'package:subb_front/models/album.dart';
+import 'package:subb_front/screens/bottom_navi_bar.dart';
 import 'package:subb_front/screens/compose.dart';
 import 'package:subb_front/screens/forum.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const routeName = '/';
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _contentPageIndex = 0;
+
+  final _contentPages = <Widget>[
+    ForumScreen(forumId: 1),
+    Center(
+      child: Text('Implement notification screen'),
+    ),
+    Center(
+      child: Text('Implement Personal info screen'),
+    ),
+  ];
+  void _handleBottomBarItemTapped(int index) {
+    setState(() {
+      _contentPageIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,28 +41,20 @@ class HomeScreen extends StatelessWidget {
       drawer: ForumDrawer(),
       // TODO: render different layout for web/android
       body: SafeArea(
-        // child: FutureBuilder<List<Photo>>(
-        //   future: fetchPhotos(http.Client()),
-        //   builder: (context, snapshot) {
-        //     if (snapshot.hasError) print(snapshot.error);
-
-        //     return snapshot.hasData
-        //         ? PhotosList(photos: snapshot.data!)
-        //         : Center(child: CircularProgressIndicator());
-        //   },
-        child: ForumScreen(forumId: 1),
-        // ),
+        child: _contentPages[_contentPageIndex],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ComposeScreen()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => ComposeScreen()));
         },
         child: Icon(Icons.add),
+      ),
+      bottomNavigationBar: HomeBottomNavigationBar(
+        callbackOnTap: _handleBottomBarItemTapped,
+        currentItemIndex: _contentPageIndex,
       ),
     );
   }
