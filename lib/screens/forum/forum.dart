@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:subb_front/models/album.dart';
 import 'package:subb_front/models/thread.dart';
-import 'package:subb_front/screens/appbar.dart';
-import 'package:subb_front/screens/compose.dart';
-import 'package:subb_front/screens/thread.dart';
+import 'package:subb_front/screens/home/appbar.dart';
+import 'package:subb_front/screens/forum/compose.dart';
+import 'package:subb_front/screens/forum/thread.dart';
 
 // class ForumScreen extends StatelessWidget {
 //   @override

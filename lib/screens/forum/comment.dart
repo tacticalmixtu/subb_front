@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/models/comment.dart';
-import 'package:subb_front/screens/composechildcomment.dart';
+import 'package:subb_front/screens/forum/composechildcomment.dart';
 
 class CommentScreen extends StatelessWidget {
   static const routeName = '/comment';

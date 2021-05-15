@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/screens/bottom_navi_bar.dart';
-import 'package:subb_front/screens/forum.dart';
+import 'package:subb_front/screens/home/bottom_navi_bar.dart';
+import 'package:subb_front/screens/forum/forum.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/';

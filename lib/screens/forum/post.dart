@@ -1,34 +1,35 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/controller.dart';
 import 'package:flutter_quill/widgets/editor.dart';
+import 'package:subb_front/models/comment.dart';
 import 'package:subb_front/models/post.dart';
-import 'package:subb_front/models/thread.dart';
-import 'package:subb_front/screens/composepost.dart';
-import 'package:subb_front/screens/post.dart';
+import 'package:subb_front/screens/forum/comment.dart';
+import 'package:subb_front/screens/forum/composecomment.dart';
 
-class ThreadScreen extends StatelessWidget {
-  static const routeName = '/thread';
+class PostScreen extends StatelessWidget {
+  static const routeName = '/post';
 
-  final Thread thread;
+  final Post post;
 
-  ThreadScreen({Key? key, required this.thread}) : super(key: key);
+  PostScreen({Key? key, required this.post}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(thread.title),
+        title: Text("View Comments (${post.comments})"),
       ),
-      body: FutureBuilder<List<Post>>(
-        future: fetchPosts(thread.threadId.toString(), '1'),
+      body: FutureBuilder<List<Comment>>(
+        future: fetchComments(post.postId.toString(), '1'),
         builder: (context, snapshot) {
           if (snapshot.hasError)
-            print('ThreadScreen FutureBuilder ${snapshot.error}');
+            print('PostScreen FutureBuilder ${snapshot.error}');
 
           return snapshot.hasData
-              ? PostsList(posts: snapshot.data!)
+              ? CommentsList(comments: snapshot.data!)
               : Center(child: CircularProgressIndicator());
         },
       ),
@@ -39,7 +40,7 @@ class ThreadScreen extends StatelessWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => ComposePostScreen(thread)));
+                  builder: (context) => ComposeCommentScreen(post)));
         },
         child: Icon(Icons.add),
       ),
@@ -47,15 +48,15 @@ class ThreadScreen extends StatelessWidget {
   }
 }
 
-class PostsList extends StatelessWidget {
-  final List<Post> posts;
+class CommentsList extends StatelessWidget {
+  final List<Comment> comments;
   final FocusNode _fn = FocusNode();
 
-  PostsList({Key? key, required this.posts}) : super(key: key);
+  CommentsList({Key? key, required this.comments}) : super(key: key);
 
-  QuillController _getController(Post post) {
+  QuillController _getController(Comment comment) {
     return QuillController(
-        document: Document.fromJson(jsonDecode(post.content)),
+        document: Document.fromJson(jsonDecode(comment.content)),
         selection: const TextSelection.collapsed(offset: 0));
   }
 
@@ -83,7 +84,7 @@ class PostsList extends StatelessWidget {
     );
   }
 
-  Widget _buildCard(Post post) => Container(
+  Widget _buildCard(Comment comment) => Container(
         margin: EdgeInsets.all(4),
         child: Card(
           child: Column(
@@ -92,11 +93,11 @@ class PostsList extends StatelessWidget {
                 leading: Icon(
                   Icons.person_pin,
                 ),
-                title: Text('posted by: author ${post.author}'),
-                subtitle: Text('parent thread: ${post.threadId}'),
+                title: Text('posted by: author ${comment.author}'),
+                subtitle: Text('comment on post: ${comment.postId}'),
               ),
               Image.network(r'https://picsum.photos/100'),
-              _buildContent(_getController(post)),
+              _buildContent(_getController(comment)),
             ],
           ),
         ),
@@ -105,7 +106,7 @@ class PostsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: posts.length,
+      itemCount: comments.length,
       itemBuilder: (context, index) {
         // return Image.network(photos[index].thumbnailUrl);
         // return Text('${photos[index].title}');
@@ -114,9 +115,10 @@ class PostsList extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => PostScreen(post: posts[index])));
+                    builder: (context) =>
+                        CommentScreen(comment: comments[index])));
           },
-          child: _buildCard(posts[index]),
+          child: _buildCard(comments[index]),
         );
       },
     );

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/screens/home.dart';
-import 'package:subb_front/screens/signin.dart';
-import 'package:subb_front/screens/signup.dart';
-import 'package:subb_front/screens/editprofile.dart';
-import 'package:subb_front/screens/userprofile.dart';
-import 'package:subb_front/screens/resetpassword.dart';
+import 'package:subb_front/screens/home/home.dart';
+import 'package:subb_front/screens/me/signin.dart';
+import 'package:subb_front/screens/me/signup.dart';
+import 'package:subb_front/screens/me/editprofile.dart';
+import 'package:subb_front/screens/me/userprofile.dart';
+import 'package:subb_front/screens/me/resetpassword.dart';
 
 void main() {
   runApp(MyApp());

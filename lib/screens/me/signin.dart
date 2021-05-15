@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/screens/home.dart';
+import 'package:subb_front/screens/home/home.dart';
 import 'package:subb_front/utils/network.dart';
 
 class SigninScreen extends StatelessWidget {
@@ -81,9 +81,9 @@ class SigninFormState extends State<SigninForm> {
     );
     late final SnackBar snackBar;
     if (apiResponse != null) {
-       print('code: ${apiResponse.code}');
-       print('message: ${apiResponse.message}');
-       print('data: ${apiResponse.data}');
+      print('code: ${apiResponse.code}');
+      print('message: ${apiResponse.message}');
+      print('data: ${apiResponse.data}');
       snackBar = SnackBar(content: Text('Signed in success'));
     } else {
       snackBar = SnackBar(content: Text('Signed in failed'));
@@ -153,44 +153,46 @@ class SigninFormState extends State<SigninForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-
               Padding(padding: EdgeInsets.all(6.0)),
-              Expanded(child: Text("New User", textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16.0, color: Colors.deepOrange))
-              ),
+              Expanded(
+                  child: Text("New User",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 16.0, color: Colors.deepOrange))),
               Expanded(child: Padding(padding: EdgeInsets.all(2.0))),
-              Expanded(child: Text("Forget Password", textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16.0, color: Colors.deepOrange))
-              ),
+              Expanded(
+                  child: Text("Forget Password",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 16.0, color: Colors.deepOrange))),
               Padding(padding: EdgeInsets.all(6.0)),
             ],
           ),
           Row(
-
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(padding: EdgeInsets.all(6.0)),
-              Expanded(child: TextButton(
-                  style: ButtonStyle(
-                    foregroundColor:
-                    MaterialStateProperty.resolveWith((states) => Colors.blue),
-                    backgroundColor: MaterialStateProperty.resolveWith(
+              Expanded(
+                  child: TextButton(
+                      style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.resolveWith(
+                            (states) => Colors.blue),
+                        backgroundColor: MaterialStateProperty.resolveWith(
                             (states) => Colors.yellow),
-                  ),
-                  onPressed: showSignUpScreen,
-                  child: Text("Sign Up"))
-              ),
+                      ),
+                      onPressed: showSignUpScreen,
+                      child: Text("Sign Up"))),
               Expanded(child: Padding(padding: EdgeInsets.all(2.0))),
-              Expanded(child: TextButton(
-                  style: ButtonStyle(
-                    foregroundColor:
-                    MaterialStateProperty.resolveWith((states) => Colors.blue),
-                    backgroundColor: MaterialStateProperty.resolveWith(
+              Expanded(
+                  child: TextButton(
+                      style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.resolveWith(
+                            (states) => Colors.blue),
+                        backgroundColor: MaterialStateProperty.resolveWith(
                             (states) => Colors.yellow),
-                  ),
-                  onPressed: showResetScreen,
-                  child: Text("Reset Password"))
-              ),
+                      ),
+                      onPressed: showResetScreen,
+                      child: Text("Reset Password"))),
               Padding(padding: EdgeInsets.all(6.0)),
             ],
           ),
