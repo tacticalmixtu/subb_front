@@ -28,7 +28,10 @@ class SignUpFormState extends State<SignUpForm> {
   late final _passcodeController;
   late bool _hidePassword;
   double formProgress = 0;
-  //final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
+  final _emailKey = GlobalKey<FormState>();
+  bool _codeSend = false;
+  double PADDING_SIZE = 10.0;
 
   @override
   void initState() {
@@ -73,37 +76,25 @@ class SignUpFormState extends State<SignUpForm> {
     late final SnackBar snackBar;
     if (apiResponse != null) {
       print('code: ${apiResponse.code}');
-      print('messagee: ${apiResponse.message}');
+      print('message: ${apiResponse.message}');
       print('data: ${apiResponse.data}');
-      //snackBar = SnackBar(content: Text('Verification code sent'));
-    } //else {
-      //snackBar = SnackBar(content: Text('Unable to send verification code send'));
-    //}
-    //ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (apiResponse.code == 200) {
+        _codeSend = true;
+        snackBar = SnackBar(content: Text('Verification code sent'));
+        return;
+      } else {
+        snackBar = SnackBar(content: Text('Unable to send verification code'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return;
+      }
+    }
+    snackBar = SnackBar(content: Text('Unable to send verification code'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void popScreen() {
     Navigator.of(context).pop();
   }
-
-  /*int validate() {
-    String out;
-    late final SnackBar snackBar;
-
-    if (_emailController.text.length < 6) {
-      snackBar = SnackBar(content: Text("Invalid email address"));
-      //ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-    }
-    if (_passwordController.text.length < 2 || _passwordController.text.length > 16) {
-      snackBar = SnackBar(content: Text("Invalid password length"));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return -1;
-    }
-    return 0;
-  }*/
-  //void _placeholder() {}
-
 
   void _signUp() async {
     final apiResponse = await doPost(
@@ -133,6 +124,9 @@ class SignUpFormState extends State<SignUpForm> {
         snackBar = SnackBar(content: Text('Incorrect verification code'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return;
+      } else {
+        snackBar = SnackBar(content: Text('Unable to sign up'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
     snackBar = SnackBar(content: Text('Sign up failed'));
@@ -142,14 +136,15 @@ class SignUpFormState extends State<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-        //key: _formKey,
-        //autovalidate: true,
+        key: _formKey,
         onChanged: updateFormProgress,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text('Sign up', style: Theme.of(context).textTheme.headline5),
           Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextFormField(
+            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
+            child:
+            TextFormField(
+              key: _emailKey,
               controller: _emailController,
               maxLength: 20,
               decoration: InputDecoration(
@@ -158,46 +153,86 @@ class SignUpFormState extends State<SignUpForm> {
                 enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Color(0xFFF76900))
                 ),
-                //suffixIcon: Icon(Icons.check_circle),
               ),
+              validator: (value) {
+                //validate email
+                RegExp regex = RegExp(r'\w+@\w+\.\w+'); //translates to word@word.word
+                if (value == null || value.length == 0) {
+                  return 'Please enter your email';
+                } else if (!regex.hasMatch(value)) {
+                  return 'Incorrect email address.';
+                } else {
+                  return null;
+                }
+              },
             ),
           ),
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
               child: TextButton(
-                  onPressed: _requestPasscode,
-                  child:Text("   Send verification code", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),)),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _requestPasscode();
+                    }
+                  },
+                  child:Text("    Send verification code", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),)),
             ),
           ),
-
           Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
             child: TextFormField(
               controller: _passcodeController,
               maxLength: 10,
               //textAlign: TextAlign.left,
+              validator: (value) {
+                if (value == null) {
+                  return 'Plaese enter your code';
+                }
+              },
               decoration: InputDecoration(
                 labelText: 'Enter your code',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
                 enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Color(0xFFF76900))
                 ),
-                //suffixIcon: Icon(Icons.check_circle),
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
             // TODO: use password hidden
             child: TextFormField(
               controller: _passwordController,
-              maxLength: 20,
+              maxLength: 16,
               obscureText: _hidePassword,
+              validator: (value) {
+                //validate password
+                RegExp hasUpper = RegExp(r'[A-Z]');
+                RegExp hasLower = RegExp(r'[a-z]');
+                RegExp hasDigit = RegExp(r'\d');
+
+                if (value == null || value.length == 0) {
+                  return 'Please enter your password';
+                }
+                if (!RegExp(r'.{2,}').hasMatch(value)) {
+                  return 'Password must have at least 2 characters';
+                }
+                if (!hasUpper.hasMatch(value)) {
+                  return 'Password must have at least one uppercase letter';
+                }
+                if (!hasLower.hasMatch(value)) {
+                  return 'Password must have at least one lowercase letter';
+                }
+                if (!hasDigit.hasMatch(value)) {
+                  return 'Password must have at least one number';
+                }
+                return null;
+              },
               decoration: InputDecoration(
                 labelText: 'Create your password',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
-                helperText: 'Password should contain numbers, upper case letters and lower case letters. No special characters. Length: 2-16.',// Length: 2-16',
+                helperText: 'Must consist of numbers, upper and lower case letters only.',// Length: 2-16',
                 enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Color(0xFFF76900))
                 ),
@@ -214,18 +249,12 @@ class SignUpFormState extends State<SignUpForm> {
               ),
             ),
           ),
-
           Row(
             children: <Widget> [
+              Expanded(child: Padding(padding:EdgeInsets.symmetric(horizontal:1.0))),
+              Expanded(child: Padding(padding:EdgeInsets.symmetric(horizontal:1.0))),
               Expanded(child:
-                TextButton(
-                  onPressed: _requestPasscode,
-                  child:Text("", //"""Send verification code",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),)),
-              ),
-              Expanded(child: Padding(padding:EdgeInsets.all(4.0))),
-              Expanded(child:
-                TextButton(
+              TextButton(
                   style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.resolveWith(
                               (Set<MaterialState> states) {
@@ -238,91 +267,15 @@ class SignUpFormState extends State<SignUpForm> {
                           states.contains(MaterialState.disabled)
                               ? null
                               :Color(0xFFF76900))),
-                  //onPressed: formProgress == 1 ? _signUp : null, //_placeholder,
-                  onPressed: _signUp,
+                  onPressed: (){
+                    if (_formKey.currentState!.validate()) {
+                      _signUp();
+                    }},
+                  //_signUp
                   child: Text("Sign up")),
               ),
             ],
           ),
-
         ]));
   }
 }
-/*
-          /* Padding(
-            padding: EdgeInsets.all(2.0),
-            child:               TextButton(
-                onPressed: _requestPasscode,
-                child:Text("Send verification code", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),)),
-          ),*/
-        Row(
-            children: <Widget> [
-              Expanded(child:
-              TextButton(
-                  onPressed: _requestPasscode,
-                  child:Text("Send verification code", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),)),
-              ),
-              Expanded(child: Padding(padding:EdgeInsets.all(2.0))),
-              Expanded(child: Padding(padding:EdgeInsets.all(2.0))),
-              Expanded(child: Padding(padding:EdgeInsets.all(2.0))),
-              Expanded(child: Padding(padding:EdgeInsets.all(2.0))),
-              Expanded(child: Padding(padding:EdgeInsets.all(2.0))),
-          ]
-        ),
-
-
-Row(children: <Widget> [
-            Padding(padding: EdgeInsets.all(5.0)),
-            TextButton(
-                onPressed: _requestPasscode,
-                child: Text("Send verification code", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),)),]
-          ),*/
-/*TextButton(
-              onPressed: _requestPasscode,
-              child: Text("Send Passcode", style: TextStyle(color: Color(0xFF2B72D7)),)),
-          TextButton(
-              style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.resolveWith(
-                          (Set<MaterialState> states) {
-                        return states.contains(MaterialState.disabled)
-                            ? null
-                            : Color(0xFF2B72D7);
-                      }),
-                  backgroundColor: MaterialStateProperty.resolveWith(
-                          (Set<MaterialState> states) =>
-                      states.contains(MaterialState.disabled)
-                          ? null
-                          :Color(0xFFF76900))),
-              //onPressed: formProgress == 1 ? _signIn : null,
-              onPressed: _signUp,
-              child: Text("Sign up")),
-          Padding(padding: EdgeInsets.all(8.0)),*/
-/*Row(
-            children: <Widget> [
-              Padding(padding: EdgeInsets.all(8.0)),
-              TextButton(
-                  onPressed: _requestPasscode,
-                  child: Text("Send Passcode", style: TextStyle(color: Color(0xFF2B72D7)),)),
-
-              //(child: Padding(padding:EdgeInsets.all(2.0))),
-              Padding(padding: EdgeInsets.all(8.0)),
-
-                TextButton(
-                  style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) {
-                            return states.contains(MaterialState.disabled)
-                                ? null
-                                : Color(0xFF2B72D7);
-                          }),
-                      backgroundColor: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) =>
-                          states.contains(MaterialState.disabled)
-                              ? null
-                              :Color(0xFFF76900))),
-                  //onPressed: formProgress == 1 ? _signIn : null,
-                  onPressed: _signUp,
-                  child: Text("Sign Up")),
-
-            ],
-          ),*/

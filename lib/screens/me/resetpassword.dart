@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/screens/home/home.dart';
 import 'package:subb_front/utils/network.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
@@ -21,8 +20,14 @@ class ResetForm extends StatefulWidget {
 }
 
 class ResetFormState extends State<ResetForm> {
+
   final _resetPasswordApi = '/small_talk_api/recover_password/';
   final _requestPasscodeApi = '/small_talk_api/request_passcode/';
+
+  late bool _hidePassword;
+  double formProgress = 0;
+  final _formKey = GlobalKey<FormState>();
+  double PADDING_SIZE = 10.0;
 
   late final _emailController;
   late final _passwordController;
@@ -33,6 +38,7 @@ class ResetFormState extends State<ResetForm> {
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     _passcodeController = TextEditingController();
+    _hidePassword = true;
     super.initState();
   }
 
@@ -43,8 +49,6 @@ class ResetFormState extends State<ResetForm> {
     _passcodeController.dispose();
     super.dispose();
   }
-
-  double formProgress = 0;
 
   void updateFormProgress() {
     var progress = 0.0;
@@ -110,74 +114,139 @@ class ResetFormState extends State<ResetForm> {
     //Navigator.pop(context);
   }
 
-  @override
   Widget build(BuildContext context) {
     return Form(
+        key: _formKey,
         onChanged: updateFormProgress,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('Reset Password', style: Theme.of(context).textTheme.headline4),
+          Text('Reset password', style: Theme.of(context).textTheme.headline5),
           Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextFormField(
+            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
+            child:
+            TextFormField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              maxLength: 20,
+              decoration: InputDecoration(
+                labelText: 'SUmail',
+                labelStyle: TextStyle(color: Color(0xFFF76900)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFF76900))
+                ),
+              ),
+              validator: (value) {
+                //validate email
+                RegExp regex = RegExp(r'\w+@\w+\.\w+'); //translates to word@word.word
+                if (value == null || value.length == 0) {
+                  return 'Please enter your email';
+                } else if (!regex.hasMatch(value)) {
+                  return 'Incorrect email address';
+                } else {
+                  return null;
+                }
+              },
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              child: TextButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _requestPasscode();
+                    }
+                  },
+                  //onPressed: _requestPasscode,
+                  child:Text("    Send verification code", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),)),
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
+            child: TextFormField(
+              controller: _passcodeController,
+              maxLength: 10,
+              decoration: InputDecoration(
+                labelText: 'Enter your code',
+                labelStyle: TextStyle(color: Color(0xFFF76900)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFF76900))
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
             // TODO: use password hidden
             child: TextFormField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            // TODO: use password hidden
-            child: TextFormField(
-              controller: _passcodeController,
-              decoration: InputDecoration(labelText: 'Passcode'),
-            ),
-          ),
+              maxLength: 20,
+              obscureText: _hidePassword,
+              validator: (value) {
+                //validate password
+                RegExp hasUpper = RegExp(r'[A-Z]');
+                RegExp hasLower = RegExp(r'[a-z]');
+                RegExp hasDigit = RegExp(r'\d');
 
-          //Padding(padding: EdgeInsets.all(8.0)),
+                if (value == null || value.length == 0) {
+                  return 'Please enter your password';
+                }
+                if (!RegExp(r'.{2,}').hasMatch(value)) {
+                  return 'Password must have at least 2 characters';
+                }
+                if (!hasUpper.hasMatch(value)) {
+                  return 'Password must have at least one uppercase letter';
+                }
+                if (!hasLower.hasMatch(value)) {
+                  return 'Password must have at least one lowercase letter';
+                }
+                if (!hasDigit.hasMatch(value)) {
+                  return 'Password must have at least one number';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                labelText: 'Create your new password',
+                labelStyle: TextStyle(color: Color(0xFFF76900)),
+                helperText: 'Password should contain numbers, uppercase letters and lowercase letters. No special characters. Length: 2-16.',// Length: 2-16',
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFFF76900))
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _hidePassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _hidePassword = !_hidePassword;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ),
           Row(
-            children: <Widget>[
-              Expanded(
-                  child: TextButton(
-                      style: ButtonStyle(
-                          foregroundColor: MaterialStateProperty.resolveWith(
+            children: <Widget> [
+              Expanded(child: Padding(padding:EdgeInsets.symmetric(horizontal:1.0))),
+              Expanded(child: Padding(padding:EdgeInsets.symmetric(horizontal:1.0))),
+              Expanded(child:
+              TextButton(
+                  style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.resolveWith(
                               (Set<MaterialState> states) {
                             return states.contains(MaterialState.disabled)
                                 ? null
-                                : Colors.blue;
+                                : Colors.white;//Color(0xFF2B72D7);
                           }),
-                          backgroundColor: MaterialStateProperty.resolveWith(
+                      backgroundColor: MaterialStateProperty.resolveWith(
                               (Set<MaterialState> states) =>
-                                  states.contains(MaterialState.disabled)
-                                      ? null
-                                      : Colors.yellow)),
-                      onPressed: _emailController.text.isNotEmpty
-                          ? _requestPasscode
-                          : null,
-                      child: Text("Request Code"))),
-              Expanded(child: Padding(padding: EdgeInsets.all(2.0))),
-              Expanded(
-                child: TextButton(
-                    style: ButtonStyle(
-                        foregroundColor: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> states) {
-                          return states.contains(MaterialState.disabled)
+                          states.contains(MaterialState.disabled)
                               ? null
-                              : Colors.blue;
-                        }),
-                        backgroundColor: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> states) =>
-                                states.contains(MaterialState.disabled)
-                                    ? null
-                                    : Colors.deepOrangeAccent)),
-                    onPressed: _reset,
-                    child: Text("Reset Password")),
+                              :Color(0xFFF76900))),
+                  onPressed: (){
+                    if (_formKey.currentState!.validate()) {
+                      _reset();
+                    }},
+                  //_signUp
+                  child: Text("Reset password")),
               ),
             ],
           ),
