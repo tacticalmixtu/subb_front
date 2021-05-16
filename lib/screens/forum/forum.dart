@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/models/api_response.dart';
-import 'package:subb_front/models/models.dart';
 import 'package:subb_front/models/thread.dart';
 import 'package:subb_front/screens/forum/compose.dart';
 import 'package:subb_front/screens/forum/thread.dart';
@@ -140,27 +139,6 @@ class ThreadsPage extends StatelessWidget {
           child: _buildCard(threads[index]),
         );
       },
-    );
-  }
-}
-
-class ForumDrawer extends StatelessWidget {
-  const ForumDrawer({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: FutureBuilder<ApiResponse>(
-        future: getForumList(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
-          return snapshot.hasData
-              ? ForumList(forums: parseForumList(snapshot.data!.data! as List<dynamic>))
-              : Center(child: CircularProgressIndicator());
-        },
-      ),
     );
   }
 }
