@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/screens/home/home.dart';
+import 'package:subb_front/utils/api_collection.dart';
 import 'package:subb_front/utils/network.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
@@ -66,20 +67,10 @@ class ResetFormState extends State<ResetForm> {
   }
 
   void _requestPasscode() async {
-    final apiResponse = await doPost(
-      _requestPasscodeApi,
-      {
-        'email': _emailController.text,
-      },
-      null,
-    );
+    final apiResponse = await requestPasscode(email: _emailController.text);
 
     late final SnackBar snackBar;
     if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('messagee: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
-
       snackBar = SnackBar(content: Text('Passcode requested'));
     } else {
       snackBar = SnackBar(content: Text('Passcode request failed'));
@@ -88,20 +79,13 @@ class ResetFormState extends State<ResetForm> {
   }
 
   void _reset() async {
-    final apiResponse = await doPost(
-      _resetPasswordApi,
-      {
-        'email': _emailController.text,
-        'password': _passwordController.text,
-        'passcode': _passcodeController.text,
-      },
-      null,
-    );
+    final apiResponse = await recoverPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+        passcode: _passcodeController.text);
+
     late final SnackBar snackBar;
     if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('message: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
       snackBar = SnackBar(content: Text('Reset password success'));
     } else {
       snackBar = SnackBar(content: Text('Reset Password failed'));

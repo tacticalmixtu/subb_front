@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:subb_front/models/album.dart';
+import 'package:subb_front/models/models.dart';
 
 class ForumAppbar extends StatefulWidget with PreferredSizeWidget {
   @override
@@ -17,37 +17,6 @@ class _ForumAppbarState extends State<ForumAppbar> {
     return AppBar(
       title: Text('SUBB'),
       actions: <Widget>[
-        // show sign up/sign in on web
-        // kIsWeb
-        //     ? Row(
-        //         children: [
-        //           InkWell(
-        //             child: Container(
-        //               padding: EdgeInsets.all(12.0),
-        //               child: OutlinedButton(
-        //                 onPressed: () {
-        //                   Navigator.pushNamed(context, '/signin');
-        //                 },
-        //                 child: Text("Sign In"),
-        //               ),
-        //             ),
-        //           ),
-        //           InkWell(
-        //             child: Container(
-        //               // color: Theme.of(context).accentColor,
-        //               padding: EdgeInsets.all(12.0),
-        //               child: OutlinedButton(
-        //                 onPressed: () {
-        //                   // Respond to button press
-        //                   Navigator.pushNamed(context, '/signup');
-        //                 },
-        //                 child: Text("Sign Up"),
-        //               ),
-        //             ),
-        //           ),
-        //         ],
-        //       )
-        //     : null,
         IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
@@ -92,24 +61,24 @@ class Search extends SearchDelegate {
 }
 
 class ForumList extends StatelessWidget {
-  final List<Album> albums;
+  final List<ForumData> forums;
 
-  ForumList({Key? key, required this.albums}) : super(key: key);
+  ForumList({Key? key, required this.forums}) : super(key: key);
+
+  Widget _buildCard(ForumData forum) => ListTile(
+        title: Text(forum.title),
+      );
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: albums.length,
+      itemCount: forums.length,
       itemBuilder: (context, index) {
-        // return Image.network(photos[index].thumbnailUrl);
-        // return Text('${albums[index].title}');
-        return ListTile(
-          title: Text('Forum placeholder'),
+        return GestureDetector(
           onTap: () {
-            // Update the state of the app.
-            // ...
             Navigator.pop(context);
           },
+          child: _buildCard(forums[index]),
         );
       },
     );

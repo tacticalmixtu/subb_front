@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:subb_front/utils/api_collection.dart';
 import 'package:subb_front/utils/network.dart';
 
 class SignUpScreen extends StatelessWidget {
@@ -49,7 +50,11 @@ class SignUpFormState extends State<SignUpForm> {
 
   void updateFormProgress() {
     var progress = 0.0;
-    final controllers = [ _emailController, _passwordController, _passcodeController ];
+    final controllers = [
+      _emailController,
+      _passwordController,
+      _passcodeController
+    ];
 
     for (final controller in controllers) {
       if (controller.value.text.isNotEmpty) {
@@ -62,24 +67,7 @@ class SignUpFormState extends State<SignUpForm> {
   }
 
   void _requestPasscode() async {
-    final apiResponse = await doPost(
-      _requestPasscodeApi,
-      {
-        'email' : _emailController.text,
-      },
-      null,
-    );
-
-    late final SnackBar snackBar;
-    if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('messagee: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
-      //snackBar = SnackBar(content: Text('Verification code sent'));
-    } //else {
-      //snackBar = SnackBar(content: Text('Unable to send verification code send'));
-    //}
-    //ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    await requestPasscode(email: _emailController.text);
   }
 
   void popScreen() {
@@ -104,17 +92,11 @@ class SignUpFormState extends State<SignUpForm> {
   }*/
   //void _placeholder() {}
 
-
   void _signUp() async {
-    final apiResponse = await doPost(
-      _signUpApi,
-      {
-        'email': _emailController.text,
-        'password': _passwordController.text,
-        'passcode': _passcodeController.text,
-      },
-      null,
-    );
+    final apiResponse = await signUp(
+        email: _emailController.text,
+        password: _passwordController.text,
+        passcode: _passcodeController.text);
 
     late final SnackBar snackBar;
     if (apiResponse != null) {
@@ -126,7 +108,8 @@ class SignUpFormState extends State<SignUpForm> {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return;
       } else if (apiResponse.code == 401) {
-        snackBar = SnackBar(content: Text('SUmail already exists. Please sign in.'));
+        snackBar =
+            SnackBar(content: Text('SUmail already exists. Please sign in.'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return;
       } else if (apiResponse.code == 402) {
@@ -139,6 +122,7 @@ class SignUpFormState extends State<SignUpForm> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
     //Navigator.pop(context);
   }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -156,8 +140,7 @@ class SignUpFormState extends State<SignUpForm> {
                 labelText: 'SUmail',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
                 enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))
-                ),
+                    borderSide: BorderSide(color: Color(0xFFF76900))),
                 //suffixIcon: Icon(Icons.check_circle),
               ),
             ),
@@ -167,10 +150,13 @@ class SignUpFormState extends State<SignUpForm> {
             child: Container(
               child: TextButton(
                   onPressed: _requestPasscode,
-                  child:Text("   Send verification code", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),)),
+                  child: Text(
+                    "   Send verification code",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),
+                  )),
             ),
           ),
-
           Padding(
             padding: EdgeInsets.all(8.0),
             child: TextFormField(
@@ -181,8 +167,7 @@ class SignUpFormState extends State<SignUpForm> {
                 labelText: 'Enter your code',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
                 enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))
-                ),
+                    borderSide: BorderSide(color: Color(0xFFF76900))),
                 //suffixIcon: Icon(Icons.check_circle),
               ),
             ),
@@ -197,10 +182,10 @@ class SignUpFormState extends State<SignUpForm> {
               decoration: InputDecoration(
                 labelText: 'Create your password',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
-                helperText: 'Password should contain numbers, upper case letters and lower case letters. No special characters. Length: 2-16.',// Length: 2-16',
+                helperText:
+                    'Password should contain numbers, upper case letters and lower case letters. No special characters. Length: 2-16.', // Length: 2-16',
                 enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))
-                ),
+                    borderSide: BorderSide(color: Color(0xFFF76900))),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _hidePassword ? Icons.visibility_off : Icons.visibility,
@@ -214,37 +199,39 @@ class SignUpFormState extends State<SignUpForm> {
               ),
             ),
           ),
-
           Row(
-            children: <Widget> [
-              Expanded(child:
-                TextButton(
-                  onPressed: _requestPasscode,
-                  child:Text("", //"""Send verification code",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),)),
+            children: <Widget>[
+              Expanded(
+                child: TextButton(
+                    onPressed: _requestPasscode,
+                    child: Text(
+                      "", //"""Send verification code",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2B72D7)),
+                    )),
               ),
-              Expanded(child: Padding(padding:EdgeInsets.all(4.0))),
-              Expanded(child:
-                TextButton(
-                  style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) {
-                            return states.contains(MaterialState.disabled)
-                                ? null
-                                : Colors.white;//Color(0xFF2B72D7);
-                          }),
-                      backgroundColor: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) =>
-                          states.contains(MaterialState.disabled)
+              Expanded(child: Padding(padding: EdgeInsets.all(4.0))),
+              Expanded(
+                child: TextButton(
+                    style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.resolveWith(
+                            (Set<MaterialState> states) {
+                          return states.contains(MaterialState.disabled)
                               ? null
-                              :Color(0xFFF76900))),
-                  //onPressed: formProgress == 1 ? _signUp : null, //_placeholder,
-                  onPressed: _signUp,
-                  child: Text("Sign up")),
+                              : Colors.white; //Color(0xFF2B72D7);
+                        }),
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                            (Set<MaterialState> states) =>
+                                states.contains(MaterialState.disabled)
+                                    ? null
+                                    : Color(0xFFF76900))),
+                    //onPressed: formProgress == 1 ? _signUp : null, //_placeholder,
+                    onPressed: _signUp,
+                    child: Text("Sign up")),
               ),
             ],
           ),
-
         ]));
   }
 }

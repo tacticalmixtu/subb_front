@@ -8,8 +8,7 @@ part 'api_response.g.dart';
 class ApiResponse {
   final int code;
   final String message;
-  // @JsonKey(defaultValue: null)
-  Object? data;
+  final Object? data;
 
   ApiResponse(this.code, this.message, this.data);
 

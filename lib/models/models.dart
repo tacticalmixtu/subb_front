@@ -43,43 +43,6 @@ class ContactData {
   Map<String, dynamic> toJson() => _$ContactDataToJson(this);
 }
 
-const _apiPathLoadSelf = 'small_talk_api/load_self';
-const _apiPathLoadUser = 'small_talk_api/load_user';
-
-Future<ContactData?> fetchSelf() async {
-  try {
-    final apiResponse =
-        await doGet(_apiPathLoadSelf, null);
-    if (apiResponse != null) {
-      return ContactData.fromJson(apiResponse.data! as dynamic);
-    } else {
-      print("fetchSelf() error, null apiResponse");
-    }
-  } catch (e, s) {
-    print('exception caught in fetchSelf(): $e');
-    print('Exception details:\n $e');
-    print('Stack trace:\n $s');
-  }
-  return null;
-}
-
-Future<ContactData?> fetchUser(int userId) async {
-  try {
-    final apiResponse =
-        await doGet(_apiPathLoadUser, {'user_id': userId});
-    if (apiResponse != null) {
-      return ContactData.fromJson(apiResponse.data! as dynamic);
-    } else {
-      print("fetchUser() error, null apiResponse");
-    }
-  } catch (e, s) {
-    print('exception caught in fetchUser(): $e');
-    print('Exception details:\n $e');
-    print('Stack trace:\n $s');
-  }
-  return null;
-}
-
 @JsonSerializable()
 class ForumData {
   @JsonKey(name: 'forum_id')
@@ -106,25 +69,6 @@ List<ForumData> parseForumList(List<dynamic> data) {
   return data.map((e) => ForumData.fromJson(e)).toList();
 }
 
-const _apiPathLoadForumList = 'small_talk_api/load_forum_list';
-
-Future<List<ForumData>> fetchForumList() async {
-  try {
-    final apiResponse =
-        await doGet(_apiPathLoadForumList, null);
-    if (apiResponse != null) {
-      return parseForumList(apiResponse.data! as List<dynamic>);
-    } else {
-      print("fetchForumList() error, null apiResponse");
-    }
-  } catch (e, s) {
-    print('exception caught in fetchForumList(): $e');
-    print('Exception details:\n $e');
-    print('Stack trace:\n $s');
-  }
-  return [];
-}
-
 @JsonSerializable()
 class HistoryRecord {
   @JsonKey(name: 'history_record_id')
@@ -149,25 +93,6 @@ class HistoryRecord {
 
 List<HistoryRecord> parseHistoryRecordList(List<dynamic> data) {
   return data.map((e) => HistoryRecord.fromJson(e)).toList();
-}
-
-const _apiPathGetBrowsingHistory = 'small_talk_api/get_browsing_history';
-
-Future<List<HistoryRecord>> fetchBrowsingHistory() async {
-  try {
-    final apiResponse =
-        await doGet(_apiPathGetBrowsingHistory, null);
-    if (apiResponse != null) {
-      return parseHistoryRecordList(apiResponse.data! as List<dynamic>);
-    } else {
-      print("fetchBrowsingHistory() error, null apiResponse");
-    }
-  } catch (e, s) {
-    print('exception caught in fetchBrowsingHistory(): $e');
-    print('Exception details:\n $e');
-    print('Stack trace:\n $s');
-  }
-  return [];
 }
 
 @JsonSerializable()
@@ -197,25 +122,6 @@ class Notification {
 
 List<Notification> parseNotificationList(List<dynamic> data) {
   return data.map((e) => Notification.fromJson(e)).toList();
-}
-
-const _apiPathGetNotification = 'small_talk_api/get_notification';
-
-Future<List<Notification>> fetchNotificationList() async {
-  try {
-    final apiResponse =
-        await doGet(_apiPathGetNotification, null);
-    if (apiResponse != null) {
-      return parseNotificationList(apiResponse.data! as List<dynamic>);
-    } else {
-      print("fetchNotificationList() error, null apiResponse");
-    }
-  } catch (e, s) {
-    print('exception caught in fetchNotificationList(): $e');
-    print('Exception details:\n $e');
-    print('Stack trace:\n $s');
-  }
-  return [];
 }
 
 @JsonSerializable()
@@ -251,23 +157,4 @@ class PrivateMessage {
 
 List<PrivateMessage> parsePrivateMessageList(List<dynamic> data) {
   return data.map((e) => PrivateMessage.fromJson(e)).toList();
-}
-
-const _apiPathFetchPrivateMessage = 'small_talk_api/fetch_private_message';
-
-Future<List<PrivateMessage>> fetchPrivateMessage() async {
-  try {
-    final apiResponse =
-        await doGet(_apiPathFetchPrivateMessage, null);
-    if (apiResponse != null) {
-      return parsePrivateMessageList(apiResponse.data! as List<dynamic>);
-    } else {
-      print("fetchPrivateMessage() error, null apiResponse");
-    }
-  } catch (e, s) {
-    print('exception caught in fetchPrivateMessage(): $e');
-    print('Exception details:\n $e');
-    print('Stack trace:\n $s');
-  }
-  return [];
 }

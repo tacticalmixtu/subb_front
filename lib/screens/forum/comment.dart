@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/comment.dart';
 import 'package:subb_front/screens/forum/composechildcomment.dart';
+import 'package:subb_front/utils/api_collection.dart';
 
 class CommentScreen extends StatelessWidget {
   static const routeName = '/comment';
@@ -15,14 +17,13 @@ class CommentScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("View Discussion (${comment.comments})"),
       ),
-      body: FutureBuilder<List<Comment>>(
-        future: fetchChildComments(comment.commentId.toString(), '1'),
+      body: FutureBuilder<ApiResponse>(
+        future: getCommentPage(commentId: comment.commentId.toString(), page: '1'),
         builder: (context, snapshot) {
           if (snapshot.hasError)
             print('CommentScreen FutureBuilder ${snapshot.error}');
-
           return snapshot.hasData
-              ? ChildCommentsList(comments: snapshot.data!)
+              ? ChildCommentsList(comments: parseComments(snapshot.data!.data! as List<dynamic>))
               : Center(child: CircularProgressIndicator());
         },
       ),

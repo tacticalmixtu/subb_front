@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/controller.dart';
 import 'package:flutter_quill/widgets/editor.dart';
+import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/comment.dart';
 import 'package:subb_front/models/post.dart';
 import 'package:subb_front/screens/forum/comment.dart';
 import 'package:subb_front/screens/forum/composecomment.dart';
+import 'package:subb_front/utils/api_collection.dart';
 
 class PostScreen extends StatelessWidget {
   static const routeName = '/post';
@@ -22,14 +24,13 @@ class PostScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("View Comments (${post.comments})"),
       ),
-      body: FutureBuilder<List<Comment>>(
-        future: fetchComments(post.postId.toString(), '1'),
+      body: FutureBuilder<ApiResponse>(
+        future: getPostPage(postId: post.postId.toString(), page: '1'),
         builder: (context, snapshot) {
           if (snapshot.hasError)
             print('PostScreen FutureBuilder ${snapshot.error}');
-
           return snapshot.hasData
-              ? CommentsList(comments: snapshot.data!)
+              ? CommentsList(comments: parseComments(snapshot.data!.data! as List<dynamic>))
               : Center(child: CircularProgressIndicator());
         },
       ),

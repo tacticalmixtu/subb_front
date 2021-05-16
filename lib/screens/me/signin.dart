@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subb_front/models/sign_in_state.dart';
+import 'package:subb_front/utils/api_collection.dart';
 import 'package:subb_front/utils/network.dart';
 
 class SigninScreen extends StatelessWidget {
@@ -64,21 +65,12 @@ class SigninFormState extends State<SigninForm> {
   }
 
   void _signIn() async {
-    final apiResponse = await doPost(
-      _signInApi,
-      {
-        'email': _emailController.text,
-        'password': _passwordController.text,
-      },
-      null,
-    );
+    final apiResponse = await signIn(
+        email: _emailController.text, password: _passwordController.text);
 
     late final SnackBar snackBar;
 
     if (apiResponse != null) {
-      // print('code: ${apiResponse.code}');
-      // print('message: ${apiResponse.message}');
-      // print('data: ${apiResponse.data}');
       if (apiResponse.code == 200) {
         Provider.of<SignInState>(context, listen: false).signIn();
         snackBar = SnackBar(content: Text('Signed in successfully'));

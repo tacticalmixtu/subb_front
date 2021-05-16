@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/controller.dart';
 import 'package:flutter_quill/widgets/editor.dart';
+import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/post.dart';
 import 'package:subb_front/models/thread.dart';
 import 'package:subb_front/screens/forum/composepost.dart';
 import 'package:subb_front/screens/forum/post.dart';
+import 'package:subb_front/utils/api_collection.dart';
 
 class ThreadScreen extends StatelessWidget {
   static const routeName = '/thread';
@@ -21,14 +23,13 @@ class ThreadScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(thread.title),
       ),
-      body: FutureBuilder<List<Post>>(
-        future: fetchPosts(thread.threadId.toString(), '1'),
+      body: FutureBuilder<ApiResponse>(
+        future: getThreadPage(threadId: thread.threadId.toString(), page: '1'),
         builder: (context, snapshot) {
           if (snapshot.hasError)
             print('ThreadScreen FutureBuilder ${snapshot.error}');
-
           return snapshot.hasData
-              ? PostsList(posts: snapshot.data!)
+              ? PostsList(posts: parsePosts(snapshot.data!.data! as List<dynamic>))
               : Center(child: CircularProgressIndicator());
         },
       ),

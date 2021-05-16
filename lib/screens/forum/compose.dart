@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/editor.dart';
 import 'package:flutter_quill/widgets/toolbar.dart';
+import 'package:subb_front/utils/api_collection.dart';
 import 'package:subb_front/utils/network.dart';
 import 'package:subb_front/screens/forum/appbar.dart';
 import 'package:flutter_quill/widgets/controller.dart';
@@ -57,31 +58,23 @@ class _ComposeScreenState extends State<ComposeScreen> {
   void _newThread() async {
     SnackBar snackBar = SnackBar(content: Text('No title!'));
 
-    String forumID = '1';
+    String forumId = '1';
     // String title = 'demo title 3';
     if (_titleController.text == "") {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
     }
 
-    final queryParams = {
-      'forum_id': forumID,
-      'title': _titleController.text,
-    };
-    final b = await compute(
-        jsonEncode, _quillController!.document.toDelta().toJson());
-
-    final apiResponse =
-        await doPost('small_talk_api/new_thread/', queryParams, b);
+    final apiResponse = await newThread(
+      forumId: forumId, 
+      title: _titleController.text, 
+      content: await compute(
+        jsonEncode, _quillController!.document.toDelta().toJson()));
 
     if (apiResponse != null) {
-      // print('code: ${apiResponse.code}');
-      // print('message: ${apiResponse.message}');
-      // print('data: ${apiResponse.data}');
       snackBar = SnackBar(content: Text('Thread created'));
     } else {
       snackBar = SnackBar(content: Text('Thread created failed'));
-      // print("_signIn() error, null apiResponse");
     }
 
     // Find the ScaffoldMessenger in the widget tree

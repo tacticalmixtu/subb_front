@@ -7,6 +7,7 @@ import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/editor.dart';
 import 'package:flutter_quill/widgets/toolbar.dart';
 import 'package:subb_front/models/thread.dart';
+import 'package:subb_front/utils/api_collection.dart';
 import 'package:subb_front/utils/network.dart';
 import 'package:flutter_quill/widgets/controller.dart';
 
@@ -66,24 +67,15 @@ class _ComposePostScreenState extends State<ComposePostScreen> {
   void _newPost() async {
     SnackBar snackBar = SnackBar(content: Text('No title!'));
 
-    print("*********");
-    final queryParams = {
-      'thread_id': thread.threadId.toString(),
-    };
-    final b = await compute(
-        jsonEncode, _quillController!.document.toDelta().toJson());
-
-    final apiResponse =
-        await doPost('small_talk_api/new_post/', queryParams, b);
+    final apiResponse = await newPost(
+      threadId: thread.threadId.toString(), 
+      content: await compute(
+        jsonEncode, _quillController!.document.toDelta().toJson()));
 
     if (apiResponse != null) {
-      // print('code: ${apiResponse.code}');
-      // print('message: ${apiResponse.message}');
-      // print('data: ${apiResponse.data}');
       snackBar = SnackBar(content: Text('Post created'));
     } else {
       snackBar = SnackBar(content: Text('Post created failed'));
-      // print("_signIn() error, null apiResponse");
     }
 
     // Find the ScaffoldMessenger in the widget tree

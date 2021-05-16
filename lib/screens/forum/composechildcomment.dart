@@ -7,6 +7,7 @@ import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/editor.dart';
 import 'package:flutter_quill/widgets/toolbar.dart';
 import 'package:subb_front/models/comment.dart';
+import 'package:subb_front/utils/api_collection.dart';
 import 'package:subb_front/utils/network.dart';
 import 'package:flutter_quill/widgets/controller.dart';
 
@@ -66,24 +67,16 @@ class _ComposeChildCommentScreenState extends State<ComposeChildCommentScreen> {
   void _newChildComment() async {
     SnackBar snackBar = SnackBar(content: Text('No title!'));
 
-    final queryParams = {
-      'post_id': comment.postId.toString(),
-      'quote_id': comment.commentId.toString(),
-    };
-    final b = await compute(
-        jsonEncode, _quillController!.document.toDelta().toJson());
-
-    final apiResponse =
-        await doPost('small_talk_api/new_comment/', queryParams, b);
+    final apiResponse = await newComment(
+      postId: comment.postId.toString(), 
+      quoteId: comment.commentId.toString(),
+      content: await compute(
+        jsonEncode, _quillController!.document.toDelta().toJson()));
 
     if (apiResponse != null) {
-      // print('code: ${apiResponse.code}');
-      // print('message: ${apiResponse.message}');
-      // print('data: ${apiResponse.data}');
       snackBar = SnackBar(content: Text('Child comment created'));
     } else {
       snackBar = SnackBar(content: Text('Child comment created failed'));
-      // print("_signIn() error, null apiResponse");
     }
 
     // Find the ScaffoldMessenger in the widget tree

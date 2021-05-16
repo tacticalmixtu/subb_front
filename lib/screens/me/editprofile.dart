@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:subb_front/utils/api_collection.dart';
 import 'package:subb_front/utils/network.dart';
 
 class EditProfileScreen extends StatelessWidget {
@@ -78,23 +79,15 @@ class EditProfileFormState extends State<EditProfileForm> {
 
 
   void _modifyInfo() async {
-    final apiResponse = await doPost(
-      _modifyInfoApi,
-      {
-        'nickname': nameController.text,
-        'password': passwordController.text,
-        'gender': 'gender_' + genderController.text,
-        'avatar_link' : '',
-        'personal_info': bioController.text,
-      },
-      null,
+    final apiResponse = await modifyInfo(
+        nickname: nameController.text,
+        password: passwordController.text,
+        // gender: genderController.text,
+        // avatarLink : 'https://peinanweng.com/download_index/base/avatar.png',
+        personalInfo: bioController.text,
     );
     late final SnackBar snackBar;
     if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('message: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
-
       if (apiResponse.code == 200) {
         snackBar = SnackBar(content: Text('Saved'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);

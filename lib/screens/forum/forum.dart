@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:subb_front/models/album.dart';
+import 'package:subb_front/models/api_response.dart';
+import 'package:subb_front/models/models.dart';
 import 'package:subb_front/models/thread.dart';
 import 'package:subb_front/screens/forum/appbar.dart';
 import 'package:subb_front/screens/forum/compose.dart';
 import 'package:subb_front/screens/forum/thread.dart';
+import 'package:subb_front/utils/api_collection.dart';
 
 class ForumScreen extends StatefulWidget {
   static const routeName = '/forum';
@@ -18,7 +19,7 @@ class ForumScreen extends StatefulWidget {
 }
 
 class _ForumScreenState extends State<ForumScreen> {
-  late Future<List<Thread>> _futureThreads;
+  late Future<ApiResponse> _futureResponse;
 
   final int forumId;
 
@@ -27,7 +28,7 @@ class _ForumScreenState extends State<ForumScreen> {
   @override
   void initState() {
     super.initState();
-    _futureThreads = fetchThreads(forumId.toString(), '1');
+    _futureResponse = getForumPage(forumId: forumId.toString(), page: '1');
   }
 
   @override
@@ -44,8 +45,8 @@ class _ForumScreenState extends State<ForumScreen> {
         },
         child: Icon(Icons.add),
       ),
-      body: FutureBuilder<List<Thread>>(
-          future: _futureThreads,
+      body: FutureBuilder<ApiResponse>(
+          future: _futureResponse,
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
@@ -56,14 +57,13 @@ class _ForumScreenState extends State<ForumScreen> {
                 if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
-                  // return ListView.builder(itemBuilder: (context, index) {
                   return RefreshIndicator(
-                    child: ThreadsPage(threads: snapshot.data!),
+                    child: ThreadsPage(threads: parseThreads(snapshot.data!.data! as List<dynamic>)),
                     onRefresh: () {
                       setState(() {
-                        _futureThreads = fetchThreads('1', '1');
+                        _futureResponse = getForumPage(forumId: forumId.toString(), page: '1');
                       });
-                      return _futureThreads;
+                      return _futureResponse;
                     },
                   );
                   // });
@@ -154,13 +154,12 @@ class ForumDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: FutureBuilder<List<Album>>(
-        future: fetchAlbums(http.Client()),
+      child: FutureBuilder<ApiResponse>(
+        future: getForumList(),
         builder: (context, snapshot) {
           if (snapshot.hasError) print(snapshot.error);
-
           return snapshot.hasData
-              ? ForumList(albums: snapshot.data!)
+              ? ForumList(forums: parseForumList(snapshot.data!.data! as List<dynamic>))
               : Center(child: CircularProgressIndicator());
         },
       ),

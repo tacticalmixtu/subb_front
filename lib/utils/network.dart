@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:subb_front/models/api_response.dart';
 
 const domainName = 'smalltalknow.com';
@@ -20,8 +19,10 @@ Future<void> setCookies(String cookies) async {
   prefs.setString('COOKIES', cookies);
 }
 
-Future<ApiResponse?> doGet(
+Future<ApiResponse> doGet(
     String path, Map<String, dynamic>? queryParams) async {
+  queryParams?.removeWhere((key, value) => value == null);
+
   final uri = Uri.https(domainName, path, queryParams);
 
   try {
@@ -32,38 +33,41 @@ Future<ApiResponse?> doGet(
 
     if (response.statusCode == 200) {
       return await compute(parseApiResponse, response.body);
+    } else {
+      throw (response.statusCode);
     }
   } catch (e, s) {
     print('Exception caught in doGet(): $e');
     print('Stack trace:\n $s');
-    return null;
+    throw(600);
   }
 }
 
-Future<ApiResponse?> doPost(
-    String path, Map<String, dynamic> queryParams, Object? body) async {
+Future<ApiResponse> doPost(
+    String path, Map<String, dynamic>? queryParams, Object? body) async {
+  queryParams?.removeWhere((key, value) => value == null);
+
   final uri = Uri.https(domainName, path, queryParams);
+
   try {
     final cookies = await getCookies();
     final response = cookies != null
         ? await _client.post(uri,
             headers: {HttpHeaders.cookieHeader: cookies}, body: body)
-        : await _client.post(uri,
-            // headers: {
-            //   HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
-            // },
-            body: body);
+        : await _client.post(uri, body: body);
+
     if (response.statusCode == 200) {
       if (response.headers[HttpHeaders.setCookieHeader] != null) {
         await setCookies(response.headers[HttpHeaders.setCookieHeader]!);
         print('cookie set!: ${response.headers[HttpHeaders.setCookieHeader]}');
       }
       return await compute(parseApiResponse, response.body);
+    } else {
+      throw(response.statusCode);
     }
   } catch (e, s) {
-    print('exception caught in doGet():');
-    print('Exception details:\n $e');
+    print('Exception caught in doPost(): $e');
     print('Stack trace:\n $s');
-    return null;
+    throw(600);
   }
 }

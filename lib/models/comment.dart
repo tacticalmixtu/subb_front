@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:subb_front/utils/network.dart';
 
 part 'comment.g.dart';
 
@@ -43,44 +42,6 @@ class Comment {
   Map<String, dynamic> toJson() => _$CommentToJson(this);
 }
 
-// A function that converts a response body into a List<Comment>.
 List<Comment> parseComments(List<dynamic> data) {
   return data.map((e) => Comment.fromJson(e)).toList();
-}
-
-const _apiPath = 'small_talk_api/get_post_page';
-const _apiPathChildComments = "small_talk_api/get_comment_page";
-
-Future<List<Comment>> fetchComments(String postId, String page) async {
-  try {
-    final apiResponse =
-        await doGet(_apiPath, {'post_id': postId, 'page': page});
-    if (apiResponse != null) {
-      return parseComments(apiResponse.data! as List<dynamic>);
-    } else {
-      print("_fetchComments() error, null apiResponse");
-    }
-  } catch (e, s) {
-    print('exception caught in fetchComments(): $e');
-    print('Exception details:\n $e');
-    print('Stack trace:\n $s');
-  }
-  return [];
-}
-
-Future<List<Comment>> fetchChildComments(String commentId, String page) async {
-  try {
-    final apiResponse =
-        await doGet(_apiPathChildComments, {'comment_id': commentId, 'page': page});
-    if (apiResponse != null) {
-      return parseComments(apiResponse.data! as List<dynamic>);
-    } else {
-      print("_fetchChildComments() error, null apiResponse");
-    }
-  } catch (e, s) {
-    print('exception caught in fetchChildComments(): $e');
-    print('Exception details:\n $e');
-    print('Stack trace:\n $s');
-  }
-  return [];
 }
