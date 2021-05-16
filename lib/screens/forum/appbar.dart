@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:subb_front/models/album.dart';
-import 'package:subb_front/screens/me/signin.dart';
 
 class ForumAppbar extends StatefulWidget with PreferredSizeWidget {
   @override
