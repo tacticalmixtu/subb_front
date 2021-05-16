@@ -8,7 +8,6 @@ import 'package:flutter_quill/widgets/editor.dart';
 import 'package:flutter_quill/widgets/toolbar.dart';
 import 'package:subb_front/utils/api_collection.dart';
 import 'package:subb_front/utils/network.dart';
-import 'package:subb_front/screens/forum/appbar.dart';
 import 'package:flutter_quill/widgets/controller.dart';
 
 class ComposeScreen extends StatefulWidget {

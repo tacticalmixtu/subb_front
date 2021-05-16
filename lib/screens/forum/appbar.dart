@@ -16,6 +16,7 @@ class _ForumAppbarState extends State<ForumAppbar> {
   Widget build(BuildContext context) {
     return AppBar(
       title: Text('SUBB'),
+      elevation: 4.0,
       actions: <Widget>[
         IconButton(
             icon: Icon(Icons.search),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/models.dart';
 import 'package:subb_front/models/thread.dart';
-import 'package:subb_front/screens/forum/appbar.dart';
 import 'package:subb_front/screens/forum/compose.dart';
 import 'package:subb_front/screens/forum/thread.dart';
 import 'package:subb_front/utils/api_collection.dart';
@@ -34,8 +33,7 @@ class _ForumScreenState extends State<ForumScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ForumAppbar(),
-      drawer: ForumDrawer(),
+      appBar: null,
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,

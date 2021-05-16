@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subb_front/models/sign_in_state.dart';
-import 'package:subb_front/screens/me/me_screen.dart';
+import 'package:subb_front/screens/profile/profile.dart';
 
 class UserProfileScreen extends StatelessWidget {
   static const routeName = '/userprofile';
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text('SUBB'),
-    //   ),
-    //   body: Center(
-    //     child: Card(
-    //       child: UserProfileForm(),
-    //     ),
-    //   ),
-    // );
-    return ElevatedButton.icon(
-        onPressed: () {
-          // TODO: invalidate session token on server side
-          Provider.of<SignInState>(context, listen: false).signOut();
-          Navigator.pushNamed(context, MeScreen.routeName);
-        },
-        icon: Icon(Icons.login),
-        label: Text('sign out'));
+    return Container(
+      padding: EdgeInsets.all(32),
+      child: Center(
+        child: Column(
+          children: [
+            UserProfileForm(),
+            ElevatedButton.icon(
+                onPressed: () {
+                  // TODO: invalidate session token on server side
+                  Provider.of<SignInState>(context, listen: false).signOut();
+                  Navigator.pushNamed(context, ProfileScreen.routeName);
+                },
+                icon: Icon(Icons.login),
+                label: Text('sign out'))
+          ],
+        ),
+      ),
+    );
   }
 }
 

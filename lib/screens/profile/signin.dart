@@ -12,7 +12,7 @@ class SigninScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('SUBB'),
       ),
-      body: SigninForm(),
+      body: Container(margin: EdgeInsets.all(4), child: SigninForm()),
     );
   }
 }
@@ -33,10 +33,10 @@ class SigninFormState extends State<SigninForm> {
 
   @override
   void initState() {
+    super.initState();
     _hidePassword = true;
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
-    super.initState();
   }
 
   @override
@@ -64,6 +64,14 @@ class SigninFormState extends State<SigninForm> {
     Navigator.pushNamed(context, '/resetpassword');
   }
 
+  void navigate() {
+    Navigator.pushNamed(context, '/signup');
+  }
+
+  void navigateEditProfile() {
+    Navigator.pushNamed(context, '/editprofile');
+  }
+
   void _signIn() async {
     final apiResponse = await signIn(
         email: _emailController.text, password: _passwordController.text);
@@ -78,7 +86,7 @@ class SigninFormState extends State<SigninForm> {
         Navigator.pop(context);
         return;
       } else if (apiResponse.code == 401) {
-        snackBar = SnackBar(content: Text('SUmail and password do not match.'));
+        snackBar = SnackBar(content: Text('SUmail and password do not match'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return;
       } else if (apiResponse.code == 402) {
@@ -98,7 +106,7 @@ class SigninFormState extends State<SigninForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-        //key: _formKey,
+        key: _formKey,
         onChanged: updateFormProgress,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text('Sign in', style: Theme.of(context).textTheme.headline5),
@@ -108,13 +116,16 @@ class SigninFormState extends State<SigninForm> {
               controller: _emailController,
               maxLength: 20,
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
+                //validate email
+                RegExp regex =
+                    RegExp(r'\w+@\w+\.\w+'); //translates to word@word.word
+                if (value == null || value.length == 0) {
+                  return 'Please enter your email';
+                } else if (!regex.hasMatch(value)) {
+                  return 'Incorrect email address';
+                } else {
+                  return null;
                 }
-                if (value.length <= 6) {
-                  return 'Invalid email';
-                }
-                return null;
               },
               decoration: InputDecoration(
                 labelText: 'SUmail',
@@ -132,6 +143,29 @@ class SigninFormState extends State<SigninForm> {
               controller: _passwordController,
               maxLength: 20,
               obscureText: _hidePassword,
+              validator: (value) {
+                //validate password
+                RegExp hasUpper = RegExp(r'[A-Z]');
+                RegExp hasLower = RegExp(r'[a-z]');
+                RegExp hasDigit = RegExp(r'\d');
+
+                if (value == null || value.length == 0) {
+                  return 'Please enter your password';
+                }
+                if (!RegExp(r'.{2,}').hasMatch(value)) {
+                  return 'Incorrect password format';
+                }
+                if (!hasUpper.hasMatch(value)) {
+                  return 'Incorrect password format';
+                }
+                if (!hasLower.hasMatch(value)) {
+                  return 'Incorrect password format';
+                }
+                if (!hasDigit.hasMatch(value)) {
+                  return 'Incorrect password format';
+                }
+                return null;
+              },
               decoration: InputDecoration(
                 labelText: 'Password',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
@@ -179,8 +213,12 @@ class SigninFormState extends State<SigninForm> {
                                 states.contains(MaterialState.disabled)
                                     ? null
                                     : Color(0xFFF76900))),
-                    //onPressed: formProgress == 1 ? _signIn : null,
-                    onPressed: _signIn,
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _signIn();
+                      }
+                    },
+                    //onPressed: _signIn,
                     child: Text("Sign in")),
               ),
             ],
@@ -188,25 +226,3 @@ class SigninFormState extends State<SigninForm> {
         ]));
   }
 }
-/*
-//import 'package:flutter/cupertino.dart';
-TextButton(
-              style: ButtonStyle(
-                  foregroundColor: MaterialStateProperty.resolveWith(
-                      (Set<MaterialState> states) {
-                    return states.contains(MaterialState.disabled)
-                        ? null
-                        : Color(0xFF2B72D7);
-                  }),
-                  backgroundColor: MaterialStateProperty.resolveWith(
-                      (Set<MaterialState> states) =>
-                          states.contains(MaterialState.disabled)
-                              ? null
-                              :Color(0xFFF76900))),
-               //onPressed: formProgress == 1 ? _signIn : null,
-              onPressed: _signIn,
-              child: Text("Sign In")),
-          Padding(padding: EdgeInsets.all(8.0)),
-          TextButton(
-              onPressed: showResetScreen,
-              child: Text("Forgot email?", style: TextStyle(color: Color(0xFF2B72D7)),)),*/

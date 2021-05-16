@@ -15,7 +15,6 @@ class EditProfileScreen extends StatelessWidget {
   }
 }
 
-
 class EditProfileForm extends StatefulWidget {
   @override
   EditProfileFormState createState() => EditProfileFormState();
@@ -77,7 +76,6 @@ class EditProfileFormState extends State<EditProfileForm> {
     Navigator.of(context).pop();
   }
 
-
   void _modifyInfo() async {
     final apiResponse = await modifyInfo(
         nickname: nameController.text,
@@ -134,45 +132,46 @@ class EditProfileFormState extends State<EditProfileForm> {
         child: Column(
             //mainAxisSize: MainAxisSize.min,
             children: [
-          Text('Edit Profile', style: Theme.of(context).textTheme.headline5),
-          Container(
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRP8UGUq_Z0Tn5u4gqDgXlffUaKu2Cm1Hcedw&usqp=CAU"), //image url here
-              radius: 40.0,
-            ),
-          ),
-          TextFormField(
-              controller: nameController,
-              decoration: InputDecoration(labelText: ' Nickname'),
-            ),
-            TextFormField(
-              controller: passwordController,
-              decoration: InputDecoration(labelText: ' Password'),
-            ),
-            TextFormField(
-              controller: genderController,
-              decoration: InputDecoration(labelText: ' Gender', helperText: ' E.g. male, female, others, hidden'),
-            ),
-            TextFormField(
-              controller: bioController,
-              decoration: InputDecoration(labelText: ' About me'),
-            ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget> [
-              TextButton(
-                //onPressed: formProgress == 1 ? popCurrentPage : null,
-                  onPressed: _modifyInfo,
-                  child: Text("Save")),
-              TextButton(
-                  onPressed: popCurrentPage,
-                  child: Text("Cancel")),
-              //TextButton(
-              //    onPressed: _loadSelf,
-              //    child: Text("Load Self")),
-            ],
-          )
-        ]));
+              Text('Edit Profile',
+                  style: Theme.of(context).textTheme.headline5),
+              Container(
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(
+                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRP8UGUq_Z0Tn5u4gqDgXlffUaKu2Cm1Hcedw&usqp=CAU"), //image url here
+                  radius: 40.0,
+                ),
+              ),
+              TextFormField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: ' Nickname'),
+              ),
+              TextFormField(
+                controller: passwordController,
+                decoration: InputDecoration(labelText: ' Password'),
+              ),
+              TextFormField(
+                controller: genderController,
+                decoration: InputDecoration(
+                    labelText: ' Gender',
+                    helperText: ' E.g. male, female, others, hidden'),
+              ),
+              TextFormField(
+                controller: bioController,
+                decoration: InputDecoration(labelText: ' About me'),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  TextButton(
+                      //onPressed: formProgress == 1 ? popCurrentPage : null,
+                      onPressed: _modifyInfo,
+                      child: Text("Save")),
+                  TextButton(onPressed: popCurrentPage, child: Text("Cancel")),
+                  //TextButton(
+                  //    onPressed: _loadSelf,
+                  //    child: Text("Load Self")),
+                ],
+              )
+            ]));
   }
 }
