@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:subb_front/models/album.dart';
 import 'package:subb_front/models/thread.dart';
-import 'package:subb_front/screens/forum/appbar.dart';
 import 'package:subb_front/screens/forum/compose.dart';
 import 'package:subb_front/screens/forum/thread.dart';
 
@@ -33,8 +30,7 @@ class _ForumScreenState extends State<ForumScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ForumAppbar(),
-      drawer: ForumDrawer(),
+      appBar: null,
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
@@ -146,24 +142,24 @@ class ThreadsPage extends StatelessWidget {
   }
 }
 
-class ForumDrawer extends StatelessWidget {
-  const ForumDrawer({
-    Key? key,
-  }) : super(key: key);
+// class ForumDrawer extends StatelessWidget {
+//   const ForumDrawer({
+//     Key? key,
+//   }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: FutureBuilder<List<Album>>(
-        future: fetchAlbums(http.Client()),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) print(snapshot.error);
+//   @override
+//   Widget build(BuildContext context) {
+//     return Drawer(
+//       child: FutureBuilder<List<Album>>(
+//         future: fetchAlbums(http.Client()),
+//         builder: (context, snapshot) {
+//           if (snapshot.hasError) print(snapshot.error);
 
-          return snapshot.hasData
-              ? ForumList(albums: snapshot.data!)
-              : Center(child: CircularProgressIndicator());
-        },
-      ),
-    );
-  }
-}
+//           return snapshot.hasData
+//               ? ForumList(albums: snapshot.data!)
+//               : Center(child: CircularProgressIndicator());
+//         },
+//       ),
+//     );
+//   }
+// }
