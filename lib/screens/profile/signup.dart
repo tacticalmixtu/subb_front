@@ -11,6 +11,7 @@ class SignUpScreen extends StatelessWidget {
       ),
       body: SignUpForm(),
     );
+    // return SignUpForm();
   }
 }
 
@@ -52,7 +53,11 @@ class SignUpFormState extends State<SignUpForm> {
 
   void updateFormProgress() {
     var progress = 0.0;
-    final controllers = [ _emailController, _passwordController, _passcodeController ];
+    final controllers = [
+      _emailController,
+      _passwordController,
+      _passcodeController
+    ];
 
     for (final controller in controllers) {
       if (controller.value.text.isNotEmpty) {
@@ -68,7 +73,7 @@ class SignUpFormState extends State<SignUpForm> {
     final apiResponse = await doPost(
       _requestPasscodeApi,
       {
-        'email' : _emailController.text,
+        'email': _emailController.text,
       },
       null,
     );
@@ -115,9 +120,11 @@ class SignUpFormState extends State<SignUpForm> {
       if (apiResponse.code == 200) {
         snackBar = SnackBar(content: Text('Signed up success'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.pop(context);
         return;
       } else if (apiResponse.code == 401) {
-        snackBar = SnackBar(content: Text('SUmail already exists. Please sign in.'));
+        snackBar =
+            SnackBar(content: Text('SUmail already exists. Please sign in.'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return;
       } else if (apiResponse.code == 402) {
@@ -133,6 +140,7 @@ class SignUpFormState extends State<SignUpForm> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
     //Navigator.pop(context);
   }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -142,8 +150,7 @@ class SignUpFormState extends State<SignUpForm> {
           Text('Sign up', style: Theme.of(context).textTheme.headline5),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
-            child:
-            TextFormField(
+            child: TextFormField(
               key: _emailKey,
               controller: _emailController,
               maxLength: 20,
@@ -151,12 +158,12 @@ class SignUpFormState extends State<SignUpForm> {
                 labelText: 'SUmail',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
                 enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))
-                ),
+                    borderSide: BorderSide(color: Color(0xFFF76900))),
               ),
               validator: (value) {
                 //validate email
-                RegExp regex = RegExp(r'\w+@\w+\.\w+'); //translates to word@word.word
+                RegExp regex =
+                    RegExp(r'\w+@\w+\.\w+'); //translates to word@word.word
                 if (value == null || value.length == 0) {
                   return 'Please enter your email';
                 } else if (!regex.hasMatch(value)) {
@@ -176,7 +183,11 @@ class SignUpFormState extends State<SignUpForm> {
                       _requestPasscode();
                     }
                   },
-                  child:Text("    Send verification code", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),)),
+                  child: Text(
+                    "    Send verification code",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),
+                  )),
             ),
           ),
           Padding(
@@ -194,8 +205,7 @@ class SignUpFormState extends State<SignUpForm> {
                 labelText: 'Enter your code',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
                 enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))
-                ),
+                    borderSide: BorderSide(color: Color(0xFFF76900))),
               ),
             ),
           ),
@@ -232,10 +242,10 @@ class SignUpFormState extends State<SignUpForm> {
               decoration: InputDecoration(
                 labelText: 'Create your password',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
-                helperText: 'Must consist of numbers, upper and lower case letters only.',// Length: 2-16',
+                helperText:
+                    'Must consist of numbers, upper and lower case letters only.', // Length: 2-16',
                 enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))
-                ),
+                    borderSide: BorderSide(color: Color(0xFFF76900))),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _hidePassword ? Icons.visibility_off : Icons.visibility,
@@ -250,29 +260,34 @@ class SignUpFormState extends State<SignUpForm> {
             ),
           ),
           Row(
-            children: <Widget> [
-              Expanded(child: Padding(padding:EdgeInsets.symmetric(horizontal:1.0))),
-              Expanded(child: Padding(padding:EdgeInsets.symmetric(horizontal:1.0))),
-              Expanded(child:
-              TextButton(
-                  style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) {
-                            return states.contains(MaterialState.disabled)
-                                ? null
-                                : Colors.white;//Color(0xFF2B72D7);
-                          }),
-                      backgroundColor: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) =>
-                          states.contains(MaterialState.disabled)
+            children: <Widget>[
+              Expanded(
+                  child:
+                      Padding(padding: EdgeInsets.symmetric(horizontal: 1.0))),
+              Expanded(
+                  child:
+                      Padding(padding: EdgeInsets.symmetric(horizontal: 1.0))),
+              Expanded(
+                child: TextButton(
+                    style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.resolveWith(
+                            (Set<MaterialState> states) {
+                          return states.contains(MaterialState.disabled)
                               ? null
-                              :Color(0xFFF76900))),
-                  onPressed: (){
-                    if (_formKey.currentState!.validate()) {
-                      _signUp();
-                    }},
-                  //_signUp
-                  child: Text("Sign up")),
+                              : Colors.white; //Color(0xFF2B72D7);
+                        }),
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                            (Set<MaterialState> states) =>
+                                states.contains(MaterialState.disabled)
+                                    ? null
+                                    : Color(0xFFF76900))),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _signUp();
+                      }
+                    },
+                    //_signUp
+                    child: Text("Sign up")),
               ),
             ],
           ),
