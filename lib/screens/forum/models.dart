@@ -40,7 +40,7 @@ class ContactData {
 
   factory ContactData.fromJson(Map<String, dynamic> json) => _$ContactDataFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ContactDataFromJson(this);
+  Map<String, dynamic> toJson() => _$ContactDataToJson(this);
 }
 
 const _apiPathLoadSelf = 'small_talk_api/load_self';
@@ -99,7 +99,7 @@ class ForumData {
 
   factory ForumData.fromJson(Map<String, dynamic> json) => _$ForumDataFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ForumDataFromJson(this);
+  Map<String, dynamic> toJson() => _$ForumDataToJson(this);
 }
 
 List<ForumData> parseForumList(List<dynamic> data) {
@@ -144,7 +144,7 @@ class HistoryRecord {
 
   factory HistoryRecord.fromJson(Map<String, dynamic> json) => _$HistoryRecordFromJson(json);
 
-  Map<String, dynamic> toJson() => _$HistoryRecordFromJson(this);
+  Map<String, dynamic> toJson() => _$HistoryRecordToJson(this);
 }
 
 List<HistoryRecord> parseHistoryRecordList(List<dynamic> data) {
@@ -192,7 +192,7 @@ class Notification {
 
   factory Notification.fromJson(Map<String, dynamic> json) => _$NotificationFromJson(json);
 
-  Map<String, dynamic> toJson() => _$NotificationFromJson(this);
+  Map<String, dynamic> toJson() => _$NotificationToJson(this);
 }
 
 List<Notification> parseNotificationList(List<dynamic> data) {
@@ -246,7 +246,7 @@ class PrivateMessage {
 
   factory PrivateMessage.fromJson(Map<String, dynamic> json) => _$PrivateMessageFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PrivateMessageFromJson(this);
+  Map<String, dynamic> toJson() => _$PrivateMessageToJson(this);
 }
 
 List<PrivateMessage> parsePrivateMessageList(List<dynamic> data) {
