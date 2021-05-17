@@ -38,15 +38,16 @@ class _ForumScreenState extends State<ForumScreen> {
       appBar: AppBar(
         title: Text(forum.title),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.black,
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ComposeThreadScreen(forum)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ComposeThreadScreen(forum)));
         },
-        icon: Icon(Icons.add),
-        label: Text('Compose'),
+        child: Icon(Icons.edit),
       ),
       body: FutureBuilder<ApiResponse>(
           future: _futureResponse,
@@ -83,85 +84,88 @@ class ThreadsPage extends StatelessWidget {
   final List<Thread> threads;
   ThreadsPage({Key? key, required this.threads});
 
-  Widget _buildIconItem(String label, String content) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: Row(
-        children: [
-          Text(label),
-          Text(content),
-        ],
-      ),
-    );
-  }
+  // Widget _buildIconItem(String label, String content) {
+  //   return Container(
+  //     margin: const EdgeInsets.symmetric(horizontal: 4.0),
+  //     child: Row(
+  //       children: [
+  //         Text(label),
+  //         Text(content),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildBottomContainer(Thread thread) {
+  // Widget _buildBottomContainer(Thread thread) {
+  //   return Container(
+  //     margin: EdgeInsets.symmetric(horizontal: 4),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Row(
+  //           children: [
+  //             // _buildIconItem(Icons.whatshot, '${thread.heat}'),
+  //             _buildIconItem('Posts: ', '${thread.posts}'),
+  //             // _buildIconItem(, '${thread.votes}'),
+  //           ],
+  //         ),
+  //         Text('${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Widget _buildUI({required String imageUrl, required Thread thread}) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // _buildIconItem(Icons.whatshot, '${thread.heat}'),
-              _buildIconItem('Posts: ', '${thread.posts}'),
-              // _buildIconItem(, '${thread.votes}'),
+              Flexible(
+                child: Chip(
+                    avatar: CircleAvatar(
+                      backgroundImage: NetworkImage(imageUrl),
+                    ),
+                    label: Text('${thread.author}')),
+              ),
+              Flexible(
+                  child: Text(
+                '${epochtoCustomTimeDisplay(thread.activeTimestamp)}',
+                style: TextStyle(fontSize: 16),
+              )),
             ],
           ),
-          Text('${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
+          Text(
+            '${thread.title}',
+            style: TextStyle(fontSize: 24),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Posts: ${thread.posts}',
+                style: TextStyle(fontSize: 16),
+              ),
+              ActionChip(
+                avatar: Icon(Icons.thumb_up),
+                label: Text("${thread.votes}"),
+                onPressed: () {},
+              ),
+            ],
+          ),
+          Divider(thickness: 1),
+          // ButtonBar(children: [],)
         ],
       ),
     );
   }
 
-  Widget _buildUI({required Widget image, required Thread thread}) {
-    return Container(
-      margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-      // margin: EdgeInsets.all(8),
-      child: Card(
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [image, Text('{thread.author}')],
-                ),
-                Text('${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
-              ],
-            ),
-            Text('${thread.title}'),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Posts: ${thread.posts}'),
-                // Text('Post: ${thread.posts}'),
-                ActionChip(
-                  avatar: Icon(Icons.thumb_up),
-                  label: Text("like!"),
-                  onPressed: () {},
-                ),
-              ],
-            )
-            // Row(children: [Image.network(avatarUrl),Text('${thread.author'),]),
-            // ListTile(
-            //   leading: leading,
-            //   title: Text('${thread.title}'),
-            //   subtitle: Text("User ID - ${thread.author}"),
-            //   trailing: ActionChip(
-            //     avatar: Icon(Icons.thumb_up),
-            //     label: Text("like!"),
-            //     onPressed: () {},
-            //   ),
-            // ),
-            // _buildBottomContainer(thread),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCard(Thread thread) {
+  Widget _buildThreadSummary(Thread thread) {
     final Future<ApiResponse> _futureResponse =
         loadUser(userId: thread.author.toString());
     return FutureBuilder<ApiResponse>(
@@ -171,15 +175,23 @@ class ThreadsPage extends StatelessWidget {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              return _buildUI(image: Icon(Icons.person_pin), thread: thread);
+              // return _buildUI(image: Icon(Icons.person_pin), thread: thread);
+              return Text('Hold on...');
             case ConnectionState.done:
-              return snapshot.hasError
-                  ? _buildUI(image: Icon(Icons.error_outline), thread: thread)
-                  : _buildUI(
-                      image: Image.network(
-                          ContactData.fromJson(snapshot.data!.data! as dynamic)
-                              .avatarLink),
-                      thread: thread);
+              if (snapshot.hasError) {
+                // return _buildUI(
+                // image: Icon(Icons.error_outline), thread: thread);
+                return Text('Error');
+              } else {
+                // TODO: change back to real avatar
+                return _buildUI(
+                    // imageUrl:
+                    //     ContactData.fromJson(snapshot.data!.data! as dynamic)
+                    //         .avatarLink,
+                    imageUrl:
+                        r'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fcdn.duitang.com%2Fuploads%2Fitem%2F201408%2F30%2F20140830180834_XuWYJ.png&refer=http%3A%2F%2Fcdn.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1623856347&t=2586acbfbcd1b632d273a0d4f093344e',
+                    thread: thread);
+              }
           }
         });
   }
@@ -197,7 +209,7 @@ class ThreadsPage extends StatelessWidget {
                     builder: (context) =>
                         ThreadScreen(thread: threads[index])));
           },
-          child: _buildCard(threads[index]),
+          child: _buildThreadSummary(threads[index]),
         );
       },
     );

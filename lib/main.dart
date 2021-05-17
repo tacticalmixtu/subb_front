@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subb_front/models/sign_in_state.dart';
 import 'package:subb_front/screens/forum/appbar.dart';
 import 'package:subb_front/screens/forum/forum_list_screen.dart';
@@ -14,6 +15,7 @@ import 'package:subb_front/screens/profile/reset_password_screen.dart';
 import 'package:subb_front/screens/profile/sign_in_screen.dart';
 import 'package:subb_front/screens/profile/sign_up_scren.dart';
 import 'package:subb_front/screens/profile/user_screen.dart';
+import 'package:subb_front/utils/network.dart';
 
 void main() {
   runApp(
@@ -85,10 +87,18 @@ class _BaseScaffoldState extends State<BaseScaffold> {
   int _currentPageIndex = 0;
   // late final TabController tabController;
 
+  void _restoreSession() async {
+    final session = await getCookies();
+    if (session != null) {
+      Provider.of<SignInState>(context, listen: false).signIn();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     // tabController = TabController(length: _pages.length, vsync: this);
+    _restoreSession();
   }
 
   void _handleBottomBarItemTapped(int index) {
