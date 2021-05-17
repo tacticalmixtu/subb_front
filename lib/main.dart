@@ -5,15 +5,15 @@ import 'package:subb_front/models/sign_in_state.dart';
 import 'package:subb_front/screens/forum/appbar.dart';
 import 'package:subb_front/screens/forum/forum_list_screen.dart';
 import 'package:subb_front/screens/home/appbar.dart';
-import 'package:subb_front/screens/home/home.dart';
+import 'package:subb_front/screens/home/home_home.dart';
 import 'package:subb_front/screens/notification/notification.dart';
 import 'package:subb_front/screens/profile/appbar.dart';
-import 'package:subb_front/screens/profile/edit_profile.dart';
-import 'package:subb_front/screens/profile/profile.dart';
-import 'package:subb_front/screens/profile/reset_password.dart';
-import 'package:subb_front/screens/profile/sign_in.dart';
-import 'package:subb_front/screens/profile/sign_up.dart';
-import 'package:subb_front/screens/profile/user.dart';
+import 'package:subb_front/screens/profile/edit_profile_screen.dart';
+import 'package:subb_front/screens/profile/profile_screen.dart';
+import 'package:subb_front/screens/profile/reset_password_screen.dart';
+import 'package:subb_front/screens/profile/sign_in_screen.dart';
+import 'package:subb_front/screens/profile/sign_up_scren.dart';
+import 'package:subb_front/screens/profile/user_screen.dart';
 
 void main() {
   runApp(

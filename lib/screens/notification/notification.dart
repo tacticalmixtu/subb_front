@@ -3,6 +3,25 @@ import 'package:subb_front/screens/notification/chat.dart';
 
 class NotificationScreen extends StatelessWidget {
   NotificationScreen();
+  Tab _buildTabItem(IconData icond, String label) {
+    return Tab(
+        child: Row(
+      children: [
+        Spacer(
+          flex: 4,
+        ),
+        Icon(icond),
+        Spacer(
+          flex: 1,
+        ),
+        Text(label),
+        Spacer(
+          flex: 4,
+        ),
+      ],
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     // TabController(vsync: tickerProvider, length: tabCount)
@@ -21,8 +40,9 @@ class NotificationScreen extends StatelessWidget {
             title: Text('Notifications'),
             bottom: TabBar(
               tabs: [
-                Tab(text: 'Updates', icon: Icon(Icons.campaign)),
-                Tab(text: 'Private Messages', icon: Icon(Icons.chat)),
+                _buildTabItem(Icons.campaign, "Updates"),
+                _buildTabItem(Icons.mail, "Private Messages"),
+                // Tab(text: 'Private Messages', icon: Icon(Icons.chat)),
               ],
             ),
           ),

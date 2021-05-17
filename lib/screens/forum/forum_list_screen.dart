@@ -47,7 +47,9 @@ class _ForumListScreenState extends State<ForumListScreen> {
                   return Text('Error: ${snapshot.error}');
                 } else {
                   return RefreshIndicator(
-                    child: ForumsPage(forums: parseForumList(snapshot.data!.data! as List<dynamic>)),
+                    child: ForumsPage(
+                        forums: parseForumList(
+                            snapshot.data!.data! as List<dynamic>)),
                     onRefresh: () {
                       setState(() {
                         _futureResponse = getForumList();
@@ -92,8 +94,7 @@ class ForumsPage extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        ForumScreen(forum: forums[index])));
+                    builder: (context) => ForumScreen(forum: forums[index])));
           },
           child: _buildCard(forums[index]),
         );
