@@ -101,12 +101,6 @@ class _BaseScaffoldState extends State<BaseScaffold> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget._pageAppBars[_currentPageIndex],
-      // appBar: _currentPageIndex == 2
-      //     ? null
-      //     : AppBar(
-      //         title: Text('SUBB'),
-      //         elevation: 4,
-      //       ),
       body: widget._pages[_currentPageIndex],
       bottomNavigationBar: HomeBottomNavigationBar(
         callbackOnTap: _handleBottomBarItemTapped,

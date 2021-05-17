@@ -4,11 +4,13 @@ import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/controller.dart';
 import 'package:flutter_quill/widgets/editor.dart';
 import 'package:subb_front/models/api_response.dart';
+import 'package:subb_front/models/models.dart';
 import 'package:subb_front/models/post.dart';
 import 'package:subb_front/models/thread.dart';
 import 'package:subb_front/screens/forum/compose_post_screen.dart';
 import 'package:subb_front/screens/forum/post_screen.dart';
 import 'package:subb_front/utils/api_collection.dart';
+import 'package:subb_front/utils/tool.dart';
 
 class ThreadScreen extends StatelessWidget {
   static const routeName = '/thread';
@@ -29,7 +31,8 @@ class ThreadScreen extends StatelessWidget {
           if (snapshot.hasError)
             print('ThreadScreen FutureBuilder ${snapshot.error}');
           return snapshot.hasData
-              ? PostsList(posts: parsePosts(snapshot.data!.data! as List<dynamic>))
+              ? PostsList(
+                  posts: parsePosts(snapshot.data!.data! as List<dynamic>))
               : Center(child: CircularProgressIndicator());
         },
       ),
@@ -84,32 +87,73 @@ class PostsList extends StatelessWidget {
     );
   }
 
-  Widget _buildCard(Post post) => Container(
-        margin: EdgeInsets.all(4),
-        child: Card(
-          child: Column(
-            children: [
-              ListTile(
-                leading: Icon(
-                  Icons.person_pin,
+  Widget _buildCard(Post post) {
+    final Future<ApiResponse> _futureResponse =
+        loadUser(userId: post.author.toString());
+    return FutureBuilder<ApiResponse>(
+        future: _futureResponse,
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              return Card(
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.person_pin, size: 40),
+                      title: Text('User ID - ${post.author}'),
+                      trailing: Column(children: [
+                        Text('${epochtoCustomTimeDisplay(post.timestamp)}'),
+                      ]),
+                    ),
+                    _buildContent(_getController(post)),
+                  ],
                 ),
-                title: Text('posted by: author ${post.author}'),
-                subtitle: Text('parent thread: ${post.threadId}'),
-              ),
-              Image.network(r'https://picsum.photos/100'),
-              _buildContent(_getController(post)),
-            ],
-          ),
-        ),
-      );
+              );
+            case ConnectionState.done:
+              if (snapshot.hasError) {
+                return Card(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Icon(Icons.error_outline, size: 40),
+                        title: Text('User ID - ${post.author}'),
+                        trailing: Column(children: [
+                          Text('${epochtoCustomTimeDisplay(post.timestamp)}'),
+                        ]),
+                      ),
+                      _buildContent(_getController(post)),
+                    ],
+                  ),
+                );
+              } else {
+                final ContactData authorData =
+                    ContactData.fromJson(snapshot.data!.data! as dynamic);
+                return Card(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Image.network(authorData.avatarLink),
+                        title: Text(authorData.nickname),
+                        trailing: Column(children: [
+                          Text('${epochtoCustomTimeDisplay(post.timestamp)}'),
+                        ]),
+                      ),
+                      _buildContent(_getController(post)),
+                    ],
+                  ),
+                );
+              }
+          }
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: posts.length,
       itemBuilder: (context, index) {
-        // return Image.network(photos[index].thumbnailUrl);
-        // return Text('${photos[index].title}');
         return GestureDetector(
           onTap: () {
             Navigator.push(

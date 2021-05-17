@@ -5,7 +5,6 @@ class ProfileAppbar extends StatefulWidget with PreferredSizeWidget {
   _ProfileAppbarState createState() => _ProfileAppbarState();
 
   @override
-  // Size.fromHeight(toolbarHeight ?? kToolbarHeight + (bottom?.preferredSize.height ?? 0.0))
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 

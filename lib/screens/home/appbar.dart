@@ -5,7 +5,6 @@ class HomeAppbar extends StatefulWidget with PreferredSizeWidget {
   _HomeAppbarState createState() => _HomeAppbarState();
 
   @override
-  // Size.fromHeight(toolbarHeight ?? kToolbarHeight + (bottom?.preferredSize.height ?? 0.0))
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 

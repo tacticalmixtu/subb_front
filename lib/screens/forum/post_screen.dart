@@ -6,10 +6,12 @@ import 'package:flutter_quill/widgets/controller.dart';
 import 'package:flutter_quill/widgets/editor.dart';
 import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/comment.dart';
+import 'package:subb_front/models/models.dart';
 import 'package:subb_front/models/post.dart';
 import 'package:subb_front/screens/forum/comment_screen.dart';
 import 'package:subb_front/screens/forum/compose_comment_screen.dart';
 import 'package:subb_front/utils/api_collection.dart';
+import 'package:subb_front/utils/tool.dart';
 
 class PostScreen extends StatelessWidget {
   static const routeName = '/post';
@@ -30,7 +32,9 @@ class PostScreen extends StatelessWidget {
           if (snapshot.hasError)
             print('PostScreen FutureBuilder ${snapshot.error}');
           return snapshot.hasData
-              ? CommentsList(comments: parseComments(snapshot.data!.data! as List<dynamic>))
+              ? CommentsList(
+                  comments:
+                      parseComments(snapshot.data!.data! as List<dynamic>))
               : Center(child: CircularProgressIndicator());
         },
       ),
@@ -64,13 +68,14 @@ class CommentsList extends StatelessWidget {
   Widget _buildContent(QuillController? controller) {
     var quillEditor = QuillEditor(
       controller: controller!,
+      focusNode: _fn,
       scrollController: ScrollController(),
       scrollable: true,
-      focusNode: _fn,
+      padding: EdgeInsets.zero,
       autoFocus: true,
+      showCursor: false,
       readOnly: true,
       expands: false,
-      padding: EdgeInsets.zero,
     );
     _fn.unfocus();
     return Padding(
@@ -78,39 +83,88 @@ class CommentsList extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(color: Colors.grey.shade200),
         ),
         child: quillEditor,
       ),
     );
   }
 
-  Widget _buildCard(Comment comment) => Container(
-        margin: EdgeInsets.all(4),
-        child: Card(
-          child: Column(
-            children: [
-              ListTile(
-                leading: Icon(
-                  Icons.person_pin,
+  Widget _buildCard(Comment comment) {
+    final Future<ApiResponse> _futureResponse =
+        loadUser(userId: comment.author.toString());
+    return FutureBuilder<ApiResponse>(
+        future: _futureResponse,
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              return Container(
+                margin: EdgeInsets.all(4),
+                child: Card(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Icon(Icons.person_pin),
+                        title: Text('User ID - ${comment.author}'),
+                        trailing: Column(children: [
+                          Text(
+                              '${epochtoCustomTimeDisplay(comment.timestamp)}'),
+                        ]),
+                      ),
+                      _buildContent(_getController(comment)),
+                    ],
+                  ),
                 ),
-                title: Text('posted by: author ${comment.author}'),
-                subtitle: Text('comment on post: ${comment.postId}'),
-              ),
-              Image.network(r'https://picsum.photos/100'),
-              _buildContent(_getController(comment)),
-            ],
-          ),
-        ),
-      );
+              );
+            case ConnectionState.done:
+              if (snapshot.hasError) {
+                return Container(
+                  margin: EdgeInsets.all(4),
+                  child: Card(
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: Icon(Icons.person_pin),
+                          title: Text('User ID - ${comment.author}'),
+                          trailing: Column(children: [
+                            Text(
+                                '${epochtoCustomTimeDisplay(comment.timestamp)}'),
+                          ]),
+                        ),
+                        _buildContent(_getController(comment)),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                final ContactData authorData =
+                    ContactData.fromJson(snapshot.data!.data! as dynamic);
+                return Card(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Image.network(authorData.avatarLink),
+                        title: Text(authorData.nickname),
+                        trailing: Column(children: [
+                          Text(
+                              '${epochtoCustomTimeDisplay(comment.timestamp)}'),
+                        ]),
+                      ),
+                      _buildContent(_getController(comment)),
+                    ],
+                  ),
+                );
+              }
+          }
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: comments.length,
       itemBuilder: (context, index) {
-        // return Image.network(photos[index].thumbnailUrl);
-        // return Text('${photos[index].title}');
         return GestureDetector(
           onTap: () {
             Navigator.push(
