@@ -14,7 +14,7 @@ class _ForumAppbarState extends State<ForumAppbar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text('SUBB'),
+      title: Text('Forums'),
       elevation: 4.0,
       actions: <Widget>[
         IconButton(

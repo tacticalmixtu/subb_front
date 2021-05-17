@@ -18,11 +18,11 @@ class NotificationScreen extends StatelessWidget {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            title: Text('SUBB'),
+            title: Text('Notifications'),
             bottom: TabBar(
               tabs: [
-                Tab(icon: Icon(Icons.campaign)),
-                Tab(icon: Icon(Icons.chat)),
+                Tab(text: 'Updates', icon: Icon(Icons.campaign)),
+                Tab(text: 'Private Messages', icon: Icon(Icons.chat)),
               ],
             ),
           ),
