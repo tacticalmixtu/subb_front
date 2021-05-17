@@ -129,6 +129,7 @@ class EditProfileFormState extends State<EditProfileForm> {
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
               ),
               TextFormField(
                 controller: _bioController,
