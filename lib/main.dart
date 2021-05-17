@@ -88,7 +88,7 @@ class _BaseScaffoldState extends State<BaseScaffold> {
   void _restoreSession() async {
     final session = await getCookies();
     if (session != null) {
-      Provider.of<SignInState>(context, listen: false).signIn();
+      context.read<SignInState>().signIn();
     }
   }
 
