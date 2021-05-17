@@ -62,7 +62,7 @@ class Empty extends StatelessWidget {
                   Navigator.pushNamed(context, SignUpScreen.routeName);
                 },
                 child: Text(
-                  "Not having an account? Register one with your SUmail",
+                  "Not having an account? Register Now!",
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),
                 ),

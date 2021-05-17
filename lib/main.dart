@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart';
 import 'package:subb_front/models/sign_in_state.dart';
+import 'package:subb_front/screens/forum/appbar.dart';
 import 'package:subb_front/screens/forum/forum_list_screen.dart';
+import 'package:subb_front/screens/home/appbar.dart';
 import 'package:subb_front/screens/home/home.dart';
 import 'package:subb_front/screens/notification/notification.dart';
+import 'package:subb_front/screens/profile/appbar.dart';
 import 'package:subb_front/screens/profile/edit_profile.dart';
 import 'package:subb_front/screens/profile/profile.dart';
 import 'package:subb_front/screens/profile/reset_password.dart';
@@ -62,6 +65,12 @@ class MyApp extends StatelessWidget {
 
 class BaseScaffold extends StatefulWidget {
   static final routeName = '/';
+  final _pageAppBars = <PreferredSizeWidget?>[
+    HomeAppbar(),
+    ForumAppbar(),
+    null,
+    ProfileAppbar(),
+  ];
   final _pages = <Widget>[
     HomeScreen(),
     ForumListScreen(),
@@ -75,13 +84,6 @@ class BaseScaffold extends StatefulWidget {
 class _BaseScaffoldState extends State<BaseScaffold> {
   int _currentPageIndex = 0;
   // late final TabController tabController;
-
-  // final _pageAppBars = <PreferredSizeWidget?>[
-  //   HomeAppbar(),
-  //   ForumAppbar(),
-  //   null,
-  //   ProfileAppbar(),
-  // ];
 
   @override
   void initState() {
@@ -98,13 +100,13 @@ class _BaseScaffoldState extends State<BaseScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: widget._pageAppBars[_currentPageIndex],
-      appBar: _currentPageIndex == 2
-          ? null
-          : AppBar(
-              title: Text('SUBB'),
-              elevation: 4,
-            ),
+      appBar: widget._pageAppBars[_currentPageIndex],
+      // appBar: _currentPageIndex == 2
+      //     ? null
+      //     : AppBar(
+      //         title: Text('SUBB'),
+      //         elevation: 4,
+      //       ),
       body: widget._pages[_currentPageIndex],
       bottomNavigationBar: HomeBottomNavigationBar(
         callbackOnTap: _handleBottomBarItemTapped,
