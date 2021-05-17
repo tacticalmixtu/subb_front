@@ -1,38 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/models/api_response.dart';
+import 'package:subb_front/models/models.dart';
 import 'package:subb_front/models/thread.dart';
-import 'package:subb_front/screens/forum/compose.dart';
-import 'package:subb_front/screens/forum/thread.dart';
+import 'package:subb_front/screens/forum/compose_screen.dart';
+import 'package:subb_front/screens/forum/thread_screen.dart';
 import 'package:subb_front/utils/api_collection.dart';
 
 class ForumScreen extends StatefulWidget {
   static const routeName = '/forum';
 
-  final int forumId;
+  final ForumData forum;
 
-  ForumScreen({Key? key, required this.forumId}) : super(key: key);
+  ForumScreen({Key? key, required this.forum}) : super(key: key);
 
   @override
-  _ForumScreenState createState() => _ForumScreenState(forumId);
+  _ForumScreenState createState() => _ForumScreenState(forum);
 }
 
 class _ForumScreenState extends State<ForumScreen> {
   late Future<ApiResponse> _futureResponse;
 
-  final int forumId;
+  final ForumData forum;
 
-  _ForumScreenState(this.forumId);
+  _ForumScreenState(this.forum);
 
   @override
   void initState() {
     super.initState();
-    _futureResponse = getForumPage(forumId: forumId.toString(), page: '1');
+    _futureResponse = getForumPage(forumId: forum.forumId.toString(), page: '1');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: null,
+      appBar: AppBar(
+        title: Text(forum.title),
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
@@ -58,7 +61,7 @@ class _ForumScreenState extends State<ForumScreen> {
                     child: ThreadsPage(threads: parseThreads(snapshot.data!.data! as List<dynamic>)),
                     onRefresh: () {
                       setState(() {
-                        _futureResponse = getForumPage(forumId: forumId.toString(), page: '1');
+                        _futureResponse = getForumPage(forumId: forum.toString(), page: '1');
                       });
                       return _futureResponse;
                     },

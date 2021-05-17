@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart';
 import 'package:subb_front/models/sign_in_state.dart';
-import 'package:subb_front/screens/forum/forum.dart';
+import 'package:subb_front/screens/forum/forum_list_screen.dart';
 import 'package:subb_front/screens/home/home.dart';
 import 'package:subb_front/screens/notification/notification.dart';
-import 'package:subb_front/screens/profile/editprofile.dart';
+import 'package:subb_front/screens/profile/edit_profile.dart';
 import 'package:subb_front/screens/profile/profile.dart';
-import 'package:subb_front/screens/profile/resetpassword.dart';
-import 'package:subb_front/screens/profile/signin.dart';
-import 'package:subb_front/screens/profile/signup.dart';
+import 'package:subb_front/screens/profile/reset_password.dart';
+import 'package:subb_front/screens/profile/sign_in.dart';
+import 'package:subb_front/screens/profile/sign_up.dart';
 import 'package:subb_front/screens/profile/user.dart';
 
 void main() {
@@ -64,7 +64,7 @@ class BaseScaffold extends StatefulWidget {
   static final routeName = '/';
   final _pages = <Widget>[
     HomeScreen(),
-    ForumScreen(forumId: 1),
+    ForumListScreen(),
     NotificationScreen(),
     ProfileScreen(),
   ];
@@ -147,7 +147,7 @@ class HomeBottomNavigationBar extends StatelessWidget {
             label: 'Notifications',
             icon: Badge(
               // TODO: dynamic number
-              badgeContent: Text('12'),
+              badgeContent: Text('99'),
               child: Icon(Icons.notifications),
               padding: EdgeInsets.all(4),
               animationType: BadgeAnimationType.scale,

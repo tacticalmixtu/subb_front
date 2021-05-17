@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/comment.dart';
-import 'package:subb_front/screens/forum/composechildcomment.dart';
+import 'package:subb_front/screens/forum/compose_child_comment_screen.dart';
 import 'package:subb_front/utils/api_collection.dart';
 
 class CommentScreen extends StatelessWidget {

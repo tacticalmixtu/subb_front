@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subb_front/models/sign_in_state.dart';
-import 'package:subb_front/screens/profile/signin.dart';
-import 'package:subb_front/screens/profile/signup.dart';
+import 'package:subb_front/screens/profile/sign_in.dart';
+import 'package:subb_front/screens/profile/sign_up.dart';
 import 'package:subb_front/screens/profile/user.dart';
 
 class ProfileScreen extends StatelessWidget {
-  static const routeName = '/me';
+  static const routeName = '/profile';
   @override
   Widget build(BuildContext context) {
     return Consumer<SignInState>(

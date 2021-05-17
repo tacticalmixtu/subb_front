@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/utils/network.dart';
+import 'package:subb_front/utils/api_collection.dart';
 
 class SignUpScreen extends StatelessWidget {
-  static const routeName = '/signup';
+  static const routeName = '/sign_up';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,31 +70,18 @@ class SignUpFormState extends State<SignUpForm> {
   }
 
   void _requestPasscode() async {
-    final apiResponse = await doPost(
-      _requestPasscodeApi,
-      {
-        'email': _emailController.text,
-      },
-      null,
-    );
-
+    final apiResponse = await requestPasscode(email: _emailController.text);
     late final SnackBar snackBar;
-    if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('message: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
-      if (apiResponse.code == 200) {
-        _codeSend = true;
-        snackBar = SnackBar(content: Text('Verification code sent'));
-        return;
-      } else {
-        snackBar = SnackBar(content: Text('Unable to send verification code'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        return;
-      }
+    if (apiResponse.code == 200) {
+      _codeSend = true;
+      snackBar = SnackBar(content: Text('Verification code sent'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    } else {
+      snackBar = SnackBar(content: Text('Unable to send verification code'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
     }
-    snackBar = SnackBar(content: Text('Unable to send verification code'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void popScreen() {
@@ -102,43 +89,29 @@ class SignUpFormState extends State<SignUpForm> {
   }
 
   void _signUp() async {
-    final apiResponse = await doPost(
-      _signUpApi,
-      {
-        'email': _emailController.text,
-        'password': _passwordController.text,
-        'passcode': _passcodeController.text,
-      },
-      null,
-    );
-
+    final apiResponse = await signUp(
+        email: _emailController.text,
+        password: _passwordController.text,
+        passcode: _passcodeController.text);
     late final SnackBar snackBar;
-    if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('messagee: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
-      if (apiResponse.code == 200) {
-        snackBar = SnackBar(content: Text('Signed up success'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.pop(context);
-        return;
-      } else if (apiResponse.code == 401) {
-        snackBar =
-            SnackBar(content: Text('SUmail already exists. Please sign in.'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        return;
-      } else if (apiResponse.code == 402) {
-        snackBar = SnackBar(content: Text('Incorrect verification code'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        return;
-      } else {
-        snackBar = SnackBar(content: Text('Unable to sign up'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
+    if (apiResponse.code == 200) {
+      snackBar = SnackBar(content: Text('Signed up success'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.pop(context);
+      return;
+    } else if (apiResponse.code == 401) {
+      snackBar =
+          SnackBar(content: Text('SUmail already exists. Please sign in.'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    } else if (apiResponse.code == 402) {
+      snackBar = SnackBar(content: Text('Incorrect verification code'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    } else {
+      snackBar = SnackBar(content: Text('Unable to sign up'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-    snackBar = SnackBar(content: Text('Sign up failed'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    //Navigator.pop(context);
   }
 
   @override

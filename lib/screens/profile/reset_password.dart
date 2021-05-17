@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/utils/network.dart';
+import 'package:subb_front/utils/api_collection.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
-  static const routeName = '/resetpassword';
+  static const routeName = '/reset_password';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +20,6 @@ class ResetForm extends StatefulWidget {
 }
 
 class ResetFormState extends State<ResetForm> {
-
   final _resetPasswordApi = '/small_talk_api/recover_password/';
   final _requestPasscodeApi = '/small_talk_api/request_passcode/';
 
@@ -70,48 +69,34 @@ class ResetFormState extends State<ResetForm> {
   }
 
   void _requestPasscode() async {
-    final apiResponse = await doPost(
-      _requestPasscodeApi,
-      {
-        'email': _emailController.text,
-      },
-      null,
-    );
-
+    final apiResponse = await requestPasscode(email: _emailController.text);
     late final SnackBar snackBar;
-    if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('messagee: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
-
-      snackBar = SnackBar(content: Text('Passcode requested'));
+    if (apiResponse.code == 200) {
+      snackBar = SnackBar(content: Text('Verification code sent'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
     } else {
-      snackBar = SnackBar(content: Text('Passcode request failed'));
+      snackBar = SnackBar(content: Text('Unable to send verification code'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void _reset() async {
-    final apiResponse = await doPost(
-      _resetPasswordApi,
-      {
-        'email': _emailController.text,
-        'password': _passwordController.text,
-        'passcode': _passcodeController.text,
-      },
-      null,
-    );
+    final apiResponse = await recoverPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+        passcode: _passcodeController.text);
     late final SnackBar snackBar;
-    if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('message: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
+    if (apiResponse.code == 200) {
       snackBar = SnackBar(content: Text('Reset password success'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.pop(context);
+      return;
     } else {
       snackBar = SnackBar(content: Text('Reset Password failed'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    //Navigator.pop(context);
   }
 
   Widget build(BuildContext context) {
@@ -122,20 +107,19 @@ class ResetFormState extends State<ResetForm> {
           Text('Reset password', style: Theme.of(context).textTheme.headline5),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
-            child:
-            TextFormField(
+            child: TextFormField(
               controller: _emailController,
               maxLength: 20,
               decoration: InputDecoration(
                 labelText: 'SUmail',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
                 enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))
-                ),
+                    borderSide: BorderSide(color: Color(0xFFF76900))),
               ),
               validator: (value) {
                 //validate email
-                RegExp regex = RegExp(r'\w+@\w+\.\w+'); //translates to word@word.word
+                RegExp regex =
+                    RegExp(r'\w+@\w+\.\w+'); //translates to word@word.word
                 if (value == null || value.length == 0) {
                   return 'Please enter your email';
                 } else if (!regex.hasMatch(value)) {
@@ -156,7 +140,11 @@ class ResetFormState extends State<ResetForm> {
                     }
                   },
                   //onPressed: _requestPasscode,
-                  child:Text("    Send verification code", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),)),
+                  child: Text(
+                    "    Send verification code",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),
+                  )),
             ),
           ),
           Padding(
@@ -168,8 +156,7 @@ class ResetFormState extends State<ResetForm> {
                 labelText: 'Enter your code',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
                 enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))
-                ),
+                    borderSide: BorderSide(color: Color(0xFFF76900))),
               ),
             ),
           ),
@@ -206,10 +193,10 @@ class ResetFormState extends State<ResetForm> {
               decoration: InputDecoration(
                 labelText: 'Create your new password',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
-                helperText: 'Password should contain numbers, uppercase letters and lowercase letters. No special characters. Length: 2-16.',// Length: 2-16',
+                helperText:
+                    'Password should contain numbers, uppercase letters and lowercase letters. No special characters. Length: 2-16.', // Length: 2-16',
                 enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))
-                ),
+                    borderSide: BorderSide(color: Color(0xFFF76900))),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _hidePassword ? Icons.visibility_off : Icons.visibility,
@@ -224,29 +211,34 @@ class ResetFormState extends State<ResetForm> {
             ),
           ),
           Row(
-            children: <Widget> [
-              Expanded(child: Padding(padding:EdgeInsets.symmetric(horizontal:1.0))),
-              Expanded(child: Padding(padding:EdgeInsets.symmetric(horizontal:1.0))),
-              Expanded(child:
-              TextButton(
-                  style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) {
-                            return states.contains(MaterialState.disabled)
-                                ? null
-                                : Colors.white;//Color(0xFF2B72D7);
-                          }),
-                      backgroundColor: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) =>
-                          states.contains(MaterialState.disabled)
+            children: <Widget>[
+              Expanded(
+                  child:
+                      Padding(padding: EdgeInsets.symmetric(horizontal: 1.0))),
+              Expanded(
+                  child:
+                      Padding(padding: EdgeInsets.symmetric(horizontal: 1.0))),
+              Expanded(
+                child: TextButton(
+                    style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.resolveWith(
+                            (Set<MaterialState> states) {
+                          return states.contains(MaterialState.disabled)
                               ? null
-                              :Color(0xFFF76900))),
-                  onPressed: (){
-                    if (_formKey.currentState!.validate()) {
-                      _reset();
-                    }},
-                  //_signUp
-                  child: Text("Reset password")),
+                              : Colors.white; //Color(0xFF2B72D7);
+                        }),
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                            (Set<MaterialState> states) =>
+                                states.contains(MaterialState.disabled)
+                                    ? null
+                                    : Color(0xFFF76900))),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _reset();
+                      }
+                    },
+                    //_signUp
+                    child: Text("Reset password")),
               ),
             ],
           ),

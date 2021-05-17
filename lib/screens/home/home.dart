@@ -6,7 +6,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         child: Center(
-      child: Text("To DO home page"),
+      child: Text("Todo: home page"),
     ));
   }
 }

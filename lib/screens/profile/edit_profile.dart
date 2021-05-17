@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/utils/api_collection.dart';
-import 'package:subb_front/utils/network.dart';
 
 class EditProfileScreen extends StatelessWidget {
-  static const routeName = '/editprofile';
+  static const routeName = '/edit_profile';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,19 +77,17 @@ class EditProfileFormState extends State<EditProfileForm> {
 
   void _modifyInfo() async {
     final apiResponse = await modifyInfo(
-        nickname: nameController.text,
-        password: passwordController.text,
-        // gender: genderController.text,
-        // avatarLink : 'https://peinanweng.com/download_index/base/avatar.png',
-        personalInfo: bioController.text,
+      nickname: nameController.text,
+      password: passwordController.text,
+      // gender: genderController.text,
+      // avatarLink : 'https://peinanweng.com/download_index/base/avatar.png',
+      personalInfo: bioController.text,
     );
     late final SnackBar snackBar;
-    if (apiResponse != null) {
-      if (apiResponse.code == 200) {
-        snackBar = SnackBar(content: Text('Saved'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        return;
-      }
+    if (apiResponse.code == 200) {
+      snackBar = SnackBar(content: Text('Saved'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
     }
     snackBar = SnackBar(content: Text('Save failed'));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);

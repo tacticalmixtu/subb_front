@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subb_front/models/sign_in_state.dart';
+import 'package:subb_front/screens/profile/edit_profile.dart';
+import 'package:subb_front/screens/profile/reset_password.dart';
+import 'package:subb_front/screens/profile/sign_up.dart';
 import 'package:subb_front/utils/api_collection.dart';
-import 'package:subb_front/utils/network.dart';
 
 class SigninScreen extends StatelessWidget {
-  static const routeName = '/signin';
+  static const routeName = '/sign_in';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,15 +63,15 @@ class SigninFormState extends State<SigninForm> {
   }
 
   void resetPassword() {
-    Navigator.pushNamed(context, '/resetpassword');
+    Navigator.pushNamed(context, ResetPasswordScreen.routeName);
   }
 
   void navigate() {
-    Navigator.pushNamed(context, '/signup');
+    Navigator.pushNamed(context, SignUpScreen.routeName);
   }
 
   void navigateEditProfile() {
-    Navigator.pushNamed(context, '/editprofile');
+    Navigator.pushNamed(context, EditProfileScreen.routeName);
   }
 
   void _signIn() async {
@@ -78,22 +80,20 @@ class SigninFormState extends State<SigninForm> {
 
     late final SnackBar snackBar;
 
-    if (apiResponse != null) {
-      if (apiResponse.code == 200) {
-        Provider.of<SignInState>(context, listen: false).signIn();
-        snackBar = SnackBar(content: Text('Signed in successfully'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        Navigator.pop(context);
-        return;
-      } else if (apiResponse.code == 401) {
-        snackBar = SnackBar(content: Text('SUmail and password do not match'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        return;
-      } else if (apiResponse.code == 402) {
-        snackBar = SnackBar(content: Text('SUmail does not exist'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        return;
-      }
+    if (apiResponse.code == 200) {
+      Provider.of<SignInState>(context, listen: false).signIn();
+      snackBar = SnackBar(content: Text('Signed in successfully'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.pop(context);
+      return;
+    } else if (apiResponse.code == 401) {
+      snackBar = SnackBar(content: Text('SUmail and password do not match'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    } else if (apiResponse.code == 402) {
+      snackBar = SnackBar(content: Text('SUmail does not exist'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
     }
     // print("_signIn() error, null apiResponse");
     // Find the ScaffoldMessenger in the widget tree
@@ -145,6 +145,7 @@ class SigninFormState extends State<SigninForm> {
               obscureText: _hidePassword,
               validator: (value) {
                 //validate password
+                RegExp hasLetter = RegExp(r'[A-Za-z]');
                 RegExp hasUpper = RegExp(r'[A-Z]');
                 RegExp hasLower = RegExp(r'[a-z]');
                 RegExp hasDigit = RegExp(r'\d');
@@ -155,12 +156,15 @@ class SigninFormState extends State<SigninForm> {
                 if (!RegExp(r'.{2,}').hasMatch(value)) {
                   return 'Incorrect password format';
                 }
-                if (!hasUpper.hasMatch(value)) {
+                if (!hasLetter.hasMatch(value)) {
                   return 'Incorrect password format';
                 }
-                if (!hasLower.hasMatch(value)) {
-                  return 'Incorrect password format';
-                }
+                // if (!hasUpper.hasMatch(value)) {
+                //   return 'Incorrect password format';
+                // }
+                // if (!hasLower.hasMatch(value)) {
+                //   return 'Incorrect pas8sword format';
+                // }
                 if (!hasDigit.hasMatch(value)) {
                   return 'Incorrect password format';
                 }

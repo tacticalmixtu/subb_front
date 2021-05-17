@@ -6,31 +6,30 @@ import 'package:flutter/services.dart';
 import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/editor.dart';
 import 'package:flutter_quill/widgets/toolbar.dart';
-import 'package:subb_front/models/comment.dart';
+import 'package:subb_front/models/thread.dart';
 import 'package:subb_front/utils/api_collection.dart';
-import 'package:subb_front/utils/network.dart';
 import 'package:flutter_quill/widgets/controller.dart';
 
-class ComposeChildCommentScreen extends StatefulWidget {
-  static const routeName = '/composechildcomment';
+class ComposePostScreen extends StatefulWidget {
+  static const routeName = '/compose_post';
 
-  final Comment comment;
+  final Thread thread;
 
-  ComposeChildCommentScreen(this.comment);
+  ComposePostScreen(this.thread);
 
   @override
-  _ComposeChildCommentScreenState createState() => _ComposeChildCommentScreenState(comment);
+  _ComposePostScreenState createState() => _ComposePostScreenState(thread);
 }
 
-class _ComposeChildCommentScreenState extends State<ComposeChildCommentScreen> {
+class _ComposePostScreenState extends State<ComposePostScreen> {
   QuillController? _quillController;
   late final _titleController;
   // TODO: fix focus bug
   late FocusNode _focusNode;
 
-  final Comment comment;
+  final Thread thread;
 
-  _ComposeChildCommentScreenState(this.comment);
+  _ComposePostScreenState(this.thread);
 
   Future<void> _loadFromAssets() async {
     try {
@@ -64,19 +63,18 @@ class _ComposeChildCommentScreenState extends State<ComposeChildCommentScreen> {
     super.dispose();
   }
 
-  void _newChildComment() async {
+  void _newPost() async {
     SnackBar snackBar = SnackBar(content: Text('No title!'));
 
-    final apiResponse = await newComment(
-      postId: comment.postId.toString(), 
-      quoteId: comment.commentId.toString(),
+    final apiResponse = await newPost(
+      threadId: thread.threadId.toString(), 
       content: await compute(
         jsonEncode, _quillController!.document.toDelta().toJson()));
 
     if (apiResponse != null) {
-      snackBar = SnackBar(content: Text('Child comment created'));
+      snackBar = SnackBar(content: Text('Post created'));
     } else {
-      snackBar = SnackBar(content: Text('Child comment created failed'));
+      snackBar = SnackBar(content: Text('Post created failed'));
     }
 
     // Find the ScaffoldMessenger in the widget tree
@@ -93,7 +91,7 @@ class _ComposeChildCommentScreenState extends State<ComposeChildCommentScreen> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text("Re: ${comment.content}"),
+        title: Text("Writing Post: ${thread.title}"),
       ),
       body: SafeArea(
           child: Column(
@@ -120,7 +118,7 @@ class _ComposeChildCommentScreenState extends State<ComposeChildCommentScreen> {
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
         // onPressed: _sendNewPost,
-        onPressed: _newChildComment,
+        onPressed: _newPost,
         child: Icon(Icons.send),
       ),
     );

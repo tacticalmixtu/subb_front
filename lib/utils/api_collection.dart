@@ -16,6 +16,9 @@ const _apiPathDeleteComment = "small_talk_api/delete_comment";
 const _apiPathVoteThread = "small_talk_api/vote_thread";
 const _apiPathVotePost = "small_talk_api/vote_post";
 const _apiPathVoteComment = "small_talk_api/vote_comment";
+const _apiPathHasVotedThread = "small_talk_api/has_voted_thread";
+const _apiPathHasVotedPost = "small_talk_api/has_voted_post";
+const _apiPathHasVotedComment = "small_talk_api/has_voted_comment";
 const _apiPathGetForum = "small_talk_api/get_forum";
 const _apiPathGetThread = "small_talk_api/get_thread";
 const _apiPathGetPost = "small_talk_api/get_post";
@@ -229,6 +232,30 @@ Future<ApiResponse> voteComment({
         'comment_id': commentId,
       },
       null);
+}
+
+Future<ApiResponse> hasVotedThread({
+  required String threadId,
+}) async {
+  return await doGet(_apiPathHasVotedThread, {
+    'thread_id': threadId,
+  });
+}
+
+Future<ApiResponse> hasVotedPost({
+  required String postId,
+}) async {
+  return await doGet(_apiPathHasVotedPost, {
+    'post_id': postId,
+  });
+}
+
+Future<ApiResponse> hasVotedComment({
+  required String commentId,
+}) async {
+  return await doGet(_apiPathHasVotedComment, {
+    'comment_id': commentId,
+  });
 }
 
 Future<ApiResponse> getForum({

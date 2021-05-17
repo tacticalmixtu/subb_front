@@ -7,8 +7,8 @@ import 'package:flutter_quill/widgets/editor.dart';
 import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/comment.dart';
 import 'package:subb_front/models/post.dart';
-import 'package:subb_front/screens/forum/comment.dart';
-import 'package:subb_front/screens/forum/composecomment.dart';
+import 'package:subb_front/screens/forum/comment_screen.dart';
+import 'package:subb_front/screens/forum/compose_comment_screen.dart';
 import 'package:subb_front/utils/api_collection.dart';
 
 class PostScreen extends StatelessWidget {

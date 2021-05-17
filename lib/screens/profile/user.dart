@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subb_front/models/sign_in_state.dart';
+import 'package:subb_front/screens/profile/edit_profile.dart';
 import 'package:subb_front/screens/profile/profile.dart';
 
 class UserProfileScreen extends StatelessWidget {
-  static const routeName = '/userprofile';
+  static const routeName = '/user_profile';
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,15 +43,11 @@ class UserProfileFormState extends State<UserProfileForm> {
   double formProgress = 0;
 
   void popCurrentPage() {
-    //Navigator.pushNamed(context, '/signin');
     Navigator.of(context).pop();
   }
 
   void showEditProfileScreen() {
-    //Navigator.pushNamed(context, '/editprofile');
-    //Navigator.push(context, MaterialPageRoute(builder: (BuildContext) => new EditProfileScreen()));
-
-    Navigator.pushNamed(context, '/editprofile');
+    Navigator.pushNamed(context, EditProfileScreen.routeName);
   }
 
   @override
