@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/screens/notification/chat_screen.dart';
+import 'package:subb_front/screens/notification/message_screen.dart';
 
 class NotificationScreen extends StatelessWidget {
   NotificationScreen();
@@ -24,15 +24,6 @@ class NotificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TabController(vsync: tickerProvider, length: tabCount)
-    //   ..addListener(() {
-    //     if (!tabController.indexIsChanging) {
-    //       setState(() {
-    //         // Rebuild the enclosing scaffold with a new AppBar title
-    //         appBarTitle = 'Tab ${tabController.index}';
-    //       });
-    //     }
-    //   });
     return DefaultTabController(
         length: 2,
         child: Scaffold(

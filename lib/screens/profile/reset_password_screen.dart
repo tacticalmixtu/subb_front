@@ -9,7 +9,7 @@ class ResetPasswordScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Reset Password'),
       ),
-      body: ResetForm(),
+      body: Container(child: ResetForm()),
     );
   }
 }
@@ -20,17 +20,13 @@ class ResetForm extends StatefulWidget {
 }
 
 class ResetFormState extends State<ResetForm> {
-  final _resetPasswordApi = '/small_talk_api/recover_password/';
-  final _requestPasscodeApi = '/small_talk_api/request_passcode/';
+  late final _emailController;
+  late final _passwordController;
+  late final _passcodeController;
 
   late bool _hidePassword;
   double formProgress = 0;
   final _formKey = GlobalKey<FormState>();
-  double PADDING_SIZE = 10.0;
-
-  late final _emailController;
-  late final _passwordController;
-  late final _passcodeController;
 
   @override
   void initState() {
@@ -92,7 +88,6 @@ class ResetFormState extends State<ResetForm> {
       snackBar = SnackBar(content: Text('Reset password success'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       Navigator.pop(context);
-      return;
     } else {
       snackBar = SnackBar(content: Text('Reset Password failed'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -103,145 +98,136 @@ class ResetFormState extends State<ResetForm> {
     return Form(
         key: _formKey,
         onChanged: updateFormProgress,
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('Reset password', style: Theme.of(context).textTheme.headline5),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
-            child: TextFormField(
-              controller: _emailController,
-              maxLength: 20,
-              decoration: InputDecoration(
-                labelText: 'SUmail',
-                labelStyle: TextStyle(color: Color(0xFFF76900)),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))),
+        child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: TextStyle(color: Color(0xFFF76900)),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFF76900))),
+                ),
+                validator: (value) {
+                  RegExp regex = RegExp(
+                      r'^([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{1,6}))$');
+                  if (value == null || value.length == 0) {
+                    return 'Please enter your email';
+                  } else if (!regex.hasMatch(value)) {
+                    return 'Incorrect email address.';
+                  } else {
+                    return null;
+                  }
+                },
               ),
-              validator: (value) {
-                //validate email
-                RegExp regex =
-                    RegExp(r'\w+@\w+\.\w+'); //translates to word@word.word
-                if (value == null || value.length == 0) {
-                  return 'Please enter your email';
-                } else if (!regex.hasMatch(value)) {
-                  return 'Incorrect email address';
-                } else {
-                  return null;
-                }
-              },
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              child: TextButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _requestPasscode();
-                    }
-                  },
-                  //onPressed: _requestPasscode,
-                  child: Text(
-                    "    Send verification code",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),
-                  )),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
-            child: TextFormField(
-              controller: _passcodeController,
-              maxLength: 10,
-              decoration: InputDecoration(
-                labelText: 'Enter your code',
-                labelStyle: TextStyle(color: Color(0xFFF76900)),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  LimitedBox(
+                    child: TextButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _requestPasscode();
+                          }
+                        },
+                        child: Text(
+                          "Send Verification Code",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF2B72D7)),
+                        )),
+                  )
+                ],
               ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
-            // TODO: use password hidden
-            child: TextFormField(
-              controller: _passwordController,
-              maxLength: 20,
-              obscureText: _hidePassword,
-              validator: (value) {
-                //validate password
-                RegExp hasUpper = RegExp(r'[A-Z]');
-                RegExp hasLower = RegExp(r'[a-z]');
-                RegExp hasDigit = RegExp(r'\d');
+              TextFormField(
+                controller: _passcodeController,
+                maxLength: 6,
+                validator: (value) {
+                  RegExp passcodeRule = RegExp(r'[0-9A-Za-z]{6}$');
 
-                if (value == null || value.length == 0) {
-                  return 'Please enter your password';
-                }
-                if (!RegExp(r'.{2,}').hasMatch(value)) {
-                  return 'Password must have at least 2 characters';
-                }
-                if (!hasUpper.hasMatch(value)) {
-                  return 'Password must have at least one uppercase letter';
-                }
-                if (!hasLower.hasMatch(value)) {
-                  return 'Password must have at least one lowercase letter';
-                }
-                if (!hasDigit.hasMatch(value)) {
-                  return 'Password must have at least one number';
-                }
-                return null;
-              },
-              decoration: InputDecoration(
-                labelText: 'Create your new password',
-                labelStyle: TextStyle(color: Color(0xFFF76900)),
-                helperText:
-                    'Password should contain numbers, uppercase letters and lowercase letters. No special characters. Length: 2-16.', // Length: 2-16',
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _hidePassword ? Icons.visibility_off : Icons.visibility,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _hidePassword = !_hidePassword;
-                    });
-                  },
+                  if (value == null) {
+                    return 'Plaese enter your code';
+                  }
+                  if (!passcodeRule.hasMatch(value)) {
+                    return 'Incorrect passcode format';
+                  }
+                },
+                decoration: InputDecoration(
+                  labelText: 'Enter your code',
+                  labelStyle: TextStyle(color: Color(0xFFF76900)),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFF76900))),
                 ),
               ),
-            ),
-          ),
-          Row(
-            children: <Widget>[
-              Expanded(
-                  child:
-                      Padding(padding: EdgeInsets.symmetric(horizontal: 1.0))),
-              Expanded(
-                  child:
-                      Padding(padding: EdgeInsets.symmetric(horizontal: 1.0))),
-              Expanded(
-                child: TextButton(
-                    style: ButtonStyle(
-                        foregroundColor: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> states) {
-                          return states.contains(MaterialState.disabled)
-                              ? null
-                              : Colors.white; //Color(0xFF2B72D7);
-                        }),
-                        backgroundColor: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> states) =>
-                                states.contains(MaterialState.disabled)
-                                    ? null
-                                    : Color(0xFFF76900))),
+              TextFormField(
+                controller: _passwordController,
+                maxLength: 16,
+                obscureText: _hidePassword,
+                validator: (value) {
+                  RegExp lengthRule = RegExp(r'.{6,16}');
+                  RegExp letterRule = RegExp(r'[A-Za-z]');
+                  RegExp digitRule = RegExp(r'\d');
+
+                  if (value == null || value.length == 0) {
+                    return 'Please enter your password';
+                  }
+                  if (!lengthRule.hasMatch(value)) {
+                    return 'Incorrect password format';
+                  }
+                  if (!letterRule.hasMatch(value)) {
+                    return 'Incorrect password format';
+                  }
+                  if (!digitRule.hasMatch(value)) {
+                    return 'Incorrect password format';
+                  }
+                  return null;
+                },
+               decoration: InputDecoration(
+                  labelText: 'Create your password',
+                  labelStyle: TextStyle(color: Color(0xFFF76900)),
+                  helperText:
+                      'Must consist of numbers, upper and lower case letters only.',
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFF76900))),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _hidePassword ? Icons.visibility_off : Icons.visibility,
+                    ),
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _reset();
-                      }
+                      setState(() {
+                        _hidePassword = !_hidePassword;
+                      });
                     },
-                    //_signUp
-                    child: Text("Reset password")),
+                  ),
+                ),
               ),
-            ],
-          ),
-        ]));
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  LimitedBox(
+                    child: TextButton(
+                        style: ButtonStyle(
+                            foregroundColor: MaterialStateProperty.resolveWith(
+                                (Set<MaterialState> states) {
+                              return states.contains(MaterialState.disabled)
+                                  ? null
+                                  : Colors.white;
+                            }),
+                            backgroundColor: MaterialStateProperty.resolveWith(
+                                (Set<MaterialState> states) =>
+                                    states.contains(MaterialState.disabled)
+                                        ? null
+                                        : Color(0xFFF76900))),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _reset();
+                          }
+                        },
+                        child: Text("Reset password")),
+                  ),
+                ],
+              ),
+            ])));
   }
 }

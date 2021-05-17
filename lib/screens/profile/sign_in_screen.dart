@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subb_front/models/sign_in_state.dart';
-import 'package:subb_front/screens/profile/edit_profile_screen.dart';
 import 'package:subb_front/screens/profile/reset_password_screen.dart';
-import 'package:subb_front/screens/profile/sign_up_scren.dart';
 import 'package:subb_front/utils/api_collection.dart';
 
 class SigninScreen extends StatelessWidget {
@@ -14,7 +12,7 @@ class SigninScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Sign In'),
       ),
-      body: Container(margin: EdgeInsets.all(4), child: SigninForm()),
+      body: Container(child: SigninForm()),
     );
   }
 }
@@ -25,7 +23,6 @@ class SigninForm extends StatefulWidget {
 }
 
 class SigninFormState extends State<SigninForm> {
-  final _signInApi = '/small_talk_api/sign_in/';
   late final _emailController;
   late final _passwordController;
 
@@ -35,10 +32,10 @@ class SigninFormState extends State<SigninForm> {
 
   @override
   void initState() {
-    super.initState();
-    _hidePassword = true;
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
+    _hidePassword = true;
+    super.initState();
   }
 
   @override
@@ -50,7 +47,10 @@ class SigninFormState extends State<SigninForm> {
 
   void updateFormProgress() {
     var progress = 0.0;
-    final controllers = [_emailController, _passwordController];
+    final controllers = [
+      _emailController,
+      _passwordController,
+    ];
 
     for (final controller in controllers) {
       if (controller.value.text.isNotEmpty) {
@@ -62,63 +62,44 @@ class SigninFormState extends State<SigninForm> {
     }
   }
 
-  void resetPassword() {
+  void navigateToResetPassword() {
     Navigator.pushNamed(context, ResetPasswordScreen.routeName);
-  }
-
-  void navigate() {
-    Navigator.pushNamed(context, SignUpScreen.routeName);
-  }
-
-  void navigateEditProfile() {
-    Navigator.pushNamed(context, EditProfileScreen.routeName);
   }
 
   void _signIn() async {
     final apiResponse = await signIn(
-        email: _emailController.text, password: _passwordController.text);
-
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
     late final SnackBar snackBar;
-
     if (apiResponse.code == 200) {
       Provider.of<SignInState>(context, listen: false).signIn();
       snackBar = SnackBar(content: Text('Signed in successfully'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       Navigator.pop(context);
-      return;
     } else if (apiResponse.code == 401) {
-      snackBar = SnackBar(content: Text('SUmail and password do not match'));
+      snackBar = SnackBar(content: Text('Email and password do not match'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
     } else if (apiResponse.code == 402) {
-      snackBar = SnackBar(content: Text('SUmail does not exist'));
+      snackBar = SnackBar(content: Text('Email does not exist'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
     }
-    // print("_signIn() error, null apiResponse");
-    // Find the ScaffoldMessenger in the widget tree
-    // and use it to show a SnackBar.
-    snackBar = SnackBar(content: Text('Sign in failed'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    //Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Form(
-        key: _formKey,
-        onChanged: updateFormProgress,
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('Sign in', style: Theme.of(context).textTheme.headline5),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextFormField(
+      key: _formKey,
+      onChanged: updateFormProgress,
+      child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            TextFormField(
               controller: _emailController,
               maxLength: 20,
               validator: (value) {
-                //validate email
-                RegExp regex =
-                    RegExp(r'\w+@\w+\.\w+'); //translates to word@word.word
+                RegExp regex = RegExp(
+                    r'^([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{1,6}))$');
                 if (value == null || value.length == 0) {
                   return 'Please enter your email';
                 } else if (!regex.hasMatch(value)) {
@@ -128,44 +109,31 @@ class SigninFormState extends State<SigninForm> {
                 }
               },
               decoration: InputDecoration(
-                labelText: 'SUmail',
-                //errorText: 'Invalid Email',
+                labelText: 'Email',
                 labelStyle: TextStyle(color: Color(0xFFF76900)),
                 enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Color(0xFFF76900))),
-                //suffixIcon: Icon(Icons.check_circle),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextFormField(
+            TextFormField(
               controller: _passwordController,
               maxLength: 20,
               obscureText: _hidePassword,
               validator: (value) {
-                //validate password
-                RegExp hasLetter = RegExp(r'[A-Za-z]');
-                RegExp hasUpper = RegExp(r'[A-Z]');
-                RegExp hasLower = RegExp(r'[a-z]');
-                RegExp hasDigit = RegExp(r'\d');
+                RegExp lengthRule = RegExp(r'.{6,16}');
+                RegExp letterRule = RegExp(r'[A-Za-z]');
+                RegExp digitRule = RegExp(r'\d');
 
                 if (value == null || value.length == 0) {
                   return 'Please enter your password';
                 }
-                if (!RegExp(r'.{2,}').hasMatch(value)) {
+                if (!lengthRule.hasMatch(value)) {
                   return 'Incorrect password format';
                 }
-                if (!hasLetter.hasMatch(value)) {
+                if (!letterRule.hasMatch(value)) {
                   return 'Incorrect password format';
                 }
-                // if (!hasUpper.hasMatch(value)) {
-                //   return 'Incorrect password format';
-                // }
-                // if (!hasLower.hasMatch(value)) {
-                //   return 'Incorrect pas8sword format';
-                // }
-                if (!hasDigit.hasMatch(value)) {
+                if (!digitRule.hasMatch(value)) {
                   return 'Incorrect password format';
                 }
                 return null;
@@ -187,46 +155,44 @@ class SigninFormState extends State<SigninForm> {
                 ),
               ),
             ),
-          ),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: TextButton(
-                  onPressed: resetPassword,
-                  child: Text(
-                    "Forgot password?",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                LimitedBox(
+                  child: TextButton(
+                    onPressed: navigateToResetPassword,
+                    child: Text(
+                      "Forgot Password?",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2B72D7)),
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: Padding(padding: EdgeInsets.all(4.0)),
-              ),
-              Expanded(
-                child: TextButton(
-                    style: ButtonStyle(
-                        foregroundColor: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> states) {
-                          return states.contains(MaterialState.disabled)
-                              ? null
-                              : Colors.white;
-                        }),
-                        backgroundColor: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> states) =>
-                                states.contains(MaterialState.disabled)
-                                    ? null
-                                    : Color(0xFFF76900))),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _signIn();
-                      }
-                    },
-                    //onPressed: _signIn,
-                    child: Text("Sign in")),
-              ),
-            ],
-          ),
-        ]));
+                LimitedBox(
+                  child: TextButton(
+                      style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.resolveWith(
+                              (Set<MaterialState> states) {
+                            return states.contains(MaterialState.disabled)
+                                ? null
+                                : Colors.white;
+                          }),
+                          backgroundColor: MaterialStateProperty.resolveWith(
+                              (Set<MaterialState> states) =>
+                                  states.contains(MaterialState.disabled)
+                                      ? null
+                                      : Color(0xFFF76900))),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _signIn();
+                        }
+                      },
+                      child: Text("Sign in")),
+                ),
+              ],
+            ),
+          ])),
+    );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/models.dart';
-import 'package:subb_front/screens/forum/compose_screen.dart';
 import 'package:subb_front/screens/forum/forum_screen.dart';
 import 'package:subb_front/utils/api_collection.dart';
 

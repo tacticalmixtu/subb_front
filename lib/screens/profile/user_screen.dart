@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:subb_front/models/api_response.dart';
+import 'package:subb_front/models/models.dart';
 import 'package:subb_front/models/sign_in_state.dart';
-import 'package:subb_front/screens/profile/edit_profile_screen.dart';
-import 'package:subb_front/screens/profile/profile_screen.dart';
+import 'package:subb_front/screens/profile/edit_profile.dart';
+import 'package:subb_front/screens/profile/profile.dart';
+import 'package:subb_front/utils/api_collection.dart';
 
 class UserProfileScreen extends StatelessWidget {
   static const routeName = '/user_profile';
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(32),
+      padding: EdgeInsets.all(16),
       child: Center(
         child: Column(
           children: [
             UserProfileForm(),
             ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: invalidate session token on server side
+                onPressed: () async {
+                  await signOut();
                   Provider.of<SignInState>(context, listen: false).signOut();
                   Navigator.pushNamed(context, ProfileScreen.routeName);
                 },
                 icon: Icon(Icons.login),
-                label: Text('sign out'))
+                label: Text('Sign Out'))
           ],
         ),
       ),
@@ -52,48 +55,61 @@ class UserProfileFormState extends State<UserProfileForm> {
 
   @override
   Widget build(BuildContext context) {
+    final Future<ApiResponse> _futureResponse = loadSelf();
     return Form(
-        onChanged: null,
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('My Profile', style: Theme.of(context).textTheme.headline4),
-          Padding(padding: EdgeInsets.all(8.0)),
-          Container(
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRP8UGUq_Z0Tn5u4gqDgXlffUaKu2Cm1Hcedw&usqp=CAU"), //image url here
-              radius: 60.0,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text("Alice, EECS"),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text("Username: milano987"),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text("Bio: MSCS 19 Fall. Enjoy traveling and skiing!"),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-          ),
-          TextButton(
-              style: ButtonStyle(
-                foregroundColor:
-                    MaterialStateProperty.resolveWith((states) => Colors.blue),
-                backgroundColor: MaterialStateProperty.resolveWith(
-                    (states) => Colors.transparent),
-              ),
-              onPressed: showEditProfileScreen,
-              child: Text("Edit Profile")),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-          ),
-        ]));
+      onChanged: null,
+      child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: FutureBuilder<ApiResponse>(
+              future: _futureResponse,
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                  case ConnectionState.waiting:
+                  case ConnectionState.active:
+                    return Center(child: CircularProgressIndicator());
+                  case ConnectionState.done:
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else {
+                      final ContactData selfData =
+                          ContactData.fromJson(snapshot.data!.data! as dynamic);
+                      return Column(mainAxisSize: MainAxisSize.min, children: [
+                        Container(
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(selfData.avatarLink),
+                            radius: 40.0,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                        ),
+                        Text(selfData.nickname),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                        ),
+                        Text(selfData.personalInfo),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                        ),
+                        TextButton(
+                            style: ButtonStyle(
+                              foregroundColor:
+                                  MaterialStateProperty.resolveWith(
+                                      (states) => Colors.blue),
+                              backgroundColor:
+                                  MaterialStateProperty.resolveWith(
+                                      (states) => Colors.transparent),
+                            ),
+                            onPressed: showEditProfileScreen,
+                            child: Text("Edit Profile")),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                        ),
+                      ]);
+                    }
+                }
+              })),
+    );
   }
 }

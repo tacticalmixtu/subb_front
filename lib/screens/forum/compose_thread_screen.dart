@@ -6,21 +6,30 @@ import 'package:flutter/services.dart';
 import 'package:flutter_quill/models/documents/document.dart';
 import 'package:flutter_quill/widgets/editor.dart';
 import 'package:flutter_quill/widgets/toolbar.dart';
+import 'package:subb_front/models/models.dart';
 import 'package:subb_front/utils/api_collection.dart';
-import 'package:subb_front/utils/network.dart';
 import 'package:flutter_quill/widgets/controller.dart';
 
-class ComposeScreen extends StatefulWidget {
+class ComposeThreadScreen extends StatefulWidget {
   static const routeName = '/compose';
+
+  final ForumData forum;
+
+  ComposeThreadScreen(this.forum);
+
   @override
-  _ComposeScreenState createState() => _ComposeScreenState();
+  _ComposeThreadScreenState createState() => _ComposeThreadScreenState(forum);
 }
 
-class _ComposeScreenState extends State<ComposeScreen> {
+class _ComposeThreadScreenState extends State<ComposeThreadScreen> {
   QuillController? _quillController;
   late final _titleController;
   // TODO: fix focus bug
   late FocusNode _focusNode;
+
+  final ForumData forum;
+
+  _ComposeThreadScreenState(this.forum);
 
   Future<void> _loadFromAssets() async {
     try {
@@ -57,20 +66,18 @@ class _ComposeScreenState extends State<ComposeScreen> {
   void _newThread() async {
     SnackBar snackBar = SnackBar(content: Text('No title!'));
 
-    String forumId = '1';
-    // String title = 'demo title 3';
     if (_titleController.text == "") {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
     }
 
     final apiResponse = await newThread(
-      forumId: forumId, 
-      title: _titleController.text, 
-      content: await compute(
-        jsonEncode, _quillController!.document.toDelta().toJson()));
+        forumId: forum.forumId.toString(),
+        title: _titleController.text,
+        content: await compute(
+            jsonEncode, _quillController!.document.toDelta().toJson()));
 
-    if (apiResponse != null) {
+    if (apiResponse.code == 200) {
       snackBar = SnackBar(content: Text('Thread created'));
     } else {
       snackBar = SnackBar(content: Text('Thread created failed'));
@@ -89,37 +96,40 @@ class _ComposeScreenState extends State<ComposeScreen> {
       return const Scaffold(body: Center(child: Text('Loading...')));
     }
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Forum: ${forum.title}"),
+      ),
       body: SafeArea(
-          child: Column(
-        children: [
-          QuillToolbar.basic(controller: _quillController!),
-          Expanded(
-            child: Column(children: <Widget>[
-              TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), hintText: 'Title'),
-                controller: _titleController,
-                autofocus: true,
-              ),
-              QuillEditor(
-                controller: _quillController!,
-                readOnly: false,
-                autoFocus: true,
-                focusNode: _focusNode,
-                scrollController: ScrollController(),
-                scrollable: true,
-                expands: false,
-                padding: EdgeInsets.only(top: 4),
-                // embedBuilder: defaultEmbedBuilderWeb,
-              ),
-            ]),
-          )
-        ],
-      )),
+          child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  TextField(
+                    decoration:
+                        InputDecoration(hintText: 'Thread title here...'),
+                    controller: _titleController,
+                    autofocus: true,
+                  ),
+                  QuillToolbar.basic(controller: _quillController!),
+                  Expanded(
+                    child: Column(children: <Widget>[
+                      QuillEditor(
+                        controller: _quillController!,
+                        readOnly: false,
+                        autoFocus: true,
+                        focusNode: _focusNode,
+                        scrollController: ScrollController(),
+                        scrollable: true,
+                        expands: false,
+                        padding: EdgeInsets.only(top: 4),
+                      ),
+                    ]),
+                  )
+                ],
+              ))),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
-        // onPressed: _sendNewPost,
         onPressed: _newThread,
         child: Icon(Icons.send),
       ),

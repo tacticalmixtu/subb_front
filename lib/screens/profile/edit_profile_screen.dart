@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:subb_front/models/api_response.dart';
+import 'package:subb_front/models/models.dart';
 import 'package:subb_front/utils/api_collection.dart';
 
 class EditProfileScreen extends StatelessWidget {
@@ -9,7 +11,7 @@ class EditProfileScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Edit Profile'),
       ),
-      body: EditProfileForm(),
+      body: Container(child: EditProfileForm()),
     );
   }
 }
@@ -20,44 +22,39 @@ class EditProfileForm extends StatefulWidget {
 }
 
 class EditProfileFormState extends State<EditProfileForm> {
-  //final nameController = TextEditingController();
-  //final passwordController = TextEditingController();
-  //final genderController = TextEditingController();
-  //final bioController = TextEditingController();
+  late final _nameController;
+  late final _passwordController;
+  late final _genderController;
+  late final _bioController;
 
-  final _modifyInfoApi = '/small_talk_api/modify_info/';
-  late final nameController;
-  late final passwordController;
-  late final genderController;
-  late final bioController;
+  double formProgress = 0;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    nameController = TextEditingController();
-    passwordController = TextEditingController();
-    genderController = TextEditingController();
-    bioController = TextEditingController();
+    _nameController = TextEditingController();
+    _passwordController = TextEditingController();
+    _genderController = TextEditingController();
+    _bioController = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
-    nameController.dispose();
-    passwordController.dispose();
-    genderController.dispose();
-    bioController.dispose();
+    _nameController.dispose();
+    _passwordController.dispose();
+    _genderController.dispose();
+    _bioController.dispose();
     super.dispose();
   }
-
-  double formProgress = 0;
 
   void updateFormProgress() {
     var progress = 0.0;
     final controllers = [
-      nameController,
-      passwordController,
-      genderController,
-      bioController
+      _nameController,
+      _passwordController,
+      _genderController,
+      _bioController
     ];
 
     for (final controller in controllers) {
@@ -71,104 +68,81 @@ class EditProfileFormState extends State<EditProfileForm> {
     }
   }
 
-  void popCurrentPage() {
-    Navigator.of(context).pop();
-  }
-
   void _modifyInfo() async {
     final apiResponse = await modifyInfo(
-      nickname: nameController.text,
-      password: passwordController.text,
+      nickname: _nameController.text,
+      password: _passwordController.text,
       // gender: genderController.text,
       // avatarLink : 'https://peinanweng.com/download_index/base/avatar.png',
-      personalInfo: bioController.text,
+      personalInfo: _bioController.text,
     );
     late final SnackBar snackBar;
     if (apiResponse.code == 200) {
-      snackBar = SnackBar(content: Text('Saved'));
+      snackBar = SnackBar(content: Text('Profile Saved'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
+    } else {
+      snackBar = SnackBar(content: Text('Profile Saving Failed'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-    snackBar = SnackBar(content: Text('Save failed'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    //Navigator.pop(context);
   }
-
-  /*
-  void _loadSelf() async {
-
-    final _loadSelfApi = '/small_talk_api/load_self';
-    final apiResponse = await doGet(_loadSelfApi, null);
-
-    //final apiResponse = await Uri.https('smalltalknow.com', _loadSelfApi, {});
-
-    late final SnackBar snackBar;
-    if (apiResponse != null) {
-      print('code: ${apiResponse.code}');
-      print('message: ${apiResponse.message}');
-      print('data: ${apiResponse.data}');
-
-      if (apiResponse.code == 200) {
-        print('200');
-        snackBar = SnackBar(content: Text('Profile loaded'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        return;
-      }
-    }
-    print('not 200');
-    snackBar = SnackBar(content: Text('Load profile failed'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    Navigator.pop(context);
-  }
-  */
 
   @override
   Widget build(BuildContext context) {
+    final Future<ApiResponse> _futureResponse = loadSelf();
     return Form(
+        key: _formKey,
         onChanged: updateFormProgress,
-        child: Column(
-            //mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Edit Profile',
-                  style: Theme.of(context).textTheme.headline5),
-              Container(
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRP8UGUq_Z0Tn5u4gqDgXlffUaKu2Cm1Hcedw&usqp=CAU"), //image url here
-                  radius: 40.0,
-                ),
+        child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              GestureDetector(
+                  onTap: () {
+                    // Todo: Upload Avatar & Save Avatar
+                  },
+                  child: FutureBuilder<ApiResponse>(
+                      future: _futureResponse,
+                      builder: (context, snapshot) {
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.none:
+                          case ConnectionState.waiting:
+                          case ConnectionState.active:
+                            return Center(child: CircularProgressIndicator());
+                          case ConnectionState.done:
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final ContactData selfData = ContactData.fromJson(
+                                  snapshot.data!.data! as dynamic);
+                              return CircleAvatar(
+                                backgroundImage:
+                                    NetworkImage(selfData.avatarLink),
+                                radius: 40.0,
+                              );
+                            }
+                        }
+                      })),
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Nickname'),
               ),
               TextFormField(
-                controller: nameController,
-                decoration: InputDecoration(labelText: ' Nickname'),
+                controller: _passwordController,
+                decoration: InputDecoration(labelText: 'Password'),
               ),
               TextFormField(
-                controller: passwordController,
-                decoration: InputDecoration(labelText: ' Password'),
-              ),
-              TextFormField(
-                controller: genderController,
-                decoration: InputDecoration(
-                    labelText: ' Gender',
-                    helperText: ' E.g. male, female, others, hidden'),
-              ),
-              TextFormField(
-                controller: bioController,
-                decoration: InputDecoration(labelText: ' About me'),
+                controller: _bioController,
+                decoration: InputDecoration(labelText: 'About Me'),
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  TextButton(
-                      //onPressed: formProgress == 1 ? popCurrentPage : null,
-                      onPressed: _modifyInfo,
-                      child: Text("Save")),
-                  TextButton(onPressed: popCurrentPage, child: Text("Cancel")),
-                  //TextButton(
-                  //    onPressed: _loadSelf,
-                  //    child: Text("Load Self")),
+                  LimitedBox(
+                    child:
+                        TextButton(onPressed: _modifyInfo, child: Text("Save")),
+                  ),
                 ],
               )
-            ]));
+            ])));
   }
 }

@@ -5,7 +5,7 @@ import 'package:subb_front/models/sign_in_state.dart';
 import 'package:subb_front/screens/forum/appbar.dart';
 import 'package:subb_front/screens/forum/forum_list_screen.dart';
 import 'package:subb_front/screens/home/appbar.dart';
-import 'package:subb_front/screens/home/home_home.dart';
+import 'package:subb_front/screens/home/home_screen.dart';
 import 'package:subb_front/screens/notification/notification_screen.dart';
 import 'package:subb_front/screens/profile/appbar.dart';
 import 'package:subb_front/screens/profile/edit_profile_screen.dart';

@@ -99,7 +99,7 @@ class ChildCommentsList extends StatelessWidget {
             case ConnectionState.waiting:
             case ConnectionState.active:
               return Container(
-                  margin: EdgeInsets.all(4),
+                  padding: EdgeInsets.all(4),
                   child: Card(
                     child: Column(
                       children: [
@@ -118,7 +118,7 @@ class ChildCommentsList extends StatelessWidget {
             case ConnectionState.done:
               if (snapshot.hasError) {
                 return Container(
-                    margin: EdgeInsets.all(4),
+                    padding: EdgeInsets.all(4),
                     child: Card(
                       child: Column(
                         children: [
@@ -138,7 +138,7 @@ class ChildCommentsList extends StatelessWidget {
                 final ContactData authorData =
                     ContactData.fromJson(snapshot.data!.data! as dynamic);
                 return Container(
-                    margin: EdgeInsets.all(4),
+                    padding: EdgeInsets.all(4),
                     child: Card(
                       child: Column(
                         children: [

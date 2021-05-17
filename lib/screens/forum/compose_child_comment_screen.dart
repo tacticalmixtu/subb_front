@@ -18,7 +18,8 @@ class ComposeChildCommentScreen extends StatefulWidget {
   ComposeChildCommentScreen(this.comment);
 
   @override
-  _ComposeChildCommentScreenState createState() => _ComposeChildCommentScreenState(comment);
+  _ComposeChildCommentScreenState createState() =>
+      _ComposeChildCommentScreenState(comment);
 }
 
 class _ComposeChildCommentScreenState extends State<ComposeChildCommentScreen> {
@@ -67,12 +68,12 @@ class _ComposeChildCommentScreenState extends State<ComposeChildCommentScreen> {
     SnackBar snackBar = SnackBar(content: Text('No title!'));
 
     final apiResponse = await newComment(
-      postId: comment.postId.toString(), 
-      quoteId: comment.commentId.toString(),
-      content: await compute(
-        jsonEncode, _quillController!.document.toDelta().toJson()));
+        postId: comment.postId.toString(),
+        quoteId: comment.commentId.toString(),
+        content: await compute(
+            jsonEncode, _quillController!.document.toDelta().toJson()));
 
-    if (apiResponse != null) {
+    if (apiResponse.code == 200) {
       snackBar = SnackBar(content: Text('Child comment created'));
     } else {
       snackBar = SnackBar(content: Text('Child comment created failed'));
@@ -95,26 +96,28 @@ class _ComposeChildCommentScreenState extends State<ComposeChildCommentScreen> {
         title: Text("Re: ${comment.content}"),
       ),
       body: SafeArea(
-          child: Column(
-        children: [
-          QuillToolbar.basic(controller: _quillController!),
-          Expanded(
-            child: Column(children: <Widget>[
-              QuillEditor(
-                controller: _quillController!,
-                readOnly: false,
-                autoFocus: true,
-                focusNode: _focusNode,
-                scrollController: ScrollController(),
-                scrollable: true,
-                expands: false,
-                padding: EdgeInsets.only(top: 4),
-                // embedBuilder: defaultEmbedBuilderWeb,
-              ),
-            ]),
-          )
-        ],
-      )),
+          child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  QuillToolbar.basic(controller: _quillController!),
+                  Expanded(
+                    child: Column(children: <Widget>[
+                      QuillEditor(
+                        controller: _quillController!,
+                        readOnly: false,
+                        autoFocus: true,
+                        focusNode: _focusNode,
+                        scrollController: ScrollController(),
+                        scrollable: true,
+                        expands: false,
+                        padding: EdgeInsets.only(top: 4),
+                        // embedBuilder: defaultEmbedBuilderWeb,
+                      ),
+                    ]),
+                  )
+                ],
+              ))),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,

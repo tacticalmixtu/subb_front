@@ -9,9 +9,8 @@ class SignUpScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Sign Up'),
       ),
-      body: SignUpForm(),
+      body: Container(child: SignUpForm()),
     );
-    // return SignUpForm();
   }
 }
 
@@ -21,18 +20,14 @@ class SignUpForm extends StatefulWidget {
 }
 
 class SignUpFormState extends State<SignUpForm> {
-  final _signUpApi = '/small_talk_api/sign_up/';
-  final _requestPasscodeApi = '/small_talk_api/request_passcode/';
-
   late final _emailController;
   late final _passwordController;
   late final _passcodeController;
+
   late bool _hidePassword;
   double formProgress = 0;
   final _formKey = GlobalKey<FormState>();
   final _emailKey = GlobalKey<FormState>();
-  bool _codeSend = false;
-  double PADDING_SIZE = 10.0;
 
   @override
   void initState() {
@@ -56,7 +51,7 @@ class SignUpFormState extends State<SignUpForm> {
     final controllers = [
       _emailController,
       _passwordController,
-      _passcodeController
+      _passcodeController,
     ];
 
     for (final controller in controllers) {
@@ -73,7 +68,6 @@ class SignUpFormState extends State<SignUpForm> {
     final apiResponse = await requestPasscode(email: _emailController.text);
     late final SnackBar snackBar;
     if (apiResponse.code == 200) {
-      _codeSend = true;
       snackBar = SnackBar(content: Text('Verification code sent'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
@@ -84,30 +78,24 @@ class SignUpFormState extends State<SignUpForm> {
     }
   }
 
-  void popScreen() {
-    Navigator.of(context).pop();
-  }
-
   void _signUp() async {
     final apiResponse = await signUp(
-        email: _emailController.text,
-        password: _passwordController.text,
-        passcode: _passcodeController.text);
+      email: _emailController.text,
+      password: _passwordController.text,
+      passcode: _passcodeController.text,
+    );
     late final SnackBar snackBar;
     if (apiResponse.code == 200) {
       snackBar = SnackBar(content: Text('Signed up success'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       Navigator.pop(context);
-      return;
     } else if (apiResponse.code == 401) {
       snackBar =
-          SnackBar(content: Text('SUmail already exists. Please sign in.'));
+          SnackBar(content: Text('Email already exists. Please sign in.'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
     } else if (apiResponse.code == 402) {
       snackBar = SnackBar(content: Text('Incorrect verification code'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return;
     } else {
       snackBar = SnackBar(content: Text('Unable to sign up'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -119,151 +107,137 @@ class SignUpFormState extends State<SignUpForm> {
     return Form(
         key: _formKey,
         onChanged: updateFormProgress,
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('Sign up', style: Theme.of(context).textTheme.headline5),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
-            child: TextFormField(
-              key: _emailKey,
-              controller: _emailController,
-              maxLength: 20,
-              decoration: InputDecoration(
-                labelText: 'SUmail',
-                labelStyle: TextStyle(color: Color(0xFFF76900)),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))),
+        child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              TextFormField(
+                key: _emailKey,
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: TextStyle(color: Color(0xFFF76900)),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFF76900))),
+                ),
+                validator: (value) {
+                  RegExp regex = RegExp(
+                      r'^([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{1,6}))$');
+                  if (value == null || value.length == 0) {
+                    return 'Please enter your email';
+                  } else if (!regex.hasMatch(value)) {
+                    return 'Incorrect email address.';
+                  } else {
+                    return null;
+                  }
+                },
               ),
-              validator: (value) {
-                //validate email
-                RegExp regex =
-                    RegExp(r'\w+@\w+\.\w+'); //translates to word@word.word
-                if (value == null || value.length == 0) {
-                  return 'Please enter your email';
-                } else if (!regex.hasMatch(value)) {
-                  return 'Incorrect email address.';
-                } else {
-                  return null;
-                }
-              },
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              child: TextButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _requestPasscode();
-                    }
-                  },
-                  child: Text(
-                    "    Send verification code",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Color(0xFF2B72D7)),
-                  )),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
-            child: TextFormField(
-              controller: _passcodeController,
-              maxLength: 10,
-              //textAlign: TextAlign.left,
-              validator: (value) {
-                if (value == null) {
-                  return 'Plaese enter your code';
-                }
-              },
-              decoration: InputDecoration(
-                labelText: 'Enter your code',
-                labelStyle: TextStyle(color: Color(0xFFF76900)),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  LimitedBox(
+                    child: TextButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _requestPasscode();
+                          }
+                        },
+                        child: Text(
+                          "Send Verification Code",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF2B72D7)),
+                        )),
+                  )
+                ],
               ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: PADDING_SIZE),
-            // TODO: use password hidden
-            child: TextFormField(
-              controller: _passwordController,
-              maxLength: 16,
-              obscureText: _hidePassword,
-              validator: (value) {
-                //validate password
-                RegExp hasUpper = RegExp(r'[A-Z]');
-                RegExp hasLower = RegExp(r'[a-z]');
-                RegExp hasDigit = RegExp(r'\d');
+              TextFormField(
+                controller: _passcodeController,
+                maxLength: 6,
+                validator: (value) {
+                  RegExp passcodeRule = RegExp(r'[0-9A-Za-z]{6}$');
 
-                if (value == null || value.length == 0) {
-                  return 'Please enter your password';
-                }
-                if (!RegExp(r'.{2,}').hasMatch(value)) {
-                  return 'Password must have at least 2 characters';
-                }
-                if (!hasUpper.hasMatch(value)) {
-                  return 'Password must have at least one uppercase letter';
-                }
-                if (!hasLower.hasMatch(value)) {
-                  return 'Password must have at least one lowercase letter';
-                }
-                if (!hasDigit.hasMatch(value)) {
-                  return 'Password must have at least one number';
-                }
-                return null;
-              },
-              decoration: InputDecoration(
-                labelText: 'Create your password',
-                labelStyle: TextStyle(color: Color(0xFFF76900)),
-                helperText:
-                    'Must consist of numbers, upper and lower case letters only.', // Length: 2-16',
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFFF76900))),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _hidePassword ? Icons.visibility_off : Icons.visibility,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _hidePassword = !_hidePassword;
-                    });
-                  },
+                  if (value == null) {
+                    return 'Plaese enter your code';
+                  }
+                  if (!passcodeRule.hasMatch(value)) {
+                    return 'Incorrect passcode format';
+                  }
+                },
+                decoration: InputDecoration(
+                  labelText: 'Enter your code',
+                  labelStyle: TextStyle(color: Color(0xFFF76900)),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFF76900))),
                 ),
               ),
-            ),
-          ),
-          Row(
-            children: <Widget>[
-              Expanded(
-                  child:
-                      Padding(padding: EdgeInsets.symmetric(horizontal: 1.0))),
-              Expanded(
-                  child:
-                      Padding(padding: EdgeInsets.symmetric(horizontal: 1.0))),
-              Expanded(
-                child: TextButton(
-                    style: ButtonStyle(
-                        foregroundColor: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> states) {
-                          return states.contains(MaterialState.disabled)
-                              ? null
-                              : Colors.white; //Color(0xFF2B72D7);
-                        }),
-                        backgroundColor: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> states) =>
-                                states.contains(MaterialState.disabled)
-                                    ? null
-                                    : Color(0xFFF76900))),
+              TextFormField(
+                controller: _passwordController,
+                maxLength: 16,
+                obscureText: _hidePassword,
+                validator: (value) {
+                  RegExp lengthRule = RegExp(r'.{6,16}');
+                  RegExp letterRule = RegExp(r'[A-Za-z]');
+                  RegExp digitRule = RegExp(r'\d');
+
+                  if (value == null || value.length == 0) {
+                    return 'Please enter your password';
+                  }
+                  if (!lengthRule.hasMatch(value)) {
+                    return 'Incorrect password format';
+                  }
+                  if (!letterRule.hasMatch(value)) {
+                    return 'Incorrect password format';
+                  }
+                  if (!digitRule.hasMatch(value)) {
+                    return 'Incorrect password format';
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  labelText: 'Create your password',
+                  labelStyle: TextStyle(color: Color(0xFFF76900)),
+                  helperText:
+                      'Must consist of numbers, upper and lower case letters only.',
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFF76900))),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _hidePassword ? Icons.visibility_off : Icons.visibility,
+                    ),
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _signUp();
-                      }
+                      setState(() {
+                        _hidePassword = !_hidePassword;
+                      });
                     },
-                    //_signUp
-                    child: Text("Sign up")),
+                  ),
+                ),
               ),
-            ],
-          ),
-        ]));
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  LimitedBox(
+                    child: TextButton(
+                        style: ButtonStyle(
+                            foregroundColor: MaterialStateProperty.resolveWith(
+                                (Set<MaterialState> states) {
+                              return states.contains(MaterialState.disabled)
+                                  ? null
+                                  : Colors.white;
+                            }),
+                            backgroundColor: MaterialStateProperty.resolveWith(
+                                (Set<MaterialState> states) =>
+                                    states.contains(MaterialState.disabled)
+                                        ? null
+                                        : Color(0xFFF76900))),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _signUp();
+                          }
+                        },
+                        child: Text("Sign up")),
+                  ),
+                ],
+              ),
+            ])));
   }
 }

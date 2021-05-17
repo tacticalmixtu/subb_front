@@ -25,7 +25,7 @@ class Empty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(8),
+      padding: EdgeInsets.all(8),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -48,12 +48,11 @@ class Empty extends StatelessWidget {
             Flexible(
               flex: 2,
               child: ElevatedButton.icon(
-                  // style: ButtonStyle(minimumSize: ),
                   onPressed: () {
                     Navigator.pushNamed(context, SigninScreen.routeName);
                   },
                   icon: Icon(Icons.login),
-                  label: Text('sign in')),
+                  label: Text('Sign In')),
             ),
             Flexible(
               flex: 4,
