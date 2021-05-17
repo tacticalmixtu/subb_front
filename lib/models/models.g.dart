@@ -68,8 +68,8 @@ Map<String, dynamic> _$HistoryRecordToJson(HistoryRecord instance) =>
       'history_timestamp': instance.historyTimestamp,
     };
 
-Notification _$NotificationFromJson(Map<String, dynamic> json) {
-  return Notification(
+NotificationData _$NotificationDataFromJson(Map<String, dynamic> json) {
+  return NotificationData(
     json['notification_id'] as int,
     json['notification_user_id'] as int,
     json['notification_reply_id'] as int,
@@ -78,7 +78,7 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$NotificationToJson(Notification instance) =>
+Map<String, dynamic> _$NotificationDataToJson(NotificationData instance) =>
     <String, dynamic>{
       'notification_id': instance.notificationId,
       'notification_user_id': instance.notificationUserId,

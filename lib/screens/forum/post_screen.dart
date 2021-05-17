@@ -125,7 +125,7 @@ class CommentsList extends StatelessWidget {
                     child: Column(
                       children: [
                         ListTile(
-                          leading: Icon(Icons.person_pin),
+                          leading: Icon(Icons.error_outline),
                           title: Text('User ID - ${comment.author}'),
                           trailing: Column(children: [
                             Text(

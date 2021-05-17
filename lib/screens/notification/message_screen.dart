@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-String _authorName = 'User';
-
-class ChatMessage extends StatelessWidget {
-  ChatMessage({required this.text, required this.animationController});
+class MessageObject extends StatelessWidget {
+  MessageObject({required this.text, required this.animationController});
   final String text;
   final AnimationController animationController;
 
@@ -20,14 +18,13 @@ class ChatMessage extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.only(right: 16.0),
-              child: CircleAvatar(child: Text(_authorName[0])),
+              child: CircleAvatar(child: Text('User')),
             ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(_authorName,
-                      style: Theme.of(context).textTheme.headline4),
+                  Text('User', style: Theme.of(context).textTheme.headline4),
                   Container(
                     padding: EdgeInsets.only(top: 5.0),
                     child: Text(text),
@@ -42,13 +39,14 @@ class ChatMessage extends StatelessWidget {
   }
 }
 
-class ChatScreen extends StatefulWidget {
+class MessageScreen extends StatefulWidget {
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  _MessageScreenState createState() => _MessageScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
-  final List<ChatMessage> _messages = [];
+class _MessageScreenState extends State<MessageScreen>
+    with TickerProviderStateMixin {
+  final List<MessageObject> _messages = [];
   final _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool _isComposing = false;
@@ -116,7 +114,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     setState(() {
       _isComposing = false;
     });
-    var message = ChatMessage(
+    var message = MessageObject(
       text: text,
       animationController: AnimationController(
         duration: const Duration(milliseconds: 700),

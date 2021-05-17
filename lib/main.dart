@@ -140,14 +140,10 @@ class HomeBottomNavigationBar extends StatelessWidget {
           icon: Icon(Icons.forum),
         ),
         BottomNavigationBarItem(
-            label: 'Notifications',
-            icon: Badge(
-              // TODO: dynamic number
-              badgeContent: Text('99'),
-              child: Icon(Icons.notifications),
-              padding: EdgeInsets.all(4),
-              animationType: BadgeAnimationType.scale,
-            )),
+          // Todo: Badge Number
+          label: 'Notifications',
+          icon: Icon(Icons.notifications),
+        ),
         BottomNavigationBarItem(
           label: 'Me',
           icon: Icon(Icons.person),

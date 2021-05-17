@@ -4,7 +4,6 @@ import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/models.dart';
 import 'package:subb_front/models/sign_in_state.dart';
 import 'package:subb_front/screens/profile/edit_profile.dart';
-import 'package:subb_front/screens/profile/profile.dart';
 import 'package:subb_front/utils/api_collection.dart';
 
 class UserProfileScreen extends StatelessWidget {
@@ -21,7 +20,6 @@ class UserProfileScreen extends StatelessWidget {
                 onPressed: () async {
                   await signOut();
                   Provider.of<SignInState>(context, listen: false).signOut();
-                  Navigator.pushNamed(context, ProfileScreen.routeName);
                 },
                 icon: Icon(Icons.login),
                 label: Text('Sign Out'))

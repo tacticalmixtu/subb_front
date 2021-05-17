@@ -95,7 +95,7 @@ List<HistoryRecord> parseHistoryRecordList(List<dynamic> data) {
 }
 
 @JsonSerializable()
-class Notification {
+class NotificationData {
   @JsonKey(name: 'notification_id')
   int notificationId;
   @JsonKey(name: 'notification_user_id')
@@ -107,20 +107,20 @@ class Notification {
   @JsonKey(name: 'notification_status')
   String notificationStatus;
 
-  Notification(
+  NotificationData(
       this.notificationId,
       this.notificationUserId,
       this.notificationReplyId,
       this.notificationType,
       this.notificationStatus);  
 
-  factory Notification.fromJson(Map<String, dynamic> json) => _$NotificationFromJson(json);
+  factory NotificationData.fromJson(Map<String, dynamic> json) => _$NotificationDataFromJson(json);
 
-  Map<String, dynamic> toJson() => _$NotificationToJson(this);
+  Map<String, dynamic> toJson() => _$NotificationDataToJson(this);
 }
 
-List<Notification> parseNotificationList(List<dynamic> data) {
-  return data.map((e) => Notification.fromJson(e)).toList();
+List<NotificationData> parseNotificationList(List<dynamic> data) {
+  return data.map((e) => NotificationData.fromJson(e)).toList();
 }
 
 @JsonSerializable()
