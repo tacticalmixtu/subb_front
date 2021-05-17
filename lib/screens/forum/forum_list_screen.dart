@@ -25,15 +25,6 @@ class _ForumListScreenState extends State<ForumListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: null,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
-        foregroundColor: Colors.black,
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ComposeScreen()));
-        },
-        child: Icon(Icons.add),
-      ),
       body: FutureBuilder<ApiResponse>(
           future: _futureResponse,
           builder: (context, snapshot) {

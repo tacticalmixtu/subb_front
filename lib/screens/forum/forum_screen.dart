@@ -38,14 +38,15 @@ class _ForumScreenState extends State<ForumScreen> {
       appBar: AppBar(
         title: Text(forum.title),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.black,
         onPressed: () {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => ComposeScreen()));
         },
-        child: Icon(Icons.add),
+        icon: Icon(Icons.add),
+        label: Text('Compose'),
       ),
       body: FutureBuilder<ApiResponse>(
           future: _futureResponse,

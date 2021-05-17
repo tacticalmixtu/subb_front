@@ -7,7 +7,7 @@ class ResetPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SUBB'),
+        title: Text('Reset Password'),
       ),
       body: ResetForm(),
     );

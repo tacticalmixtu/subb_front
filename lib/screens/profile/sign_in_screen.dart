@@ -12,7 +12,7 @@ class SigninScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SUBB'),
+        title: Text('Sign In'),
       ),
       body: Container(margin: EdgeInsets.all(4), child: SigninForm()),
     );
