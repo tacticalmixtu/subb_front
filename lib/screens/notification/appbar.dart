@@ -7,7 +7,6 @@ class NotificationAppbar extends StatefulWidget with PreferredSizeWidget {
   _NotificationAppbarState createState() => _NotificationAppbarState();
 
   @override
-  // Size.fromHeight(toolbarHeight ?? kToolbarHeight + (bottom?.preferredSize.height ?? 0.0))
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 

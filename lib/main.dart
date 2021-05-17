@@ -98,7 +98,6 @@ class _BaseScaffoldState extends State<BaseScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: widget._pageAppBars[_currentPageIndex],
       appBar: _currentPageIndex == 2
           ? null
           : AppBar(

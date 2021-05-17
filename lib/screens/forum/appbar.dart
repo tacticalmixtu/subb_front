@@ -7,7 +7,6 @@ class ForumAppbar extends StatefulWidget with PreferredSizeWidget {
   _ForumAppbarState createState() => _ForumAppbarState();
 
   @override
-  // Size.fromHeight(toolbarHeight ?? kToolbarHeight + (bottom?.preferredSize.height ?? 0.0))
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 

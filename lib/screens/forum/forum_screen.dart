@@ -66,7 +66,6 @@ class _ForumScreenState extends State<ForumScreen> {
                       return _futureResponse;
                     },
                   );
-                  // });
                 }
             }
           }),
