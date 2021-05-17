@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:subb_front/models/sign_in_state.dart';
 import 'package:subb_front/screens/forum/appbar.dart';
 import 'package:subb_front/screens/forum/forum_list_screen.dart';
