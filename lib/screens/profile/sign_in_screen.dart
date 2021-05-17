@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:subb_front/models/sign_in_state.dart';
-import 'package:subb_front/screens/profile/reset_password.dart';
+import 'package:subb_front/screens/profile/reset_password_screen.dart';
 import 'package:subb_front/utils/api_collection.dart';
 
 class SigninScreen extends StatelessWidget {

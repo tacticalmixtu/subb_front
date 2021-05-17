@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/models.dart';
 import 'package:subb_front/models/thread.dart';
+import 'package:subb_front/screens/forum/compose_post_screen.dart';
 import 'package:subb_front/screens/forum/compose_thread_screen.dart';
 import 'package:subb_front/screens/forum/thread_screen.dart';
 import 'package:subb_front/utils/api_collection.dart';
@@ -39,13 +40,15 @@ class _ForumScreenState extends State<ForumScreen> {
         title: Text(forum.title),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
+        backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.black,
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ComposeThreadScreen(forum)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ComposeThreadScreen(forum)));
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.edit),
       ),
       body: FutureBuilder<ApiResponse>(
           future: _futureResponse,
@@ -82,30 +85,76 @@ class ThreadsPage extends StatelessWidget {
   final List<Thread> threads;
   ThreadsPage({Key? key, required this.threads});
 
-  Widget _buildIconItem(IconData icon, String content) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          color: Colors.blueGrey[400],
-        ),
-        Text(content),
-      ],
-    );
-  }
-
-  Widget _buildBottomContainer(Thread thread) {
+  Widget _buildUI(
+      {required String imageUrl,
+      required Thread thread,
+      required String authorNickName,
+      required BuildContext context,
+      required int index}) {
     return Container(
-      padding: EdgeInsets.only(left: 192),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        _buildIconItem(Icons.whatshot, '${thread.heat}'),
-        _buildIconItem(Icons.sms, '${thread.posts}'),
-        _buildIconItem(Icons.thumb_up, '${thread.votes}'),
-      ]),
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Chip(
+                    avatar: CircleAvatar(
+                      backgroundImage: NetworkImage(imageUrl),
+                    ),
+                    label: Text(authorNickName)),
+              ),
+              Flexible(
+                  child: Text(
+                '${epochtoCustomTimeDisplay(thread.activeTimestamp)}',
+                style: TextStyle(fontSize: 16),
+              )),
+            ],
+          ),
+          Text(
+            '${thread.title}',
+            style: TextStyle(fontSize: 24),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ActionChip(
+                  avatar: Icon(Icons.comment_outlined),
+                  label: Text("${thread.posts}"),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ThreadScreen(thread: threads[index])));
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ActionChip(
+                  avatar: Icon(Icons.thumb_up_outlined),
+                  label: Text("${thread.votes}"),
+                  onPressed: () {
+                    // TODO: implement vote API here
+                  },
+                ),
+              ),
+            ],
+          ),
+          Divider(thickness: 1),
+        ],
+      ),
     );
   }
 
-  Widget _buildCard(Thread thread) {
+  Widget _buildThreadSummary(Thread thread, int index) {
     final Future<ApiResponse> _futureResponse =
         loadUser(userId: thread.author.toString());
     return FutureBuilder<ApiResponse>(
@@ -115,59 +164,22 @@ class ThreadsPage extends StatelessWidget {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              return Card(
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: new Icon(Icons.person_pin, size: 40.0),
-                      title: Text('${thread.title}'),
-                      subtitle: Text("User ID - ${thread.author}"),
-                      trailing: Column(children: [
-                        Text(
-                            '${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
-                      ]),
-                    ),
-                    _buildBottomContainer(thread),
-                  ],
-                ),
-              );
+              // return _buildUI(image: Icon(Icons.person_pin), thread: thread);
+              return Text('Hold on...');
             case ConnectionState.done:
               if (snapshot.hasError) {
-                return Card(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: new Icon(Icons.error_outline, size: 40.0),
-                        title: Text('${thread.title}'),
-                        subtitle: Text("User ID - ${thread.author}"),
-                        trailing: Column(children: [
-                          Text(
-                              '${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
-                        ]),
-                      ),
-                      _buildBottomContainer(thread),
-                    ],
-                  ),
-                );
+                // return _buildUI(
+                // image: Icon(Icons.error_outline), thread: thread);
+                return Text('Error');
               } else {
-                final ContactData authorData =
+                final contactData =
                     ContactData.fromJson(snapshot.data!.data! as dynamic);
-                return Card(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Image.network(authorData.avatarLink),
-                        title: Text('${thread.title}'),
-                        subtitle: Text(authorData.nickname),
-                        trailing: Column(children: [
-                          Text(
-                              '${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
-                        ]),
-                      ),
-                      _buildBottomContainer(thread),
-                    ],
-                  ),
-                );
+                return _buildUI(
+                    imageUrl: contactData.avatarLink,
+                    authorNickName: contactData.nickname,
+                    thread: thread,
+                    context: context,
+                    index: index);
               }
           }
         });
@@ -183,10 +195,9 @@ class ThreadsPage extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        ThreadScreen(thread: threads[index])));
+                    builder: (context) => ComposePostScreen(threads[index])));
           },
-          child: _buildCard(threads[index]),
+          child: _buildThreadSummary(threads[index], index),
         );
       },
     );

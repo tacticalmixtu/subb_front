@@ -15,6 +15,25 @@ import 'package:subb_front/utils/api_collection.dart';
 import 'package:subb_front/utils/tool.dart';
 
 class NotificationScreen extends StatelessWidget {
+  Tab _buildTabItem(IconData icond, String label) {
+    return Tab(
+        child: Row(
+      children: [
+        Spacer(
+          flex: 4,
+        ),
+        Icon(icond),
+        Spacer(
+          flex: 1,
+        ),
+        Text(label),
+        Spacer(
+          flex: 4,
+        ),
+      ],
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -24,8 +43,8 @@ class NotificationScreen extends StatelessWidget {
             title: Text('Notifications'),
             bottom: TabBar(
               tabs: [
-                Tab(text: 'Updates', icon: Icon(Icons.campaign)),
-                Tab(text: 'Messages', icon: Icon(Icons.chat)),
+                _buildTabItem(Icons.campaign, "Updates"),
+                _buildTabItem(Icons.mail, "Messages"),
               ],
             ),
           ),

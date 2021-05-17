@@ -8,12 +8,13 @@ import 'package:subb_front/screens/home/appbar.dart';
 import 'package:subb_front/screens/home/home_screen.dart';
 import 'package:subb_front/screens/notification/notification_screen.dart';
 import 'package:subb_front/screens/profile/appbar.dart';
-import 'package:subb_front/screens/profile/edit_profile.dart';
-import 'package:subb_front/screens/profile/profile.dart';
-import 'package:subb_front/screens/profile/reset_password.dart';
-import 'package:subb_front/screens/profile/sign_in.dart';
-import 'package:subb_front/screens/profile/sign_up.dart';
-import 'package:subb_front/screens/profile/user.dart';
+import 'package:subb_front/screens/profile/edit_profile_screen.dart';
+import 'package:subb_front/screens/profile/profile_screen.dart';
+import 'package:subb_front/screens/profile/reset_password_screen.dart';
+import 'package:subb_front/screens/profile/sign_in_screen.dart';
+import 'package:subb_front/screens/profile/sign_up_scren.dart';
+import 'package:subb_front/screens/profile/user_screen.dart';
+import 'package:subb_front/utils/network.dart';
 
 void main() {
   runApp(
@@ -85,10 +86,18 @@ class _BaseScaffoldState extends State<BaseScaffold> {
   int _currentPageIndex = 0;
   // late final TabController tabController;
 
+  void _restoreSession() async {
+    final session = await getCookies();
+    if (session != null) {
+      Provider.of<SignInState>(context, listen: false).signIn();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     // tabController = TabController(length: _pages.length, vsync: this);
+    _restoreSession();
   }
 
   void _handleBottomBarItemTapped(int index) {
