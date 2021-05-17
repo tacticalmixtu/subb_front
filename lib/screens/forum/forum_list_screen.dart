@@ -72,8 +72,7 @@ class ForumsPage extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                // return Image.network(photos[index].thumbnailUrl);
-                // return Text('${photos[index].title}');
+                // Todo: Forum Icon & Forum Description
                 leading: new Icon(Icons.person_pin, size: 40.0),
                 title: Text('${forum.title}'),
               ),
