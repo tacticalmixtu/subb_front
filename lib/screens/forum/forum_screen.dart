@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/models.dart';
 import 'package:subb_front/models/thread.dart';
+import 'package:subb_front/screens/forum/compose_post_screen.dart';
 import 'package:subb_front/screens/forum/compose_thread_screen.dart';
 import 'package:subb_front/screens/forum/thread_screen.dart';
 import 'package:subb_front/utils/api_collection.dart';
@@ -84,38 +85,12 @@ class ThreadsPage extends StatelessWidget {
   final List<Thread> threads;
   ThreadsPage({Key? key, required this.threads});
 
-  // Widget _buildIconItem(String label, String content) {
-  //   return Container(
-  //     margin: const EdgeInsets.symmetric(horizontal: 4.0),
-  //     child: Row(
-  //       children: [
-  //         Text(label),
-  //         Text(content),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildBottomContainer(Thread thread) {
-  //   return Container(
-  //     margin: EdgeInsets.symmetric(horizontal: 4),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //       children: [
-  //         Row(
-  //           children: [
-  //             // _buildIconItem(Icons.whatshot, '${thread.heat}'),
-  //             _buildIconItem('Posts: ', '${thread.posts}'),
-  //             // _buildIconItem(, '${thread.votes}'),
-  //           ],
-  //         ),
-  //         Text('${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  Widget _buildUI({required String imageUrl, required Thread thread}) {
+  Widget _buildUI(
+      {required String imageUrl,
+      required Thread thread,
+      required String authorNickName,
+      required BuildContext context,
+      required int index}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8),
       child: Column(
@@ -123,14 +98,14 @@ class ThreadsPage extends StatelessWidget {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Flexible(
                 child: Chip(
                     avatar: CircleAvatar(
                       backgroundImage: NetworkImage(imageUrl),
                     ),
-                    label: Text('${thread.author}')),
+                    label: Text(authorNickName)),
               ),
               Flexible(
                   child: Text(
@@ -144,28 +119,42 @@ class ThreadsPage extends StatelessWidget {
             style: TextStyle(fontSize: 24),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                'Posts: ${thread.posts}',
-                style: TextStyle(fontSize: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ActionChip(
+                  avatar: Icon(Icons.comment_outlined),
+                  label: Text("${thread.posts}"),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ThreadScreen(thread: threads[index])));
+                  },
+                ),
               ),
-              ActionChip(
-                avatar: Icon(Icons.thumb_up),
-                label: Text("${thread.votes}"),
-                onPressed: () {},
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ActionChip(
+                  avatar: Icon(Icons.thumb_up_outlined),
+                  label: Text("${thread.votes}"),
+                  onPressed: () {
+                    // TODO: implement vote API here
+                  },
+                ),
               ),
             ],
           ),
           Divider(thickness: 1),
-          // ButtonBar(children: [],)
         ],
       ),
     );
   }
 
-  Widget _buildThreadSummary(Thread thread) {
+  Widget _buildThreadSummary(Thread thread, int index) {
     final Future<ApiResponse> _futureResponse =
         loadUser(userId: thread.author.toString());
     return FutureBuilder<ApiResponse>(
@@ -183,14 +172,14 @@ class ThreadsPage extends StatelessWidget {
                 // image: Icon(Icons.error_outline), thread: thread);
                 return Text('Error');
               } else {
-                // TODO: change back to real avatar
+                final contactData =
+                    ContactData.fromJson(snapshot.data!.data! as dynamic);
                 return _buildUI(
-                    // imageUrl:
-                    //     ContactData.fromJson(snapshot.data!.data! as dynamic)
-                    //         .avatarLink,
-                    imageUrl:
-                        r'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fcdn.duitang.com%2Fuploads%2Fitem%2F201408%2F30%2F20140830180834_XuWYJ.png&refer=http%3A%2F%2Fcdn.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1623856347&t=2586acbfbcd1b632d273a0d4f093344e',
-                    thread: thread);
+                    imageUrl: contactData.avatarLink,
+                    authorNickName: contactData.nickname,
+                    thread: thread,
+                    context: context,
+                    index: index);
               }
           }
         });
@@ -206,10 +195,9 @@ class ThreadsPage extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        ThreadScreen(thread: threads[index])));
+                    builder: (context) => ComposePostScreen(threads[index])));
           },
-          child: _buildThreadSummary(threads[index]),
+          child: _buildThreadSummary(threads[index], index),
         );
       },
     );

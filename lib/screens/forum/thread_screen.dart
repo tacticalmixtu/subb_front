@@ -37,7 +37,7 @@ class ThreadScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
+        backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.black,
         onPressed: () {
           Navigator.push(
@@ -45,7 +45,7 @@ class ThreadScreen extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => ComposePostScreen(thread)));
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.edit),
       ),
     );
   }

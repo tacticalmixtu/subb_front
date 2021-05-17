@@ -19,7 +19,8 @@ class UserProfileScreen extends StatelessWidget {
             ElevatedButton.icon(
                 onPressed: () async {
                   await signOut();
-                  Provider.of<SignInState>(context, listen: false).signOut();
+                  context.read<SignInState>().signOut();
+                  // Provider.of<SignInState>(context, listen: false).signOut();
                   // Navigator.pushNamed(context, BaseScaffold.routeName);
                 },
                 icon: Icon(Icons.logout),

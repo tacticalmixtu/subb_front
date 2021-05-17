@@ -1,9 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/models/documents/document.dart';
-import 'package:flutter_quill/widgets/controller.dart';
-import 'package:flutter_quill/widgets/editor.dart';
 import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/comment.dart';
 import 'package:subb_front/models/models.dart';
@@ -54,36 +49,39 @@ class CommentScreen extends StatelessWidget {
 
 class ChildCommentsList extends StatelessWidget {
   final List<Comment> comments;
-  final FocusNode _fn = FocusNode();
+  // final FocusNode _fn = FocusNode();
 
   ChildCommentsList({Key? key, required this.comments}) : super(key: key);
 
-  QuillController _getController(Comment comment) {
-    return QuillController(
-        document: Document.fromJson(jsonDecode(comment.content)),
-        selection: const TextSelection.collapsed(offset: 0));
-  }
+  // QuillController _getController(Comment comment) {
+  //   return QuillController(
+  //       document: Document.fromJson(jsonDecode(comment.content)),
+  //       selection: const TextSelection.collapsed(offset: 0));
+  // }
 
-  Widget _buildContent(QuillController? controller) {
-    var quillEditor = QuillEditor(
-      controller: controller!,
-      focusNode: _fn,
-      scrollController: ScrollController(),
-      scrollable: true,
-      padding: EdgeInsets.zero,
-      autoFocus: true,
-      showCursor: false,
-      readOnly: true,
-      expands: false,
-    );
-    _fn.unfocus();
+  Widget _buildContent(Comment comment) {
+    // var quillEditor = QuillEditor(
+    //   controller: controller!,
+    //   focusNode: _fn,
+    //   scrollController: ScrollController(),
+    //   scrollable: true,
+    //   padding: EdgeInsets.zero,
+    //   autoFocus: true,
+    //   showCursor: false,
+    //   readOnly: true,
+    //   expands: false,
+    // );
+    // _fn.unfocus();
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
         ),
-        child: quillEditor,
+        child: Text(
+          '${comment.content}',
+          softWrap: true,
+        ),
       ),
     );
   }
@@ -111,7 +109,7 @@ class ChildCommentsList extends StatelessWidget {
                                 '${epochtoCustomTimeDisplay(childComment.timestamp)}'),
                           ]),
                         ),
-                        _buildContent(_getController(childComment)),
+                        _buildContent(childComment),
                       ],
                     ),
                   ));
@@ -130,7 +128,7 @@ class ChildCommentsList extends StatelessWidget {
                                   '${epochtoCustomTimeDisplay(childComment.timestamp)}'),
                             ]),
                           ),
-                          _buildContent(_getController(childComment)),
+                          _buildContent(childComment),
                         ],
                       ),
                     ));
@@ -150,7 +148,7 @@ class ChildCommentsList extends StatelessWidget {
                                   '${epochtoCustomTimeDisplay(childComment.timestamp)}'),
                             ]),
                           ),
-                          _buildContent(_getController(childComment)),
+                          _buildContent(childComment),
                         ],
                       ),
                     ));
