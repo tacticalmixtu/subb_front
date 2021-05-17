@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/models/documents/document.dart';
+import 'package:flutter_quill/widgets/controller.dart';
+import 'package:flutter_quill/widgets/editor.dart';
 import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/comment.dart';
 import 'package:subb_front/models/models.dart';
@@ -19,6 +24,17 @@ class CommentScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("View Discussion (${comment.comments})"),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xff03dac6),
+        foregroundColor: Colors.black,
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ComposeChildCommentScreen(comment)));
+        },
+        child: Icon(Icons.add),
+      ),
       body: FutureBuilder<ApiResponse>(
         future:
             getCommentPage(commentId: comment.commentId.toString(), page: '1'),
@@ -32,56 +48,42 @@ class CommentScreen extends StatelessWidget {
               : Center(child: CircularProgressIndicator());
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
-        foregroundColor: Colors.black,
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ComposeChildCommentScreen(comment)));
-        },
-        child: Icon(Icons.add),
-      ),
     );
   }
 }
 
 class ChildCommentsList extends StatelessWidget {
   final List<Comment> comments;
-  // final FocusNode _fn = FocusNode();
+  final FocusNode _fn = FocusNode();
 
   ChildCommentsList({Key? key, required this.comments}) : super(key: key);
 
-  // QuillController _getController(Comment comment) {
-  //   return QuillController(
-  //       document: Document.fromJson(jsonDecode(comment.content)),
-  //       selection: const TextSelection.collapsed(offset: 0));
-  // }
+  QuillController _getController(String content) {
+    return QuillController(
+        document: Document.fromJson(jsonDecode(content)),
+        selection: const TextSelection.collapsed(offset: 0));
+  }
 
-  Widget _buildContent(Comment comment) {
-    // var quillEditor = QuillEditor(
-    //   controller: controller!,
-    //   focusNode: _fn,
-    //   scrollController: ScrollController(),
-    //   scrollable: true,
-    //   padding: EdgeInsets.zero,
-    //   autoFocus: true,
-    //   showCursor: false,
-    //   readOnly: true,
-    //   expands: false,
-    // );
-    // _fn.unfocus();
+  Widget _buildContent(QuillController? controller) {
+    var quillEditor = QuillEditor(
+      controller: controller!,
+      focusNode: _fn,
+      scrollController: ScrollController(),
+      scrollable: true,
+      padding: EdgeInsets.zero,
+      autoFocus: true,
+      showCursor: false,
+      readOnly: true,
+      expands: false,
+    );
+    _fn.unfocus();
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
         ),
-        child: Text(
-          '${comment.content}',
-          softWrap: true,
-        ),
+        child: quillEditor,
       ),
     );
   }
@@ -96,62 +98,60 @@ class ChildCommentsList extends StatelessWidget {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              return Container(
-                  padding: EdgeInsets.all(4),
-                  child: Card(
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: Icon(Icons.person_pin),
-                          title: Text('User ID - ${childComment.author}'),
-                          trailing: Column(children: [
-                            Text(
-                                '${epochtoCustomTimeDisplay(childComment.timestamp)}'),
-                          ]),
-                        ),
-                        _buildContent(childComment),
-                      ],
-                    ),
-                  ));
+              return Container();
             case ConnectionState.done:
               if (snapshot.hasError) {
-                return Container(
-                    padding: EdgeInsets.all(4),
-                    child: Card(
-                      child: Column(
-                        children: [
-                          ListTile(
-                            leading: Icon(Icons.error_outline),
-                            title: Text('User ID - ${childComment.author}'),
-                            trailing: Column(children: [
-                              Text(
-                                  '${epochtoCustomTimeDisplay(childComment.timestamp)}'),
-                            ]),
-                          ),
-                          _buildContent(childComment),
-                        ],
-                      ),
-                    ));
+                return Center(child: Icon(Icons.error_outline));
               } else {
                 final ContactData authorData =
                     ContactData.fromJson(snapshot.data!.data! as dynamic);
                 return Container(
-                    padding: EdgeInsets.all(4),
-                    child: Card(
-                      child: Column(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          ListTile(
-                            leading: Image.network(authorData.avatarLink),
-                            title: Text(authorData.nickname),
-                            trailing: Column(children: [
-                              Text(
-                                  '${epochtoCustomTimeDisplay(childComment.timestamp)}'),
-                            ]),
+                          Flexible(
+                            child: Chip(
+                                avatar: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(authorData.avatarLink),
+                                ),
+                                label: Text(authorData.nickname)),
                           ),
-                          _buildContent(childComment),
+                          Flexible(
+                              child: Text(
+                            '${epochToDateTime(childComment.timestamp)}',
+                            style: TextStyle(fontSize: 16),
+                          )),
                         ],
                       ),
-                    ));
+                      _buildContent(_getController(childComment.content)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: ActionChip(
+                              avatar: Icon(Icons.thumb_up_outlined),
+                              label: Text("${childComment.votes}"),
+                              onPressed: () async {
+                                await voteComment(
+                                    commentId: childComment.commentId.toString());
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      Divider(thickness: 1),
+                    ],
+                  ),
+                );
               }
           }
         });
@@ -162,8 +162,6 @@ class ChildCommentsList extends StatelessWidget {
     return ListView.builder(
       itemCount: comments.length,
       itemBuilder: (context, index) {
-        // return Image.network(photos[index].thumbnailUrl);
-        // return Text('${photos[index].title}');
         return _buildCard(comments[index]);
       },
     );

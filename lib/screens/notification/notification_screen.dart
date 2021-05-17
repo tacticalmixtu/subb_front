@@ -112,9 +112,9 @@ class UpdateList extends StatelessWidget {
   final List<NotificationData> notifications;
   UpdateList({Key? key, required this.notifications});
 
-  QuillController _getController(Post post) {
+  QuillController _getController(String content) {
     return QuillController(
-        document: Document.fromJson(jsonDecode(post.content)),
+        document: Document.fromJson(jsonDecode(content)),
         selection: const TextSelection.collapsed(offset: 0));
   }
 
@@ -152,64 +152,76 @@ class UpdateList extends StatelessWidget {
               MaterialPageRoute(builder: (context) => PostScreen(post: post)));
         },
         child: FutureBuilder<ApiResponse>(
-            future: _futureResponse,
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                case ConnectionState.waiting:
-                case ConnectionState.active:
-                  return Card(
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: Icon(Icons.person_pin, size: 40),
-                          title: Text('User ID - ${post.author}'),
-                          trailing: Column(children: [
-                            Text('${epochtoCustomTimeDisplay(post.timestamp)}'),
-                          ]),
-                        ),
-                        _buildContent(_getController(post)),
-                      ],
-                    ),
-                  );
-                case ConnectionState.done:
-                  if (snapshot.hasError) {
-                    return Card(
-                      child: Column(
+        future: _futureResponse,
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              return Container();
+            case ConnectionState.done:
+              if (snapshot.hasError) {
+                return Center(child: Icon(Icons.error_outline));
+              } else {
+                final ContactData authorData =
+                    ContactData.fromJson(snapshot.data!.data! as dynamic);
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          ListTile(
-                            leading: Icon(Icons.error_outline, size: 40),
-                            title: Text('User ID - ${post.author}'),
-                            trailing: Column(children: [
-                              Text(
-                                  '${epochtoCustomTimeDisplay(post.timestamp)}'),
-                            ]),
+                          Flexible(
+                            child: Chip(
+                                avatar: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(authorData.avatarLink),
+                                ),
+                                label: Text(authorData.nickname)),
                           ),
-                          _buildContent(_getController(post)),
+                          Flexible(
+                              child: Text(
+                            '${epochToDateTime(post.timestamp)}',
+                            style: TextStyle(fontSize: 16),
+                          )),
                         ],
                       ),
-                    );
-                  } else {
-                    final ContactData authorData =
-                        ContactData.fromJson(snapshot.data!.data! as dynamic);
-                    return Card(
-                      child: Column(
+                      _buildContent(_getController(post.content)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          ListTile(
-                            leading: Image.network(authorData.avatarLink),
-                            title: Text(authorData.nickname),
-                            trailing: Column(children: [
-                              Text(
-                                  '${epochtoCustomTimeDisplay(post.timestamp)}'),
-                            ]),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Chip(
+                              avatar: Icon(Icons.comment_outlined),
+                              label: Text("${post.comments}"),
+                            ),
                           ),
-                          _buildContent(_getController(post)),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: ActionChip(
+                              avatar: Icon(Icons.thumb_up_outlined),
+                              label: Text("${post.votes}"),
+                              onPressed: () async {
+                                await votePost(postId: post.postId.toString());
+                              },
+                            ),
+                          ),
                         ],
                       ),
-                    );
-                  }
+                      Divider(thickness: 1),
+                    ],
+                  ),
+                );
               }
-            }));
+          }
+        }));
   }
 
   Widget _buildCommentCard(BuildContext context, Comment comment) {
@@ -223,71 +235,76 @@ class UpdateList extends StatelessWidget {
                   builder: (context) => CommentScreen(comment: comment)));
         },
         child: FutureBuilder<ApiResponse>(
-            future: _futureResponse,
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                case ConnectionState.waiting:
-                case ConnectionState.active:
-                  return Container(
-                    padding: EdgeInsets.all(4),
-                    child: Card(
-                      child: Column(
+        future: _futureResponse,
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              return Container();
+            case ConnectionState.done:
+              if (snapshot.hasError) {
+                return Center(child: Icon(Icons.error_outline));
+              } else {
+                final ContactData authorData =
+                    ContactData.fromJson(snapshot.data!.data! as dynamic);
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          ListTile(
-                            leading: Icon(Icons.person_pin),
-                            title: Text('User ID - ${comment.author}'),
-                            trailing: Column(children: [
-                              Text(
-                                  '${epochtoCustomTimeDisplay(comment.timestamp)}'),
-                            ]),
+                          Flexible(
+                            child: Chip(
+                                avatar: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(authorData.avatarLink),
+                                ),
+                                label: Text(authorData.nickname)),
                           ),
-                          Text(comment.content),
+                          Flexible(
+                              child: Text(
+                            '${epochToDateTime(comment.timestamp)}',
+                            style: TextStyle(fontSize: 16),
+                          )),
                         ],
                       ),
-                    ),
-                  );
-                case ConnectionState.done:
-                  if (snapshot.hasError) {
-                    return Container(
-                      padding: EdgeInsets.all(4),
-                      child: Card(
-                        child: Column(
-                          children: [
-                            ListTile(
-                              leading: Icon(Icons.error_outline),
-                              title: Text('User ID - ${comment.author}'),
-                              trailing: Column(children: [
-                                Text(
-                                    '${epochtoCustomTimeDisplay(comment.timestamp)}'),
-                              ]),
+                      _buildContent(_getController(comment.content)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Chip(
+                              avatar: Icon(Icons.comment_outlined),
+                              label: Text("${comment.comments}"),
                             ),
-                            Text(comment.content),
-                          ],
-                        ),
-                      ),
-                    );
-                  } else {
-                    final ContactData authorData =
-                        ContactData.fromJson(snapshot.data!.data! as dynamic);
-                    return Card(
-                      child: Column(
-                        children: [
-                          ListTile(
-                            leading: Image.network(authorData.avatarLink),
-                            title: Text(authorData.nickname),
-                            trailing: Column(children: [
-                              Text(
-                                  '${epochtoCustomTimeDisplay(comment.timestamp)}'),
-                            ]),
                           ),
-                          Text(comment.content),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: ActionChip(
+                              avatar: Icon(Icons.thumb_up_outlined),
+                              label: Text("${comment.votes}"),
+                              onPressed: () async {
+                                await voteComment(commentId: comment.commentId.toString());
+                              },
+                            ),
+                          ),
                         ],
                       ),
-                    );
-                  }
+                      Divider(thickness: 1),
+                    ],
+                  ),
+                );
               }
-            }));
+          }
+        }));
   }
 
   @override
@@ -307,7 +324,7 @@ class UpdateList extends StatelessWidget {
                       case ConnectionState.none:
                       case ConnectionState.waiting:
                       case ConnectionState.active:
-                        return Center(child: CircularProgressIndicator());
+                        return Container();
                       case ConnectionState.done:
                         if (snapshot.hasError) {
                           return Center(child: Icon(Icons.error_outline));
@@ -328,7 +345,7 @@ class UpdateList extends StatelessWidget {
                       case ConnectionState.none:
                       case ConnectionState.waiting:
                       case ConnectionState.active:
-                        return Center(child: CircularProgressIndicator());
+                        return Container();
                       case ConnectionState.done:
                         if (snapshot.hasError) {
                           return Center(child: Icon(Icons.error_outline));
@@ -349,7 +366,7 @@ class UpdateList extends StatelessWidget {
                       case ConnectionState.none:
                       case ConnectionState.waiting:
                       case ConnectionState.active:
-                        return Center(child: CircularProgressIndicator());
+                        return Container();
                       case ConnectionState.done:
                         if (snapshot.hasError) {
                           return Center(child: Icon(Icons.error_outline));
@@ -369,7 +386,7 @@ class UpdateList extends StatelessWidget {
                       case ConnectionState.none:
                       case ConnectionState.waiting:
                       case ConnectionState.active:
-                        return Center(child: CircularProgressIndicator());
+                        return Container();
                       case ConnectionState.done:
                         if (snapshot.hasError) {
                           return Center(child: Icon(Icons.error_outline));
@@ -389,7 +406,7 @@ class UpdateList extends StatelessWidget {
                       case ConnectionState.none:
                       case ConnectionState.waiting:
                       case ConnectionState.active:
-                        return Center(child: CircularProgressIndicator());
+                        return Container();
                       case ConnectionState.done:
                         if (snapshot.hasError) {
                           return Center(child: Icon(Icons.error_outline));

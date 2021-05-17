@@ -69,7 +69,7 @@ class _ForumScreenState extends State<ForumScreen> {
                     onRefresh: () {
                       setState(() {
                         _futureResponse =
-                            getForumPage(forumId: forum.toString(), page: '1');
+                            getForumPage(forumId: forum.forumId.toString(), page: '1');
                       });
                       return _futureResponse;
                     },
@@ -85,14 +85,14 @@ class ThreadsPage extends StatelessWidget {
   final List<Thread> threads;
   ThreadsPage({Key? key, required this.threads});
 
-  Widget _buildUI(
-      {required String imageUrl,
-      required Thread thread,
-      required String authorNickName,
-      required BuildContext context,
-      required int index}) {
+  Widget _buildUI({
+    required BuildContext context,
+    required Thread thread,
+    required String authorNickName,
+    required String avatarLink,
+  }) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -103,13 +103,13 @@ class ThreadsPage extends StatelessWidget {
               Flexible(
                 child: Chip(
                     avatar: CircleAvatar(
-                      backgroundImage: NetworkImage(imageUrl),
+                      backgroundImage: NetworkImage(avatarLink),
                     ),
                     label: Text(authorNickName)),
               ),
               Flexible(
                   child: Text(
-                '${epochtoCustomTimeDisplay(thread.activeTimestamp)}',
+                '${epochToCustomTimeDisplay(thread.activeTimestamp)}',
                 style: TextStyle(fontSize: 16),
               )),
             ],
@@ -124,16 +124,9 @@ class ThreadsPage extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ActionChip(
+                child: Chip(
                   avatar: Icon(Icons.comment_outlined),
                   label: Text("${thread.posts}"),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ThreadScreen(thread: threads[index])));
-                  },
                 ),
               ),
               Padding(
@@ -141,8 +134,8 @@ class ThreadsPage extends StatelessWidget {
                 child: ActionChip(
                   avatar: Icon(Icons.thumb_up_outlined),
                   label: Text("${thread.votes}"),
-                  onPressed: () {
-                    // TODO: implement vote API here
+                  onPressed: () async {
+                    await voteThread(threadId: thread.threadId.toString());
                   },
                 ),
               ),
@@ -164,22 +157,27 @@ class ThreadsPage extends StatelessWidget {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              // return _buildUI(image: Icon(Icons.person_pin), thread: thread);
-              return Text('Hold on...');
+              return Container();
             case ConnectionState.done:
               if (snapshot.hasError) {
-                // return _buildUI(
-                // image: Icon(Icons.error_outline), thread: thread);
-                return Text('Error');
+                return Center(child: Icon(Icons.error_outline));
               } else {
                 final contactData =
                     ContactData.fromJson(snapshot.data!.data! as dynamic);
-                return _buildUI(
-                    imageUrl: contactData.avatarLink,
-                    authorNickName: contactData.nickname,
-                    thread: thread,
-                    context: context,
-                    index: index);
+                return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ThreadScreen(thread: thread)));
+                    },
+                    child: _buildUI(
+                      context: context,
+                      thread: thread,
+                      authorNickName: contactData.nickname,
+                      avatarLink: contactData.avatarLink,
+                    ));
               }
           }
         });

@@ -25,17 +25,6 @@ class ThreadScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(thread.title),
       ),
-      body: FutureBuilder<ApiResponse>(
-        future: getThreadPage(threadId: thread.threadId.toString(), page: '1'),
-        builder: (context, snapshot) {
-          if (snapshot.hasError)
-            print('ThreadScreen FutureBuilder ${snapshot.error}');
-          return snapshot.hasData
-              ? PostsList(
-                  posts: parsePosts(snapshot.data!.data! as List<dynamic>))
-              : Center(child: CircularProgressIndicator());
-        },
-      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.black,
@@ -47,6 +36,17 @@ class ThreadScreen extends StatelessWidget {
         },
         child: Icon(Icons.edit),
       ),
+      body: FutureBuilder<ApiResponse>(
+        future: getThreadPage(threadId: thread.threadId.toString(), page: '1'),
+        builder: (context, snapshot) {
+          if (snapshot.hasError)
+            print('ThreadScreen FutureBuilder ${snapshot.error}');
+          return snapshot.hasData
+              ? PostsList(
+                  posts: parsePosts(snapshot.data!.data! as List<dynamic>))
+              : Center(child: CircularProgressIndicator());
+        },
+      ),
     );
   }
 }
@@ -57,9 +57,9 @@ class PostsList extends StatelessWidget {
 
   PostsList({Key? key, required this.posts}) : super(key: key);
 
-  QuillController _getController(Post post) {
+  QuillController _getController(String content) {
     return QuillController(
-        document: Document.fromJson(jsonDecode(post.content)),
+        document: Document.fromJson(jsonDecode(content)),
         selection: const TextSelection.collapsed(offset: 0));
   }
 
@@ -76,14 +76,11 @@ class PostsList extends StatelessWidget {
       expands: false,
     );
     _fn.unfocus();
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-        ),
-        child: quillEditor,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
       ),
+      child: quillEditor,
     );
   }
 
@@ -97,50 +94,64 @@ class PostsList extends StatelessWidget {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              return Card(
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.person_pin, size: 40),
-                      title: Text('User ID - ${post.author}'),
-                      trailing: Column(children: [
-                        Text('${epochtoCustomTimeDisplay(post.timestamp)}'),
-                      ]),
-                    ),
-                    _buildContent(_getController(post)),
-                  ],
-                ),
-              );
+              return Container();
             case ConnectionState.done:
               if (snapshot.hasError) {
-                return Card(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Icon(Icons.error_outline, size: 40),
-                        title: Text('User ID - ${post.author}'),
-                        trailing: Column(children: [
-                          Text('${epochtoCustomTimeDisplay(post.timestamp)}'),
-                        ]),
-                      ),
-                      _buildContent(_getController(post)),
-                    ],
-                  ),
-                );
+                return Center(child: Icon(Icons.error_outline));
               } else {
                 final ContactData authorData =
                     ContactData.fromJson(snapshot.data!.data! as dynamic);
-                return Card(
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ListTile(
-                        leading: Image.network(authorData.avatarLink),
-                        title: Text(authorData.nickname),
-                        trailing: Column(children: [
-                          Text('${epochtoCustomTimeDisplay(post.timestamp)}'),
-                        ]),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: Chip(
+                                avatar: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(authorData.avatarLink),
+                                ),
+                                label: Text(authorData.nickname)),
+                          ),
+                          Flexible(
+                              child: Text(
+                            '${epochToDateTime(post.timestamp)}',
+                            style: TextStyle(fontSize: 16),
+                          )),
+                        ],
                       ),
-                      _buildContent(_getController(post)),
+                      _buildContent(_getController(post.content)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Chip(
+                              avatar: Icon(Icons.comment_outlined),
+                              label: Text("${post.comments}"),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: ActionChip(
+                              avatar: Icon(Icons.thumb_up_outlined),
+                              label: Text("${post.votes}"),
+                              onPressed: () async {
+                                await votePost(postId: post.postId.toString());
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      Divider(thickness: 1),
                     ],
                   ),
                 );

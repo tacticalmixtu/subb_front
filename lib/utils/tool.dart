@@ -1,4 +1,9 @@
-String epochtoCustomTimeDisplay(int epoch) {
+String epochToDateTime(int epoch) {
+  final dt = DateTime.fromMillisecondsSinceEpoch(epoch * 1000);
+  return '${dt.month}/${dt.day}/${dt.year} ${dt.hour}:${dt.minute}';
+}
+
+String epochToCustomTimeDisplay(int epoch) {
   final dt = DateTime.fromMillisecondsSinceEpoch(epoch * 1000);
   final dtNow = DateTime.now();
   if (dt.isBefore(dtNow.subtract(Duration(days: 7)))) {

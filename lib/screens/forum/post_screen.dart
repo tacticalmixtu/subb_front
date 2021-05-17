@@ -26,6 +26,17 @@ class PostScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("View Comments (${post.comments})"),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xff03dac6),
+        foregroundColor: Colors.black,
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ComposeCommentScreen(post)));
+        },
+        child: Icon(Icons.add),
+      ),
       body: FutureBuilder<ApiResponse>(
         future: getPostPage(postId: post.postId.toString(), page: '1'),
         builder: (context, snapshot) {
@@ -38,17 +49,6 @@ class PostScreen extends StatelessWidget {
               : Center(child: CircularProgressIndicator());
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
-        foregroundColor: Colors.black,
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ComposeCommentScreen(post)));
-        },
-        child: Icon(Icons.add),
-      ),
     );
   }
 }
@@ -59,9 +59,9 @@ class CommentsList extends StatelessWidget {
 
   CommentsList({Key? key, required this.comments}) : super(key: key);
 
-  QuillController _getController(Comment comment) {
+  QuillController _getController(String content) {
     return QuillController(
-        document: Document.fromJson(jsonDecode(comment.content)),
+        document: Document.fromJson(jsonDecode(content)),
         selection: const TextSelection.collapsed(offset: 0));
   }
 
@@ -99,59 +99,64 @@ class CommentsList extends StatelessWidget {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              return Container(
-                padding: EdgeInsets.all(4),
-                child: Card(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Icon(Icons.person_pin),
-                        title: Text('User ID - ${comment.author}'),
-                        trailing: Column(children: [
-                          Text(
-                              '${epochtoCustomTimeDisplay(comment.timestamp)}'),
-                        ]),
-                      ),
-                      _buildContent(_getController(comment)),
-                    ],
-                  ),
-                ),
-              );
+              return Container();
             case ConnectionState.done:
               if (snapshot.hasError) {
-                return Container(
-                  padding: EdgeInsets.all(4),
-                  child: Card(
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: Icon(Icons.error_outline),
-                          title: Text('User ID - ${comment.author}'),
-                          trailing: Column(children: [
-                            Text(
-                                '${epochtoCustomTimeDisplay(comment.timestamp)}'),
-                          ]),
-                        ),
-                        _buildContent(_getController(comment)),
-                      ],
-                    ),
-                  ),
-                );
+                return Center(child: Icon(Icons.error_outline));
               } else {
                 final ContactData authorData =
                     ContactData.fromJson(snapshot.data!.data! as dynamic);
-                return Card(
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ListTile(
-                        leading: Image.network(authorData.avatarLink),
-                        title: Text(authorData.nickname),
-                        trailing: Column(children: [
-                          Text(
-                              '${epochtoCustomTimeDisplay(comment.timestamp)}'),
-                        ]),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: Chip(
+                                avatar: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(authorData.avatarLink),
+                                ),
+                                label: Text(authorData.nickname)),
+                          ),
+                          Flexible(
+                              child: Text(
+                            '${epochToDateTime(comment.timestamp)}',
+                            style: TextStyle(fontSize: 16),
+                          )),
+                        ],
                       ),
-                      _buildContent(_getController(comment)),
+                      _buildContent(_getController(comment.content)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Chip(
+                              avatar: Icon(Icons.comment_outlined),
+                              label: Text("${comment.comments}"),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: ActionChip(
+                              avatar: Icon(Icons.thumb_up_outlined),
+                              label: Text("${comment.votes}"),
+                              onPressed: () async {
+                                await voteComment(commentId: comment.commentId.toString());
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      Divider(thickness: 1),
                     ],
                   ),
                 );

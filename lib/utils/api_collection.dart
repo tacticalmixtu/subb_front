@@ -38,14 +38,6 @@ const _apiPathLoadUser = "small_talk_api/load_user";
 const _apiPathPushPrivateMessage = "small_talk_api/push_private_message";
 const _apiPathFetchPrivateMessage = "small_talk_api/fetch_private_message";
 const _apiPathReadPrivateMessage = "small_talk_api/read_private_message";
-const _apiPathAdminDisableAccount =
-    "small_talk_api/admin_disable_account"; // NOT IMPLEMENTED
-const _apiPathAdminDeleteThread =
-    "small_talk_api/admin_delete_thread"; // NOT IMPLEMENTED
-const _apiPathAdminDeletePost =
-    "small_talk_api/admin_delete_post"; // NOT IMPLEMENTED
-const _apiPathAdminDeleteComment =
-    "small_talk_api/admin_delete_comment"; // NOT IMPLEMENTED
 const _apiPathGetNotification = "small_talk_api/get_notification";
 const _apiPathReadNotification = "small_talk_api/read_notification";
 
