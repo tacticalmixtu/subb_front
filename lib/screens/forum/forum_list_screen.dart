@@ -66,7 +66,7 @@ class ForumsPage extends StatelessWidget {
             children: [
               ListTile(
                 // Todo: Forum Icon & Forum Description
-                leading: new Icon(Icons.person_pin, size: 40.0),
+                leading: new Icon(Icons.forum, size: 40.0),
                 title: Text('${forum.title}'),
               ),
             ],

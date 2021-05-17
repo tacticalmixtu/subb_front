@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:subb_front/screens/notification/chat.dart';
+import 'package:subb_front/screens/notification/chat_screen.dart';
 
 class NotificationScreen extends StatelessWidget {
   NotificationScreen();

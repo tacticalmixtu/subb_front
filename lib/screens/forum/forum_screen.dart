@@ -83,26 +83,81 @@ class ThreadsPage extends StatelessWidget {
   final List<Thread> threads;
   ThreadsPage({Key? key, required this.threads});
 
-  Widget _buildIconItem(IconData icon, String content) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          color: Colors.blueGrey[400],
-        ),
-        Text(content),
-      ],
+  Widget _buildIconItem(String label, String content) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: Row(
+        children: [
+          Text(label),
+          Text(content),
+        ],
+      ),
     );
   }
 
   Widget _buildBottomContainer(Thread thread) {
     return Container(
-      padding: EdgeInsets.only(left: 192),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        _buildIconItem(Icons.whatshot, '${thread.heat}'),
-        _buildIconItem(Icons.sms, '${thread.posts}'),
-        _buildIconItem(Icons.thumb_up, '${thread.votes}'),
-      ]),
+      margin: EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              // _buildIconItem(Icons.whatshot, '${thread.heat}'),
+              _buildIconItem('Posts: ', '${thread.posts}'),
+              // _buildIconItem(, '${thread.votes}'),
+            ],
+          ),
+          Text('${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUI({required Widget image, required Thread thread}) {
+    return Container(
+      margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+      // margin: EdgeInsets.all(8),
+      child: Card(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [image, Text('{thread.author}')],
+                ),
+                Text('${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
+              ],
+            ),
+            Text('${thread.title}'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Posts: ${thread.posts}'),
+                // Text('Post: ${thread.posts}'),
+                ActionChip(
+                  avatar: Icon(Icons.thumb_up),
+                  label: Text("like!"),
+                  onPressed: () {},
+                ),
+              ],
+            )
+            // Row(children: [Image.network(avatarUrl),Text('${thread.author'),]),
+            // ListTile(
+            //   leading: leading,
+            //   title: Text('${thread.title}'),
+            //   subtitle: Text("User ID - ${thread.author}"),
+            //   trailing: ActionChip(
+            //     avatar: Icon(Icons.thumb_up),
+            //     label: Text("like!"),
+            //     onPressed: () {},
+            //   ),
+            // ),
+            // _buildBottomContainer(thread),
+          ],
+        ),
+      ),
     );
   }
 
@@ -116,60 +171,15 @@ class ThreadsPage extends StatelessWidget {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              return Card(
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: new Icon(Icons.person_pin, size: 40.0),
-                      title: Text('${thread.title}'),
-                      subtitle: Text("User ID - ${thread.author}"),
-                      trailing: Column(children: [
-                        Text(
-                            '${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
-                      ]),
-                    ),
-                    _buildBottomContainer(thread),
-                  ],
-                ),
-              );
+              return _buildUI(image: Icon(Icons.person_pin), thread: thread);
             case ConnectionState.done:
-              if (snapshot.hasError) {
-                return Card(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: new Icon(Icons.error_outline, size: 40.0),
-                        title: Text('${thread.title}'),
-                        subtitle: Text("User ID - ${thread.author}"),
-                        trailing: Column(children: [
-                          Text(
-                              '${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
-                        ]),
-                      ),
-                      _buildBottomContainer(thread),
-                    ],
-                  ),
-                );
-              } else {
-                final ContactData authorData =
-                    ContactData.fromJson(snapshot.data!.data! as dynamic);
-                return Card(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Image.network(authorData.avatarLink),
-                        title: Text('${thread.title}'),
-                        subtitle: Text(authorData.nickname),
-                        trailing: Column(children: [
-                          Text(
-                              '${epochtoCustomTimeDisplay(thread.activeTimestamp)}'),
-                        ]),
-                      ),
-                      _buildBottomContainer(thread),
-                    ],
-                  ),
-                );
-              }
+              return snapshot.hasError
+                  ? _buildUI(image: Icon(Icons.error_outline), thread: thread)
+                  : _buildUI(
+                      image: Image.network(
+                          ContactData.fromJson(snapshot.data!.data! as dynamic)
+                              .avatarLink),
+                      thread: thread);
           }
         });
   }
