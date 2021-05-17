@@ -67,9 +67,9 @@ class _ComposePostScreenState extends State<ComposePostScreen> {
     SnackBar snackBar = SnackBar(content: Text('No title!'));
 
     final apiResponse = await newPost(
-      threadId: thread.threadId.toString(), 
-      content: await compute(
-        jsonEncode, _quillController!.document.toDelta().toJson()));
+        threadId: thread.threadId.toString(),
+        content: await compute(
+            jsonEncode, _quillController!.document.toDelta().toJson()));
 
     if (apiResponse.code == 200) {
       snackBar = SnackBar(content: Text('Post created'));
@@ -94,30 +94,30 @@ class _ComposePostScreenState extends State<ComposePostScreen> {
         title: Text("Writing Post: ${thread.title}"),
       ),
       body: SafeArea(
-          child: Column(
-        children: [
-          QuillToolbar.basic(controller: _quillController!),
-          Expanded(
-            child: Column(children: <Widget>[
-              QuillEditor(
-                controller: _quillController!,
-                readOnly: false,
-                autoFocus: true,
-                focusNode: _focusNode,
-                scrollController: ScrollController(),
-                scrollable: true,
-                expands: false,
-                padding: EdgeInsets.only(top: 4),
-                // embedBuilder: defaultEmbedBuilderWeb,
-              ),
-            ]),
-          )
-        ],
-      )),
+          child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  QuillToolbar.basic(controller: _quillController!),
+                  Expanded(
+                    child: Column(children: <Widget>[
+                      QuillEditor(
+                        controller: _quillController!,
+                        readOnly: false,
+                        autoFocus: true,
+                        focusNode: _focusNode,
+                        scrollController: ScrollController(),
+                        scrollable: true,
+                        expands: false,
+                        padding: EdgeInsets.only(top: 4),
+                      ),
+                    ]),
+                  )
+                ],
+              ))),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
-        // onPressed: _sendNewPost,
         onPressed: _newPost,
         child: Icon(Icons.send),
       ),

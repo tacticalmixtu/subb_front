@@ -14,12 +14,12 @@ class ChatMessage extends StatelessWidget {
           CurvedAnimation(parent: animationController, curve: Curves.easeOut),
       axisAlignment: 0.0,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 10.0),
+        padding: EdgeInsets.symmetric(vertical: 10.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              margin: const EdgeInsets.only(right: 16.0),
+              padding: const EdgeInsets.only(right: 16.0),
               child: CircleAvatar(child: Text(_authorName[0])),
             ),
             Expanded(
@@ -29,7 +29,7 @@ class ChatMessage extends StatelessWidget {
                   Text(_authorName,
                       style: Theme.of(context).textTheme.headline4),
                   Container(
-                    margin: EdgeInsets.only(top: 5.0),
+                    padding: EdgeInsets.only(top: 5.0),
                     child: Text(text),
                   ),
                 ],
@@ -80,7 +80,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     return IconTheme(
       data: IconThemeData(color: Theme.of(context).accentColor),
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 8.0),
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
         child: Row(
           children: [
             Flexible(
@@ -98,7 +98,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               ),
             ),
             Container(
-                margin: EdgeInsets.symmetric(horizontal: 4.0),
+                padding: EdgeInsets.symmetric(horizontal: 4.0),
                 child: IconButton(
                   icon: const Icon(Icons.send),
                   onPressed: _isComposing

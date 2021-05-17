@@ -66,17 +66,16 @@ class _ComposeThreadScreenState extends State<ComposeThreadScreen> {
   void _newThread() async {
     SnackBar snackBar = SnackBar(content: Text('No title!'));
 
-    // String title = 'demo title 3';
     if (_titleController.text == "") {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
     }
 
     final apiResponse = await newThread(
-      forumId: forum.forumId.toString(), 
-      title: _titleController.text, 
-      content: await compute(
-        jsonEncode, _quillController!.document.toDelta().toJson()));
+        forumId: forum.forumId.toString(),
+        title: _titleController.text,
+        content: await compute(
+            jsonEncode, _quillController!.document.toDelta().toJson()));
 
     if (apiResponse.code == 200) {
       snackBar = SnackBar(content: Text('Thread created'));
@@ -97,37 +96,40 @@ class _ComposeThreadScreenState extends State<ComposeThreadScreen> {
       return const Scaffold(body: Center(child: Text('Loading...')));
     }
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Forum: ${forum.title}"),
+      ),
       body: SafeArea(
-          child: Column(
-        children: [
-          QuillToolbar.basic(controller: _quillController!),
-          Expanded(
-            child: Column(children: <Widget>[
-              TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(), hintText: 'Title'),
-                controller: _titleController,
-                autofocus: true,
-              ),
-              QuillEditor(
-                controller: _quillController!,
-                readOnly: false,
-                autoFocus: true,
-                focusNode: _focusNode,
-                scrollController: ScrollController(),
-                scrollable: true,
-                expands: false,
-                padding: EdgeInsets.only(top: 4),
-                // embedBuilder: defaultEmbedBuilderWeb,
-              ),
-            ]),
-          )
-        ],
-      )),
+          child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  TextField(
+                    decoration:
+                        InputDecoration(hintText: 'Thread title here...'),
+                    controller: _titleController,
+                    autofocus: true,
+                  ),
+                  QuillToolbar.basic(controller: _quillController!),
+                  Expanded(
+                    child: Column(children: <Widget>[
+                      QuillEditor(
+                        controller: _quillController!,
+                        readOnly: false,
+                        autoFocus: true,
+                        focusNode: _focusNode,
+                        scrollController: ScrollController(),
+                        scrollable: true,
+                        expands: false,
+                        padding: EdgeInsets.only(top: 4),
+                      ),
+                    ]),
+                  )
+                ],
+              ))),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff03dac6),
         foregroundColor: Colors.black,
-        // onPressed: _sendNewPost,
         onPressed: _newThread,
         child: Icon(Icons.send),
       ),
