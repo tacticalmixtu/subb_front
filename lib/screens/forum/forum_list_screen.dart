@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/models.dart';
-import 'package:subb_front/screens/forum/compose_screen.dart';
 import 'package:subb_front/screens/forum/forum_screen.dart';
 import 'package:subb_front/utils/api_collection.dart';
 
@@ -25,15 +24,6 @@ class _ForumListScreenState extends State<ForumListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: null,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
-        foregroundColor: Colors.black,
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ComposeScreen()));
-        },
-        child: Icon(Icons.add),
-      ),
       body: FutureBuilder<ApiResponse>(
           future: _futureResponse,
           builder: (context, snapshot) {

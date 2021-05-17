@@ -20,9 +20,6 @@ class ResetForm extends StatefulWidget {
 }
 
 class ResetFormState extends State<ResetForm> {
-  final _resetPasswordApi = '/small_talk_api/recover_password/';
-  final _requestPasscodeApi = '/small_talk_api/request_passcode/';
-
   late bool _hidePassword;
   double formProgress = 0;
   final _formKey = GlobalKey<FormState>();

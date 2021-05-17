@@ -72,7 +72,7 @@ class _ComposeChildCommentScreenState extends State<ComposeChildCommentScreen> {
       content: await compute(
         jsonEncode, _quillController!.document.toDelta().toJson()));
 
-    if (apiResponse != null) {
+    if (apiResponse.code == 200) {
       snackBar = SnackBar(content: Text('Child comment created'));
     } else {
       snackBar = SnackBar(content: Text('Child comment created failed'));

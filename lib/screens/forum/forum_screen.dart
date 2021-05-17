@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:subb_front/models/api_response.dart';
 import 'package:subb_front/models/models.dart';
 import 'package:subb_front/models/thread.dart';
-import 'package:subb_front/screens/forum/compose_screen.dart';
+import 'package:subb_front/screens/forum/compose_thread_screen.dart';
 import 'package:subb_front/screens/forum/thread_screen.dart';
 import 'package:subb_front/utils/api_collection.dart';
 import 'package:subb_front/utils/tool.dart';
@@ -43,7 +43,7 @@ class _ForumScreenState extends State<ForumScreen> {
         foregroundColor: Colors.black,
         onPressed: () {
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ComposeScreen()));
+              MaterialPageRoute(builder: (context) => ComposeThreadScreen(forum)));
         },
         child: Icon(Icons.add),
       ),

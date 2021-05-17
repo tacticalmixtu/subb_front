@@ -20,12 +20,6 @@ class EditProfileForm extends StatefulWidget {
 }
 
 class EditProfileFormState extends State<EditProfileForm> {
-  //final nameController = TextEditingController();
-  //final passwordController = TextEditingController();
-  //final genderController = TextEditingController();
-  //final bioController = TextEditingController();
-
-  final _modifyInfoApi = '/small_talk_api/modify_info/';
   late final nameController;
   late final passwordController;
   late final genderController;

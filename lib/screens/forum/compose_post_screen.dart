@@ -71,7 +71,7 @@ class _ComposePostScreenState extends State<ComposePostScreen> {
       content: await compute(
         jsonEncode, _quillController!.document.toDelta().toJson()));
 
-    if (apiResponse != null) {
+    if (apiResponse.code == 200) {
       snackBar = SnackBar(content: Text('Post created'));
     } else {
       snackBar = SnackBar(content: Text('Post created failed'));

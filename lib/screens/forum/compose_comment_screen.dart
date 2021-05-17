@@ -71,7 +71,7 @@ class _ComposeCommentScreenState extends State<ComposeCommentScreen> {
       content: await compute(
         jsonEncode, _quillController!.document.toDelta().toJson()));
 
-    if (apiResponse != null) {
+    if (apiResponse.code == 200) {
       snackBar = SnackBar(content: Text('Comment created'));
     } else {
       snackBar = SnackBar(content: Text('Comment created failed'));

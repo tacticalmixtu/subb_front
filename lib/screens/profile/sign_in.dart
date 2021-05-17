@@ -25,7 +25,6 @@ class SigninForm extends StatefulWidget {
 }
 
 class SigninFormState extends State<SigninForm> {
-  final _signInApi = '/small_talk_api/sign_in/';
   late final _emailController;
   late final _passwordController;
 
