@@ -137,9 +137,9 @@ class SignUpFormState extends State<SignUpForm> {
                   LimitedBox(
                     child: TextButton(
                         onPressed: () {
-                          if (_formKey.currentState!.validate()) {
+                          //if (_formKey.currentState!.validate()) {
                             _requestPasscode();
-                          }
+                          //}
                         },
                         child: Text(
                           "Send Verification Code",
