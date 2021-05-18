@@ -25,7 +25,7 @@ class CommentScreen extends StatelessWidget {
         title: Text("View Discussion (${comment.comments})"),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
+        backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.black,
         onPressed: () {
           Navigator.push(
@@ -33,7 +33,7 @@ class CommentScreen extends StatelessWidget {
               MaterialPageRoute(
                   builder: (context) => ComposeChildCommentScreen(comment)));
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.edit),
       ),
       body: FutureBuilder<ApiResponse>(
         future:
@@ -142,7 +142,8 @@ class ChildCommentsList extends StatelessWidget {
                               label: Text("${childComment.votes}"),
                               onPressed: () async {
                                 await voteComment(
-                                    commentId: childComment.commentId.toString());
+                                    commentId:
+                                        childComment.commentId.toString());
                               },
                             ),
                           ),
