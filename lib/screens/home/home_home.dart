@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: null,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
+        backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.black,
         onPressed: () {
           // Todo: Navigate to search screen.
@@ -51,8 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           parseThreads(snapshot.data!.data! as List<dynamic>)),
                   onRefresh: () {
                     setState(() {
-                      _futureResponse =
-                          getHomepage();
+                      _futureResponse = getHomepage();
                     });
                     return _futureResponse;
                   },
